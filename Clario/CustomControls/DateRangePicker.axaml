@@ -1,0 +1,50 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:Clario.CustomControls">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <!-- Add Controls for Previewer Here -->
+        </Border>
+    </Design.PreviewWith>
+
+    <Style Selector="local|DateRangePicker">
+        <Setter Property="MinHeight" Value="15" />
+        <Setter Property="MinWidth" Value="50" />
+        <!-- <Setter Property="Background" Value="{TemplateBinding Background}" /> -->
+        <!-- <Setter Property="Foreground" Value="{TemplateBinding Foreground}" /> -->
+        <!-- <Setter Property="BorderBrush" Value="{TemplateBinding BorderBrush}" /> -->
+        <!-- <Setter Property="CornerRadius" Value="{TemplateBinding CornerRadius}" /> -->
+        <!-- <Setter Property="BorderThickness" Value="1" /> -->
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid>
+
+                    <!-- Button -->
+                    <Button x:Name="PART_Button"
+                            Content="{TemplateBinding DisplayText}" HorizontalAlignment="Stretch"
+                            Padding="{TemplateBinding Padding}"
+                            FontSize="{TemplateBinding FontSize}"
+                            FontWeight="{TemplateBinding FontWeight}"
+                            Background="{TemplateBinding Background}"
+                            Foreground="{TemplateBinding Foreground}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="{TemplateBinding CornerRadius}" />
+
+                    <!-- Popup -->
+                    <Popup x:Name="PART_Popup"
+                           PlacementTarget="{Binding #PART_Button}"
+                           IsLightDismissEnabled="True">
+
+                        <Border Padding="8">
+                            <Calendar x:Name="PART_Calendar"
+                                      SelectionMode="{TemplateBinding SelectionMode}" />
+                        </Border>
+
+                    </Popup>
+
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>

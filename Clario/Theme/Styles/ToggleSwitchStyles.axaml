@@ -1,0 +1,208 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:style="using:Clario.Theme.Styles">
+
+    <Design.PreviewWith>
+        <Border Padding="24" Background="#0D0F14">
+            <StackPanel Spacing="16">
+                <ToggleSwitch />
+                <ToggleSwitch IsChecked="True"/>
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <Style Selector="ToggleSwitch">
+        <Setter Property="Width" Value="48" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Background="{TemplateBinding Background}">
+                    <Grid
+                        MinWidth="{DynamicResource ToggleSwitchThemeMinWidth}"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top">
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid
+                            x:Name="SwitchAreaGrid"
+                            Grid.RowSpan="3"
+                            Background="Transparent"
+                            Margin="0"
+                            Height="{Binding $parent[ToggleSwitch].(style:ToggleSwitchExtensions.CanvasHeight)}"
+                            TemplatedControl.IsTemplateFocusTarget="True" />
+                        <Border
+                            x:Name="OuterBorder"
+                            Grid.Row="1"
+                            Width="{TemplateBinding Width}"
+                            Height="{TemplateBinding Height}"
+                            Background="{DynamicResource ToggleSwitchTrackOff}"
+                            BorderBrush="{DynamicResource ToggleSwitchTrackBorderOff}"
+                            BorderThickness="{DynamicResource ToggleSwitchOuterBorderStrokeThickness}"
+                            CornerRadius="50" />
+
+                        <Border
+                            x:Name="SwitchKnobBounds"
+                            Grid.Row="1"
+                            Width="{TemplateBinding Width}"
+                            Height="{TemplateBinding Height}"
+                            Background="{DynamicResource AccentBlue}"
+                            BorderBrush="{DynamicResource AccentBlue}"
+                            BorderThickness="{DynamicResource ToggleSwitchOnStrokeThickness}"
+                            CornerRadius="50" />
+
+                        <Canvas
+                            x:Name="PART_SwitchKnob"
+                            Grid.Row="1"
+                            Width="{Binding $parent[ToggleSwitch].(style:ToggleSwitchExtensions.CanvasWidth)}"
+                            Height="{Binding $parent[ToggleSwitch].(style:ToggleSwitchExtensions.CanvasHeight)}"
+                            HorizontalAlignment="Left">
+
+                            <Grid x:Name="PART_MovingKnobs"
+                                  Width="{Binding $parent[ToggleSwitch].(style:ToggleSwitchExtensions.CanvasWidth)}"
+                                  Height="{Binding $parent[ToggleSwitch].(style:ToggleSwitchExtensions.CanvasHeight)}">
+                                <Border
+                                    x:Name="SwitchKnobOn"
+                                    Background="{DynamicResource ToggleSwitchKnobOn}"
+                                    Width="{Binding $parent[ToggleSwitch].(style:ToggleSwitchExtensions.KnobWidth)}"
+                                    Height="{Binding $parent[ToggleSwitch].(style:ToggleSwitchExtensions.KnobHeight)}"
+                                    CornerRadius="50">
+                                </Border>
+                                <Border
+                                    x:Name="SwitchKnobOff"
+                                    Background="{DynamicResource ToggleSwitchKnobOff}"
+                                    Width="{Binding $parent[ToggleSwitch].(style:ToggleSwitchExtensions.KnobWidth)}"
+                                    Height="{Binding $parent[ToggleSwitch].(style:ToggleSwitchExtensions.KnobHeight)}"
+                                    CornerRadius="50">
+                                </Border>
+                            </Grid>
+                        </Canvas>
+                    </Grid>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^:pointerover /template/ Border#OuterBorder">
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderAccent}" />
+            <Setter Property="Background" Value="{DynamicResource BgHover}" />
+        </Style>
+
+        <Style Selector="^:pointerover /template/ Border#SwitchKnobOff">
+            <Setter Property="Background" Value="{DynamicResource TextMuted}" />
+        </Style>
+
+        <Style Selector="^:pointerover /template/ Border#SwitchKnobOn">
+            <Setter Property="Background" Value="{DynamicResource TextSecondary}" />
+        </Style>
+
+        <Style Selector="^:pointerover /template/ Border#SwitchKnobBounds">
+            <Setter Property="Background" Value="{DynamicResource ToggleSwitchTrackOnHover}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ToggleSwitchTrackOnHover}" />
+        </Style>
+
+        <Style Selector="^:pointerover /template/ Grid#SwitchAreaGrid">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+
+        <!-- PressedState -->
+        <Style Selector="^:pressed /template/ Border#OuterBorder">
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtle}" />
+            <Setter Property="Background" Value="{DynamicResource BgSurface}" />
+        </Style>
+
+        <Style Selector="^:pressed /template/ Border#SwitchKnobBounds">
+            <Setter Property="Background" Value="{DynamicResource ToggleSwitchTrackOnPressed}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ToggleSwitchTrackOnPressed}" />
+        </Style>
+
+        <Style Selector="^:pressed /template/ Border#SwitchKnobOff">
+            <Setter Property="Background" Value="{DynamicResource TextDisabled}" />
+        </Style>
+
+        <Style Selector="^:pressed /template/ Border#SwitchKnobOn">
+            <Setter Property="Background" Value="{DynamicResource TextSecondary}" />
+        </Style>
+
+        <Style Selector="^:pressed /template/ Grid#SwitchAreaGrid">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+
+        <!--  DisabledState  -->
+        <Style Selector="^:disabled">
+            <Setter Property="Foreground" Value="{DynamicResource TextDisabled}" />
+        </Style>
+
+        <Style Selector="^:disabled /template/ Border#OuterBorder">
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtle}" />
+            <Setter Property="Background" Value="{DynamicResource BgSurface}" />
+            <Setter Property="Opacity" Value="0.4" />
+        </Style>
+
+        <Style Selector="^:disabled /template/ Border#SwitchKnobOff">
+            <Setter Property="Background" Value="{DynamicResource TextDisabled}" />
+        </Style>
+
+        <Style Selector="^:disabled /template/ Border#SwitchKnobOn">
+            <Setter Property="Background" Value="{DynamicResource TextDisabled}" />
+        </Style>
+
+        <Style Selector="^:disabled /template/ Border#SwitchKnobBounds">
+            <Setter Property="Background" Value="{DynamicResource ToggleSwitchTrackOnDisabled}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ToggleSwitchTrackOnDisabled}" />
+            <Setter Property="Opacity" Value="0.4" />
+        </Style>
+
+        <!--  CheckedState  -->
+        <Style Selector="^:checked /template/ Border#OuterBorder">
+            <Setter Property="Opacity" Value="0" />
+        </Style>
+
+        <Style Selector="^:checked  /template/ Border#SwitchKnobOff">
+            <Setter Property="Opacity" Value="0" />
+        </Style>
+
+        <Style Selector="^:checked  /template/ Border#SwitchKnobBounds">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+
+        <Style Selector="^:checked /template/ Border#SwitchKnobOn">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+
+        <Style Selector="^:checked /template/ ContentPresenter#PART_OffContentPresenter">
+            <Setter Property="Opacity" Value="0" />
+        </Style>
+
+        <Style Selector="^:checked /template/ ContentPresenter#PART_OnContentPresenter">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+
+        <!--  UncheckedState  -->
+        <Style Selector="^:unchecked /template/ Border#OuterBorder">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+
+        <Style Selector="^:unchecked /template/ Border#SwitchKnobOff">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+
+        <Style Selector="^:unchecked /template/ Border#SwitchKnobOn">
+            <Setter Property="Opacity" Value="0" />
+        </Style>
+
+        <Style Selector="^:unchecked  /template/ Border#SwitchKnobBounds">
+            <Setter Property="Opacity" Value="0" />
+        </Style>
+
+        <Style Selector="^:unchecked /template/ ContentPresenter#PART_OffContentPresenter">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+
+        <Style Selector="^:unchecked /template/ ContentPresenter#PART_OnContentPresenter">
+            <Setter Property="Opacity" Value="0" />
+        </Style>
+    </Style>
+</Styles>

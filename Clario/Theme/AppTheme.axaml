@@ -1,0 +1,960 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:cc="clr-namespace:Clario.CustomControls">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <cc:DateRangePicker SelectionMode="SingleRange"
+                                Padding="10,8"
+                                HorizontalAlignment="Stretch"
+                                FontSize="13"
+                                Margin="0,0,0,14" />
+        </Border>
+    </Design.PreviewWith>
+    <StyleInclude Source="Styles/ToggleSwitchStyles.axaml" />
+    <StyleInclude Source="Styles/CalenderItemStyles.axaml" />
+    <StyleInclude Source="../CustomControls/DateRangePicker.axaml" />
+    <Styles.Resources>
+        <ResourceDictionary>
+            <!-- FONT -->
+            <FontFamily x:Key="AppFont">Segoe UI</FontFamily>
+
+            <!-- SPACING SCALE  (multiples of 4) -->
+            <Thickness x:Key="Space0">0</Thickness>
+            <Thickness x:Key="Space4">4</Thickness>
+            <Thickness x:Key="Space8">8</Thickness>
+            <Thickness x:Key="Space12">12</Thickness>
+            <Thickness x:Key="Space16">16</Thickness>
+            <Thickness x:Key="Space20">20</Thickness>
+            <Thickness x:Key="Space24">24</Thickness>
+            <Thickness x:Key="Space32">32</Thickness>
+
+            <!-- LAYOUT TOKENS -->
+            <Thickness x:Key="PagePadding">32,28,32,32</Thickness>
+            <Thickness x:Key="CardPadding">24</Thickness>
+            <Thickness x:Key="InsetPadding">14,12</Thickness>
+            <Thickness x:Key="NavButtonPadding">12,10</Thickness>
+            <Thickness x:Key="BadgePadding">8,3</Thickness>
+            <Thickness x:Key="IconBoxPadding">7</Thickness>
+
+            <!-- CORNER RADII -->
+            <CornerRadius x:Key="RadiusCard">16</CornerRadius>
+            <CornerRadius x:Key="RadiusInset">12</CornerRadius>
+            <CornerRadius x:Key="RadiusControl">10</CornerRadius>
+            <CornerRadius x:Key="RadiusIcon">8</CornerRadius>
+            <CornerRadius x:Key="RadiusPill">20</CornerRadius>
+            <CornerRadius x:Key="RadiusBar">3</CornerRadius>
+            <CornerRadius x:Key="RadiusSmall">5</CornerRadius>
+
+            <!-- FONT SIZES -->
+            <x:Double x:Key="FontSizePageTitle">26</x:Double>
+            <x:Double x:Key="FontSizeKpi">26</x:Double>
+            <x:Double x:Key="FontSizeSectionHeading">15</x:Double>
+            <x:Double x:Key="FontSizeBody">13</x:Double>
+            <x:Double x:Key="FontSizeMeta">12</x:Double>
+            <x:Double x:Key="FontSizeLabel">11</x:Double>
+            <x:Double x:Key="FontSizeAmount">14</x:Double>
+
+            <!-- LAYOUT -->
+            <x:Double x:Key="SidebarWidth">220</x:Double>
+
+            <!-- FLYOUT PRESENTER THEME -->
+            <ControlTheme x:Key="TransparentFlyoutPresenter"
+                          TargetType="FlyoutPresenter">
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderBrush" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="CornerRadius" Value="0" />
+            </ControlTheme>
+
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Dark">
+                    <!-- BACKGROUNDS -->
+                    <SolidColorBrush x:Key="BgBase" Color="#0D0F14" />
+                    <SolidColorBrush x:Key="BgSidebar" Color="#0B0D12" />
+                    <SolidColorBrush x:Key="BgSurface" Color="#13161E" />
+                    <SolidColorBrush x:Key="BgHover" Color="#1A1E2A" />
+
+                    <!-- BORDERS -->
+                    <SolidColorBrush x:Key="BorderSubtle" Color="#1E2330" />
+                    <SolidColorBrush x:Key="BorderAccent" Color="#2A3050" />
+
+                    <!-- TEXT -->
+                    <SolidColorBrush x:Key="TextPrimary" Color="#F0F2F8" />
+                    <SolidColorBrush x:Key="TextSecondary" Color="#C8D0E8" />
+                    <SolidColorBrush x:Key="TextMuted" Color="#7A8090" />
+                    <SolidColorBrush x:Key="TextDisabled" Color="#5A6070" />
+
+                    <!-- ACCENTS -->
+                    <SolidColorBrush x:Key="AccentBlue" Color="#7B9CFF" />
+
+                    <SolidColorBrush x:Key="AccentGreen" Color="#2ECC8A" />
+                    <SolidColorBrush x:Key="AccentYellow" Color="#F5C842" />
+                    <SolidColorBrush x:Key="AccentRed" Color="#FF5E5E" />
+                    <SolidColorBrush x:Key="AccentPurple" Color="#9B7BFF" />
+                    <SolidColorBrush x:Key="AccentOrange" Color="#FF7E5E" />
+                    <SolidColorBrush x:Key="AccentPink" Color="#FF5E9B" />
+
+
+                    <!-- SVG COLORS -->
+
+                    <x:String x:Key="SvgBase">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #0D0F14; }</x:String>
+                    <x:String x:Key="SvgPrimary">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #F0F2F8; }</x:String>
+                    <x:String x:Key="SvgSecondary">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #C8D0E8; }</x:String>
+                    <x:String x:Key="SvgMuted">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #7A8090; }</x:String>
+                    <x:String x:Key="SvgDisabled">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #5A6070; }</x:String>
+                    <x:String x:Key="SvgBlue">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #7B9CFF; }</x:String>
+                    <x:String x:Key="SvgGreen">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #2ECC8A; }</x:String>
+                    <x:String x:Key="SvgYellow">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #F5C842; }</x:String>
+                    <x:String x:Key="SvgRed">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #FF5E5E; }</x:String>
+                    <x:String x:Key="SvgPurple">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #9B7BFF; }</x:String>
+                    <x:String x:Key="SvgOrange">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #FF7E5E; }</x:String>
+                    <x:String x:Key="SvgPink">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #FF5E9B; }</x:String>
+
+                    <x:String x:Key="SvgFillBase">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #0D0F14; }</x:String>
+                    <x:String x:Key="SvgFillPrimary">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #F0F2F8; }</x:String>
+                    <x:String x:Key="SvgFillSecondary">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #C8D0E8; }</x:String>
+                    <x:String x:Key="SvgFillMuted">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #7A8090; }</x:String>
+                    <x:String x:Key="SvgFillDisabled">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #5A6070; }</x:String>
+                    <x:String x:Key="SvgFillBlue">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #7B9CFF; }</x:String>
+                    <x:String x:Key="SvgFillGreen">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #2ECC8A; }</x:String>
+                    <x:String x:Key="SvgFillYellow">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #F5C842; }</x:String>
+                    <x:String x:Key="SvgFillRed">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #FF5E5E; }</x:String>
+                    <x:String x:Key="SvgFillPurple">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #9B7BFF; }</x:String>
+                    <x:String x:Key="SvgFillOrange">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #FF7E5E; }</x:String>
+                    <x:String x:Key="SvgFillPink">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #FF5E9B; }</x:String>
+                    <!-- ICON BACKGROUNDS -->
+                    <SolidColorBrush x:Key="IconBgBlue" Color="#1A2240" />
+                    <SolidColorBrush x:Key="IconBgGreen" Color="#0D2A1A" />
+                    <SolidColorBrush x:Key="IconBgOrange" Color="#2A1A0D" />
+                    <SolidColorBrush x:Key="IconBgRed" Color="#2A0D0D" />
+                    <SolidColorBrush x:Key="IconBgPurple" Color="#1A1A2A" />
+                    <SolidColorBrush x:Key="IconBgPink" Color="#1A0D1A" />
+
+                    <!-- SEMANTIC OVERLAYS -->
+                    <SolidColorBrush x:Key="BadgeBgGreen" Color="#0D2A1A" />
+                    <SolidColorBrush x:Key="BadgeBgRed" Color="#2A0D0D" />
+                    <SolidColorBrush x:Key="BadgeBgYellow" Color="#2A240D" />
+                    <SolidColorBrush x:Key="BadgeBgBlue" Color="#0D1A2A" />
+                    <SolidColorBrush x:Key="DividerAlpha" Color="#1E2330" />
+
+                    <!-- Toggle Switch specific -->
+                    <SolidColorBrush x:Key="ToggleSwitchTrackOff" Color="#1E2330" />
+                    <SolidColorBrush x:Key="ToggleSwitchTrackBorderOff" Color="#2A3050" />
+                    <SolidColorBrush x:Key="ToggleSwitchKnobOn" Color="#FFFFFF" />
+                    <SolidColorBrush x:Key="ToggleSwitchKnobOff" Color="#5A6070" />
+                    <SolidColorBrush x:Key="ToggleSwitchTrackOnHover" Color="#8FAEFF" />
+                    <SolidColorBrush x:Key="ToggleSwitchTrackOnPressed" Color="#6B8AEF" />
+                    <SolidColorBrush x:Key="ToggleSwitchTrackOnDisabled" Color="#4A5A8A" />
+
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Light">
+                    <!-- BACKGROUNDS -->
+                    <SolidColorBrush x:Key="BgBase" Color="#F4F5F8" />
+                    <SolidColorBrush x:Key="BgSidebar" Color="#ECEEF3" />
+                    <SolidColorBrush x:Key="BgSurface" Color="#FFFFFF" />
+                    <SolidColorBrush x:Key="BgHover" Color="#E8EAF2" />
+
+                    <!-- BORDERS -->
+                    <SolidColorBrush x:Key="BorderSubtle" Color="#E2E4ED" />
+                    <SolidColorBrush x:Key="BorderAccent" Color="#C8CCDE" />
+
+                    <!-- TEXT -->
+                    <SolidColorBrush x:Key="TextPrimary" Color="#0F1117" />
+                    <SolidColorBrush x:Key="TextSecondary" Color="#353A4A" />
+                    <SolidColorBrush x:Key="TextMuted" Color="#6B7080" />
+                    <SolidColorBrush x:Key="TextDisabled" Color="#A0A6B8" />
+
+                    <!-- ACCENTS -->
+                    <SolidColorBrush x:Key="AccentBlue" Color="#3B6AFF" />
+                    <SolidColorBrush x:Key="AccentGreen" Color="#18A86B" />
+                    <SolidColorBrush x:Key="AccentYellow" Color="#D4A012" />
+                    <SolidColorBrush x:Key="AccentRed" Color="#E53535" />
+                    <SolidColorBrush x:Key="AccentPurple" Color="#6B44E0" />
+                    <SolidColorBrush x:Key="AccentOrange" Color="#E8622A" />
+                    <SolidColorBrush x:Key="AccentPink" Color="#D4306A" />
+
+                    <!-- ICON BACKGROUNDS -->
+                    <SolidColorBrush x:Key="IconBgBlue" Color="#E8EEFF" />
+                    <SolidColorBrush x:Key="IconBgGreen" Color="#E0F5EC" />
+                    <SolidColorBrush x:Key="IconBgOrange" Color="#FFF0E8" />
+                    <SolidColorBrush x:Key="IconBgRed" Color="#FFE8E8" />
+                    <SolidColorBrush x:Key="IconBgPurple" Color="#EDE8FF" />
+                    <SolidColorBrush x:Key="IconBgPink" Color="#FFE8F2" />
+
+                    <!-- SEMANTIC OVERLAYS -->
+                    <SolidColorBrush x:Key="BadgeBgGreen" Color="#E0F5EC" />
+                    <SolidColorBrush x:Key="BadgeBgRed" Color="#FFE8E8" />
+                    <SolidColorBrush x:Key="BadgeBgYellow" Color="#FFF6DC" />
+                    <SolidColorBrush x:Key="BadgeBgBlue" Color="#E8EEFF" />
+                    <SolidColorBrush x:Key="DividerAlpha" Color="#E2E4ED" />
+
+                    <!-- SVG COLORS -->
+                    <x:String x:Key="SvgBase">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #F4F5F8; }</x:String>
+                    <x:String x:Key="SvgPrimary">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #0F1117; }</x:String>
+                    <x:String x:Key="SvgSecondary">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #353A4A; }</x:String>
+                    <x:String x:Key="SvgMuted">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #6B7080; }</x:String>
+                    <x:String x:Key="SvgDisabled">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #A0A6B8; }</x:String>
+
+                    <x:String x:Key="SvgBlue">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #3B6AFF; }</x:String>
+                    <x:String x:Key="SvgGreen">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #18A86B; }</x:String>
+                    <x:String x:Key="SvgYellow">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #D4A012; }</x:String>
+                    <x:String x:Key="SvgRed">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #E53535; }</x:String>
+                    <x:String x:Key="SvgPurple">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #6B44E0; }</x:String>
+                    <x:String x:Key="SvgOrange">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #E8622A; }</x:String>
+                    <x:String x:Key="SvgPink">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #D4306A; }</x:String>
+
+                    <!-- Toggle Switch specific -->
+                    <SolidColorBrush x:Key="ToggleSwitchTrackOff" Color="#E2E4ED" />
+                    <SolidColorBrush x:Key="ToggleSwitchTrackBorderOff" Color="#C8CCDE" />
+                    <SolidColorBrush x:Key="ToggleSwitchKnobOn" Color="#FFFFFF" />
+                    <SolidColorBrush x:Key="ToggleSwitchKnobOff" Color="#8090A8" />
+                    <SolidColorBrush x:Key="ToggleSwitchTrackOnHover" Color="#5580FF" />
+                    <SolidColorBrush x:Key="ToggleSwitchTrackOnPressed" Color="#2D5CE8" />
+                    <SolidColorBrush x:Key="ToggleSwitchTrackOnDisabled" Color="#A0B4FF" />
+
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </Styles.Resources>
+
+
+    <!-- WINDOW / SHELL -->
+
+    <Style Selector="Window, FlyoutPresenter, ToolTip">
+        <Setter Property="FontFamily" Value="{StaticResource AppFont}" />
+        <Setter Property="Background" Value="{DynamicResource BgBase}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimary}" />
+        <Setter Property="Svg.Css" Value="{DynamicResource SvgPrimary}" />
+    </Style>
+
+
+    <!-- CARD BORDERS -->
+
+    <Style Selector="Border.card">
+        <Setter Property="Background" Value="{DynamicResource BgSurface}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource RadiusCard}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtle}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="{DynamicResource CardPadding}" />
+    </Style>
+
+    <Style Selector="Border.card-accent">
+        <Setter Property="Background" Value="{DynamicResource BgSurface}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource RadiusCard}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderAccent}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="{DynamicResource CardPadding}" />
+    </Style>
+
+    <Style Selector="Border.inset">
+        <Setter Property="Background" Value="{DynamicResource BgElevated}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource RadiusInset}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtle}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="{DynamicResource InsetPadding}" />
+    </Style>
+
+
+    <!-- TYPOGRAPHY HELPERS -->
+
+    <Style Selector="TextBlock.display">
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimary}" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSizePageTitle}" />
+    </Style>
+
+    <Style Selector="TextBlock.section-heading">
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimary}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeSectionHeading}" />
+    </Style>
+
+    <Style Selector="TextBlock.body">
+        <Setter Property="Foreground" Value="{DynamicResource TextSecondary}" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeBody}" />
+    </Style>
+
+    <Style Selector="TextBlock.muted">
+        <Setter Property="Foreground" Value="{DynamicResource TextDisabled}" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeMeta}" />
+    </Style>
+
+    <Style Selector="TextBlock.label">
+        <Setter Property="Foreground" Value="{DynamicResource TextMuted}" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeLabel}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="LetterSpacing" Value="1.5" />
+    </Style>
+
+    <Style Selector="TextBlock.amount-positive">
+        <Setter Property="Foreground" Value="{DynamicResource AccentGreen}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeAmount}" />
+    </Style>
+
+    <Style Selector="TextBlock.amount-negative">
+        <Setter Property="Foreground" Value="{DynamicResource AccentRed}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeAmount}" />
+    </Style>
+
+
+    <!-- BADGE / PILL -->
+
+    <Style Selector="Border.badge-green">
+        <Setter Property="Background" Value="{DynamicResource BadgeBgGreen}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource RadiusPill}" />
+        <Setter Property="Padding" Value="{DynamicResource BadgePadding}" />
+    </Style>
+
+    <Style Selector="Border.badge-red">
+        <Setter Property="Background" Value="{DynamicResource BadgeBgRed}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource RadiusPill}" />
+        <Setter Property="Padding" Value="{DynamicResource BadgePadding}" />
+    </Style>
+
+    <Style Selector="Border.badge-yellow">
+        <Setter Property="Background" Value="{DynamicResource BadgeBgYellow}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource RadiusPill}" />
+        <Setter Property="Padding" Value="{DynamicResource BadgePadding}" />
+    </Style>
+
+    <Style Selector="Border.badge-blue">
+        <Setter Property="Background" Value="{DynamicResource BadgeBgBlue}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource RadiusPill}" />
+        <Setter Property="Padding" Value="{DynamicResource BadgePadding}" />
+    </Style>
+
+
+    <!-- SEPARATOR -->
+
+    <Style Selector="Separator">
+        <Setter Property="Background" Value="{DynamicResource DividerAlpha}" />
+        <Setter Property="Height" Value="1" />
+    </Style>
+
+
+    <!-- PROGRESS BAR -->
+
+    <Style Selector="ProgressBar">
+        <Setter Property="Height" Value="6" />
+        <Setter Property="CornerRadius" Value="{DynamicResource RadiusBar}" />
+        <Setter Property="Background" Value="{DynamicResource BorderSubtle}" />
+        <Setter Property="Foreground" Value="{DynamicResource AccentBlue}" />
+    </Style>
+
+    <!-- green -->
+    <Style Selector="ProgressBar.green /template/ Border#PART_Indicator">
+        <Setter Property="Background" Value="{DynamicResource AccentGreen}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource RadiusBar}" />
+    </Style>
+    <Style Selector="ProgressBar.green:indeterminate /template/ Border#PART_Indicator">
+        <Setter Property="Background" Value="{DynamicResource AccentGreen}" />
+    </Style>
+
+    <!-- yellow -->
+    <Style Selector="ProgressBar.yellow /template/ Border#PART_Indicator">
+        <Setter Property="Background" Value="{DynamicResource AccentYellow}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource RadiusBar}" />
+    </Style>
+    <Style Selector="ProgressBar.yellow:indeterminate /template/ Border#PART_Indicator">
+        <Setter Property="Background" Value="{DynamicResource AccentYellow}" />
+    </Style>
+
+    <!-- red -->
+    <Style Selector="ProgressBar.red /template/ Border#PART_Indicator">
+        <Setter Property="Background" Value="{DynamicResource AccentRed}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource RadiusBar}" />
+    </Style>
+    <Style Selector="ProgressBar.red:indeterminate /template/ Border#PART_Indicator">
+        <Setter Property="Background" Value="{DynamicResource AccentRed}" />
+    </Style>
+
+    <!-- blue -->
+    <Style Selector="ProgressBar.blue /template/ Border#PART_Indicator">
+        <Setter Property="Background" Value="{DynamicResource AccentBlue}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource RadiusBar}" />
+    </Style>
+    <Style Selector="ProgressBar.blue:indeterminate /template/ Border#PART_Indicator">
+        <Setter Property="Background" Value="{DynamicResource AccentBlue}" />
+    </Style>
+
+
+    <!-- BUTTON  (global cursor) -->
+
+    <Style Selector="Button">
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+
+    <!-- ACCOUNT BUTTONS -->
+
+    <Style Selector="Button.account">
+        <Setter Property="Background" Value="{DynamicResource BgSurface}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtle}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="16" />
+        <Setter Property="Padding" Value="20" />
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <Style Selector="Button.account:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BgSurface}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtle}" />
+    </Style>
+
+    <Style Selector="Button.account:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BgSurface}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtle}" />
+    </Style>
+
+    <Style Selector="Button.account:focus /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BgSurface}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtle}" />
+    </Style>
+
+    <Style Selector="Button.account:focus-visible /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BgSurface}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtle}" />
+    </Style>
+
+    <Style Selector="Button.account:disabled /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BgSurface}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtle}" />
+        <Setter Property="Opacity" Value="0.5" />
+    </Style>
+
+    <Style Selector="Button.account.active">
+        <Setter Property="Background" Value="{DynamicResource BgSurface}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentBlue}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="16" />
+        <Setter Property="Padding" Value="20" />
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+
+    <Style Selector="Button.account.active:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BgSurface}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentBlue}" />
+    </Style>
+
+    <Style Selector="Button.account.active:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BgSurface}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentBlue}" />
+    </Style>
+
+    <Style Selector="Button.account.active:focus /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BgSurface}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentBlue}" />
+    </Style>
+
+    <Style Selector="Button.account.active:focus-visible /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BgSurface}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentBlue}" />
+    </Style>
+
+    <Style Selector="Button.account.active:disabled /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BgSurface}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentBlue}" />
+        <Setter Property="Opacity" Value="0.5" />
+    </Style>
+
+
+    <!-- NAV BUTTON -->
+
+    <Style Selector="Button.nav">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource TextDisabled}" />
+        <Setter Property="Svg.Css" Value="{DynamicResource SvgDisabled}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="{DynamicResource NavButtonPadding}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource RadiusControl}" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FocusAdorner" Value="{x:Null}" />
+    </Style>
+
+    <Style Selector="Button.nav:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BgHover}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource TextSecondary}" />
+        <Setter Property="Svg.Css" Value="{DynamicResource SvgSecondary}" />
+    </Style>
+
+    <Style Selector="Button.nav:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BorderSubtle}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource TextPrimary}" />
+        <Setter Property="Svg.Css" Value="{DynamicResource SvgPrimary}" />
+    </Style>
+
+    <Style Selector="Button.nav:disabled /template/ ContentPresenter">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource TextDisabled}" />
+        <Setter Property="Svg.Css" Value="{DynamicResource SvgDisabled}" />
+        <Setter Property="Opacity" Value="0.4" />
+    </Style>
+
+    <Style Selector="Button.nav.active /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BgHover}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentBlue}" />
+        <Setter Property="TextElement.FontWeight" Value="SemiBold" />
+        <Setter Property="Svg.Css" Value="{DynamicResource SvgBlue}" />
+    </Style>
+
+    <Style Selector="Button.nav.active:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BgHover}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentBlue}" />
+        <Setter Property="TextElement.FontWeight" Value="SemiBold" />
+        <Setter Property="Svg.Css" Value="{DynamicResource SvgBlue}" />
+    </Style>
+
+    <Style Selector="Button.nav.active:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BorderSubtle}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentBlue}" />
+        <Setter Property="TextElement.FontWeight" Value="SemiBold" />
+        <Setter Property="Svg.Css" Value="{DynamicResource SvgBlue}" />
+    </Style>
+
+
+    <!-- ACCENTED BUTTON -->
+
+    <Style Selector="Button.accented">
+        <Setter Property="Background" Value="{DynamicResource AccentBlue}" />
+        <Setter Property="Foreground" Value="{DynamicResource BgBase}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeBody}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource RadiusControl}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="FocusAdorner" Value="{x:Null}" />
+    </Style>
+
+    <Style Selector="Button.accented:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="#6B8AEF" />
+    </Style>
+
+    <Style Selector="Button.accented:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="#5A78D8" />
+    </Style>
+
+    <Style Selector="Button.accented:disabled /template/ ContentPresenter">
+        <Setter Property="Background" Value="#3A4A70" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource TextDisabled}" />
+        <Setter Property="Svg.Css" Value="{DynamicResource SvgDisabled}" />
+    </Style>
+
+    <Style Selector="Button.accented:focus-within /template/ ContentPresenter">
+        <Setter Property="BorderBrush" Value="{DynamicResource TextPrimary}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="FocusAdorner" Value="{x:Null}" />
+    </Style>
+
+
+    <!-- BASE BUTTON -->
+
+    <Style Selector="Button.base">
+        <Setter Property="Background" Value="{DynamicResource BgSurface}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextSecondary}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtle}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{DynamicResource RadiusControl}" />
+    </Style>
+
+    <Style Selector="Button.base:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BgHover}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource TextPrimary}" />
+    </Style>
+
+    <Style Selector="Button.base:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BorderSubtle}" />
+    </Style>
+
+    <Style Selector="Button.base:disabled /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BgSurface}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource TextDisabled}" />
+        <Setter Property="Opacity" Value="0.5" />
+    </Style>
+
+    <Style Selector="Button.base:focus-within /template/ ContentPresenter">
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentBlue}" />
+        <Setter Property="BorderThickness" Value="1" />
+    </Style>
+
+
+    <!-- TOGGLE BUTTON -->
+
+    <Style Selector="ToggleButton">
+        <Setter Property="Background" Value="{DynamicResource BgSurface}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextSecondary}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtle}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{DynamicResource RadiusControl}" />
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+
+    <Style Selector="ToggleButton:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BgHover}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource TextPrimary}" />
+    </Style>
+
+    <Style Selector="ToggleButton:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BorderSubtle}" />
+    </Style>
+
+    <Style Selector="ToggleButton:checked /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource AccentBlue}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource BgBase}" />
+    </Style>
+
+    <Style Selector="ToggleButton:checked:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="#6B8AEF" />
+    </Style>
+
+    <Style Selector="ToggleButton:checked:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="#5A78D8" />
+    </Style>
+
+    <Style Selector="ToggleButton:disabled /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BgSurface}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource TextDisabled}" />
+        <Setter Property="Opacity" Value="0.5" />
+    </Style>
+
+    <Style Selector="ToggleButton:checked:disabled /template/ ContentPresenter">
+        <Setter Property="Background" Value="#3A4A70" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource TextDisabled}" />
+    </Style>
+
+
+    <!-- TEXT BOX -->
+    <Style Selector="TextBox">
+        <Setter Property="Background" Value="{DynamicResource BgSurface}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimary}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtle}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{DynamicResource RadiusControl}" />
+        <Setter Property="SelectionBrush" Value="{DynamicResource AccentBlue}" />
+        <Setter Property="CaretBrush" Value="{DynamicResource AccentBlue}" />
+    </Style>
+
+    <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderAccent}" />
+    </Style>
+
+    <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentBlue}" />
+        <Setter Property="BorderThickness" Value="1.5" />
+    </Style>
+
+    <Style Selector="TextBox:disabled">
+        <Setter Property="Opacity" Value="0.5" />
+        <Setter Property="Foreground" Value="{DynamicResource TextDisabled}" />
+        <Setter Property="Background" Value="{DynamicResource BgElevated}" />
+    </Style>
+
+    <Style Selector="TextBox:readonly">
+        <Setter Property="Background" Value="{DynamicResource BgElevated}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextMuted}" />
+    </Style>
+    <Style Selector="TextBox:readonly /template/ Border#PART_BorderElement">
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtle}" />
+    </Style>
+
+    <Style Selector="TextBox:error /template/ Border#PART_BorderElement">
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentRed}" />
+        <Setter Property="BorderThickness" Value="1.5" />
+    </Style>
+
+
+    <Style Selector="TextBox.ghost">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="FocusAdorner" Value="{x:Null}" />
+    </Style>
+    <Style Selector="TextBox.ghost:pointerover /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <Style Selector="TextBox.ghost:focus /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <Style Selector="TextBox.ghost:disabled /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <Style Selector="TextBox.ghost:disabled">
+        <Setter Property="Opacity" Value="1" />
+    </Style>
+
+    <!-- COMBOBOX -->
+
+    <Style Selector="ComboBox">
+        <Setter Property="Background" Value="{DynamicResource BgHover}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextSecondary}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderAccent}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{DynamicResource RadiusControl}" />
+    </Style>
+
+    <Style Selector="ComboBox:pointerover /template/ Border#Background">
+        <Setter Property="Background" Value="{DynamicResource BgHover}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentBlue}" />
+    </Style>
+
+    <Style Selector="ComboBox:focus /template/ Border#Background">
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentBlue}" />
+        <Setter Property="BorderThickness" Value="1.5" />
+    </Style>
+
+    <Style Selector="ComboBox:pressed /template/ Border#Background">
+        <Setter Property="Background" Value="{DynamicResource BgSurface}" />
+    </Style>
+
+    <Style Selector="ComboBox:disabled /template/ Border#Background">
+        <Setter Property="Background" Value="{DynamicResource BgElevated}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtle}" />
+        <Setter Property="Opacity" Value="0.5" />
+    </Style>
+
+    <!-- ComboBoxItem -->
+    <Style Selector="ComboBoxItem">
+        <Setter Property="Foreground" Value="{DynamicResource TextSecondary}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Padding" Value="10,6" />
+    </Style>
+
+    <Style Selector="ComboBoxItem:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BgHover}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource TextPrimary}" />
+    </Style>
+
+    <Style Selector="ComboBoxItem:selected /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BgHover}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentBlue}" />
+    </Style>
+
+    <Style Selector="ComboBoxItem:selected:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BorderSubtle}" />
+    </Style>
+
+    <Style Selector="ComboBoxItem:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BorderSubtle}" />
+    </Style>
+
+    <Style Selector="ComboBoxItem:disabled /template/ ContentPresenter">
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource TextDisabled}" />
+        <Setter Property="Opacity" Value="0.5" />
+    </Style>
+
+
+    <!-- CHECKBOX -->
+
+    <Style Selector="CheckBox">
+        <Setter Property="Foreground" Value="{DynamicResource TextSecondary}" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeBody}" />
+    </Style>
+
+    <Style Selector="CheckBox:pointerover /template/ Border#NormalRectangle">
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentBlue}" />
+    </Style>
+
+    <Style Selector="CheckBox:pressed /template/ Border#NormalRectangle">
+        <Setter Property="Background" Value="{DynamicResource BgHover}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentBlue}" />
+    </Style>
+
+    <Style Selector="CheckBox:checked /template/ Border#NormalRectangle">
+        <Setter Property="Background" Value="{DynamicResource AccentBlue}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentBlue}" />
+    </Style>
+
+    <Style Selector="CheckBox:checked:pointerover /template/ Border#NormalRectangle">
+        <Setter Property="Background" Value="#6B8AEF" />
+        <Setter Property="BorderBrush" Value="#6B8AEF" />
+    </Style>
+
+    <Style Selector="CheckBox:checked:pressed /template/ Border#NormalRectangle">
+        <Setter Property="Background" Value="#5A78D8" />
+        <Setter Property="BorderBrush" Value="#5A78D8" />
+    </Style>
+
+    <Style Selector="CheckBox:indeterminate /template/ Border#NormalRectangle">
+        <Setter Property="Background" Value="{DynamicResource BgHover}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentBlue}" />
+    </Style>
+
+    <Style Selector="CheckBox:disabled /template/ ContentPresenter">
+        <Setter Property="Foreground" Value="{DynamicResource TextDisabled}" />
+        <Setter Property="Opacity" Value="0.5" />
+    </Style>
+
+    <Style Selector="CheckBox:checked:disabled /template/ Border#NormalRectangle">
+        <Setter Property="Background" Value="#3A4A70" />
+        <Setter Property="BorderBrush" Value="#3A4A70" />
+    </Style>
+
+
+    <!-- RADIO BUTTON -->
+
+    <Style Selector="RadioButton">
+        <Setter Property="Foreground" Value="{DynamicResource TextSecondary}" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeBody}" />
+    </Style>
+
+    <Style Selector="RadioButton:pointerover /template/ Ellipse#OuterEllipse">
+        <Setter Property="Stroke" Value="{DynamicResource AccentBlue}" />
+    </Style>
+
+    <Style Selector="RadioButton:pressed /template/ Ellipse#OuterEllipse">
+        <Setter Property="Fill" Value="{DynamicResource BgHover}" />
+        <Setter Property="Stroke" Value="{DynamicResource AccentBlue}" />
+    </Style>
+
+    <Style Selector="RadioButton:checked /template/ Ellipse#CheckOuterEllipse">
+        <Setter Property="Stroke" Value="{DynamicResource AccentBlue}" />
+        <Setter Property="Fill" Value="{DynamicResource AccentBlue}" />
+    </Style>
+
+    <Style Selector="RadioButton:checked /template/ Ellipse#CheckGlyph">
+        <Setter Property="Fill" Value="{DynamicResource BgBase}" />
+    </Style>
+
+    <Style Selector="RadioButton:checked:pointerover /template/ Ellipse#CheckOuterEllipse">
+        <Setter Property="Stroke" Value="#6B8AEF" />
+        <Setter Property="Fill" Value="#6B8AEF" />
+    </Style>
+
+    <Style Selector="RadioButton:checked:pressed /template/ Ellipse#CheckOuterEllipse">
+        <Setter Property="Stroke" Value="#5A78D8" />
+        <Setter Property="Fill" Value="#5A78D8" />
+    </Style>
+
+    <Style Selector="RadioButton:disabled /template/ ContentPresenter">
+        <Setter Property="Foreground" Value="{DynamicResource TextDisabled}" />
+        <Setter Property="Opacity" Value="0.5" />
+    </Style>
+
+    <Style Selector="RadioButton:checked:disabled /template/ Ellipse#CheckOuterEllipse">
+        <Setter Property="Stroke" Value="#3A4A70" />
+        <Setter Property="Fill" Value="#3A4A70" />
+    </Style>
+
+
+    <!-- LIST BOX + LIST BOX ITEM -->
+
+    <Style Selector="ListBox">
+        <Setter Property="Background" Value="{DynamicResource BgSurface}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtle}" />
+        <Setter Property="Padding" Value="4" />
+    </Style>
+
+    <Style Selector="ListBoxItem">
+        <Setter Property="Foreground" Value="{DynamicResource TextSecondary}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Padding" Value="10,6" />
+        <Setter Property="CornerRadius" Value="{DynamicResource RadiusSmall}" />
+    </Style>
+
+    <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BgHover}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource TextPrimary}" />
+    </Style>
+
+    <Style Selector="ListBoxItem:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BorderSubtle}" />
+    </Style>
+
+    <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BgHover}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentBlue}" />
+    </Style>
+
+    <Style Selector="ListBoxItem:selected:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BorderSubtle}" />
+    </Style>
+
+    <Style Selector="ListBoxItem:selected:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BorderAccent}" />
+    </Style>
+
+    <Style Selector="ListBoxItem:disabled /template/ ContentPresenter">
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource TextDisabled}" />
+        <Setter Property="Opacity" Value="0.5" />
+    </Style>
+
+
+    <!-- SCROLL BAR -->
+
+    <Style Selector="ScrollBar">
+        <Setter Property="Background" Value="Transparent" />
+    </Style>
+
+    <Style Selector="ScrollBar:vertical /template/ Border">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Width" Value="6" />
+    </Style>
+
+    <Style Selector="ScrollBar:horizontal /template/ Border">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Height" Value="6" />
+    </Style>
+
+    <Style Selector="ScrollBar /template/ Thumb">
+        <Setter Property="Background" Value="{DynamicResource BorderAccent}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource RadiusBar}" />
+        <Setter Property="MinHeight" Value="32" />
+        <Setter Property="MinWidth" Value="6" />
+    </Style>
+
+    <Style Selector="ScrollBar /template/ Thumb:pointerover">
+        <Setter Property="Background" Value="{DynamicResource TextMuted}" />
+    </Style>
+
+    <Style Selector="ScrollBar /template/ Thumb:pressed">
+        <Setter Property="Background" Value="{DynamicResource AccentBlue}" />
+    </Style>
+
+
+    <!-- FLYOUT PRESENTER -->
+
+    <Style Selector="FlyoutPresenter">
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="MinWidth" Value="0" />
+        <Setter Property="CornerRadius" Value="{DynamicResource RadiusSmall}" />
+        <Setter Property="Background" Value="{DynamicResource BgSurface}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtle}" />
+        <Setter Property="BorderThickness" Value="1" />
+    </Style>
+
+
+    <!-- DateRangePicker -->
+
+    <Style Selector="cc|DateRangePicker">
+        <Setter Property="Background" Value="{DynamicResource BgHover}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextSecondary}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderAccent}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{DynamicResource RadiusControl}" />
+    </Style>
+
+    <Style Selector="cc|DateRangePicker:pointerover /template/ Button#PART_Button  /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BgHover}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentBlue}" />
+    </Style>
+
+    <Style Selector="cc|DateRangePicker:focus /template/ Button#PART_Button  /template/ ContentPresenter">
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentBlue}" />
+        <Setter Property="BorderThickness" Value="1.5" />
+    </Style>
+
+    <Style Selector="cc|DateRangePicker:pressed /template/ Button#PART_Button  /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BgSurface}" />
+    </Style>
+
+    <Style Selector="cc|DateRangePicker:disabled /template/ Button#PART_Button  /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BgElevated}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtle}" />
+        <Setter Property="Opacity" Value="0.5" />
+    </Style>
+
+
+</Styles>

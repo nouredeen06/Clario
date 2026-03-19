@@ -1,0 +1,448 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:cc="clr-namespace:Clario.CustomControls"
+             xmlns:vm="clr-namespace:Clario.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="1400" d:DesignHeight="1200"
+             x:DataType="vm:AuthViewModel"
+             x:Class="Clario.Views.AuthView">
+    <Grid>
+
+        <!-- ── Background ────────────────────────── -->
+        <Border Background="{DynamicResource BgBase}" />
+        <!-- <Calendar SelectionMode="SingleRange"> -->
+        <!-- </Calendar> -->
+        
+        <!-- ── Subtle grid pattern overlay ──────── -->
+        <!-- <Border Opacity="0.03" Background="{DynamicResource BgBase}"> -->
+        <!-- -->
+        <!-- </Border> -->
+
+        <!-- ── Center card ───────────────────────── -->
+        <Border HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Background="{DynamicResource BgSurface}"
+                BorderBrush="{DynamicResource BorderSubtle}"
+                BorderThickness="1"
+                CornerRadius="20"
+                Padding="40"
+                Width="420"
+                BoxShadow="0 24 64 0 #40000000">
+            <StackPanel Spacing="0">
+
+                <!-- ── Logo + App name ─────────────── -->
+                <StackPanel HorizontalAlignment="Center"
+                            Spacing="0"
+                            Margin="0,0,0,32">
+                    <Border
+                        CornerRadius="16"
+                        Height="100"
+                        HorizontalAlignment="Center">
+                        <Image Source="../Assets/Logo textmark.png"></Image>
+                    </Border>
+                    <!-- REPLACE: app name -->
+                    <StackPanel Spacing="4" HorizontalAlignment="Center">
+                        <!-- <TextBlock Text="Clario" -->
+                        <!--            FontSize="22" -->
+                        <!--            FontWeight="Bold" -->
+                        <!--            Foreground="{DynamicResource TextPrimary}" -->
+                        <!--            HorizontalAlignment="Center" /> -->
+                        <TextBlock Text="Your personal finance tracker"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource TextMuted}"
+                                   HorizontalAlignment="Center" />
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- ── Tab switcher ────────────────── -->
+                <Border Background="{DynamicResource BgBase}"
+                        BorderBrush="{DynamicResource BorderSubtle}"
+                        BorderThickness="1"
+                        CornerRadius="{DynamicResource RadiusControl}"
+                        Padding="3"
+                        Margin="0,0,0,26">
+                    <Grid ColumnDefinitions="*,*">
+                        <!-- REPLACE: active state driven by IsLoginMode -->
+                        <!-- Sign In — active -->
+                        <Button Grid.Column="0"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Center"
+                                Classes="nav"
+                                Classes.accented="{Binding isSignin}"
+                                CornerRadius="7"
+                                Padding="0,7"
+                                Cursor="Hand"
+                                Command="{Binding SetOperationCommand}" CommandParameter="login">
+                            <TextBlock Text="Sign In"
+                                       FontSize="13" FontWeight="SemiBold"
+                                       HorizontalAlignment="Center" />
+                        </Button>
+                        <!-- Sign Up -->
+                        <Button Grid.Column="1"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Center"
+                                Classes="nav"
+                                Classes.accented="{Binding isCreateAccount}"
+                                Padding="0,7"
+                                Cursor="Hand"
+                                Command="{Binding SetOperationCommand}" CommandParameter="signup">
+                            <TextBlock Text="Create Account"
+                                       FontSize="13"
+                                       HorizontalAlignment="Center" />
+                        </Button>
+                    </Grid>
+                </Border>
+
+                <!-- SIGN IN PANEL -->
+                <StackPanel Spacing="0" IsVisible="{Binding isSignin}">
+
+                    <!-- Email -->
+                    <TextBlock Text="EMAIL" Classes="label" Margin="0,0,0,6" />
+                    <Border Background="{DynamicResource BgBase}"
+                            BorderBrush="{DynamicResource BorderSubtle}"
+                            BorderThickness="1"
+                            CornerRadius="{DynamicResource RadiusControl}"
+                            Padding="0"
+                            Margin="0,0,0,14">
+                        <Grid ColumnDefinitions="Auto,*">
+                            <Svg Grid.Column="0"
+                                 Path="../Assets/Icons/mail.svg"
+                                 Width="15" Height="15"
+                                 Css="{DynamicResource SvgMuted}"
+                                 VerticalAlignment="Center"
+                                 Margin="12,0,10,0" />
+                            <!-- REPLACE: Text="{Binding Email, Mode=TwoWay}" -->
+                            <TextBox Grid.Column="1" Classes="ghost"
+                                     Watermark="you@example.com"
+                                     Text="{Binding Email }"
+                                     BorderThickness="0"
+                                     FontSize="13"
+                                     Foreground="{DynamicResource TextPrimary}"
+                                     Height="42"
+                                     Padding="0"
+                                     VerticalContentAlignment="Center" />
+                        </Grid>
+                    </Border>
+
+                    <!-- Password -->
+                    <TextBlock Text="PASSWORD" Classes="label" Margin="0,0,0,6" />
+                    <Border Background="{DynamicResource BgBase}"
+                            BorderBrush="{DynamicResource BorderSubtle}"
+                            BorderThickness="1"
+                            CornerRadius="{DynamicResource RadiusControl}"
+                            Padding="0,0"
+                            Margin="0,0,0,8">
+                        <Grid ColumnDefinitions="Auto,*,Auto">
+                            <Svg Grid.Column="0"
+                                 Path="../Assets/Icons/lock.svg"
+                                 Width="15" Height="15"
+                                 Css="{DynamicResource SvgMuted}"
+                                 VerticalAlignment="Center"
+                                 Margin="12,0,10,0" />
+                            <!-- REPLACE: Text="{Binding Password, Mode=TwoWay}" PasswordChar="●" -->
+                            <TextBox Grid.Column="1" Classes="ghost"
+                                     Watermark="••••••••"
+                                     Text="{Binding Password}"
+                                     PasswordChar="●"
+                                     RevealPassword="{Binding #showPassword.IsChecked}"
+                                     BorderThickness="0"
+                                     FontSize="13"
+                                     Foreground="{DynamicResource TextPrimary}"
+                                     Height="42"
+                                     Padding="0"
+                                     VerticalContentAlignment="Center" />
+                            <!-- REPLACE: Command="{Binding TogglePasswordCommand}" -->
+                            <ToggleButton Grid.Column="2" Name="showPassword"
+                                          Background="Transparent"
+                                          CornerRadius="{DynamicResource RadiusControl}"
+                                          BorderThickness="0" Height="42"
+                                          Padding="8,0"
+                                          Cursor="Hand"
+                                          VerticalAlignment="Center">
+                                <ToggleButton.Styles>
+                                    <Style Selector="ToggleButton:checked /template/ ContentPresenter">
+                                        <Setter Property="Background" Value="Transparent" />
+                                        <Setter Property="BorderThickness" Value="0" />
+                                    </Style>
+                                </ToggleButton.Styles>
+                                <Panel>
+                                    <Svg Path="../Assets/Icons/eye.svg"
+                                         Width="15" Height="15" IsVisible="{Binding #showPassword.IsChecked}"
+                                         Css="{DynamicResource SvgMuted}" />
+                                    <Svg Path="../Assets/Icons/eye-closed.svg"
+                                         Width="15" Height="15" IsVisible="{Binding !#showPassword.IsChecked}"
+                                         Css="{DynamicResource SvgMuted}" />
+                                </Panel>
+                            </ToggleButton>
+                        </Grid>
+                    </Border>
+
+                    <!-- Forgot password -->
+                    <!-- REPLACE: Command="{Binding ForgotPasswordCommand}" -->
+                    <Button Background="Transparent"
+                            BorderThickness="0"
+                            Padding="0"
+                            Cursor="Hand"
+                            HorizontalAlignment="Right"
+                            Margin="0,0,0,24">
+                        <TextBlock Text="Forgot password?"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource AccentBlue}" />
+                    </Button>
+
+                    <!-- Error message -->
+                    <!-- REPLACE: IsVisible="{Binding HasError}" Text="{Binding ErrorMessage}" -->
+                    <Border Background="{DynamicResource BadgeBgRed}"
+                            BorderBrush="{DynamicResource AccentRed}"
+                            BorderThickness="1"
+                            CornerRadius="10"
+                            Padding="12,10"
+                            Margin="0,0,0,16"
+                            IsVisible="False">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Svg Path="../Assets/Icons/circle-alert.svg"
+                                 Width="14" Height="14"
+                                 Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #FF5E5E; }" />
+                            <TextBlock Text="Invalid email or password."
+                                       FontSize="12"
+                                       Foreground="{DynamicResource AccentRed}"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Sign In button -->
+                    <!-- REPLACE: Command="{Binding SignInCommand}" IsEnabled="{Binding IsNotLoading}" -->
+                    <Button Classes="accented"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Center"
+                            Padding="0,12"
+                            Margin="0,0,0,20"
+                            Command="{Binding ConfirmLoginCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Svg Path="../Assets/Icons/log-in.svg"
+                                 Width="15" Height="15"
+                                 Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #0D0F14; }" />
+                            <TextBlock Text="Sign In"
+                                       FontSize="14" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource BgBase}"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+
+                </StackPanel>
+
+                <!-- ══════════════════════════════════
+             SIGN UP PANEL
+             REPLACE: IsVisible="{Binding !IsLoginMode}"
+        ══════════════════════════════════ -->
+                <StackPanel Spacing="0" IsVisible="{Binding isCreateAccount}">
+
+                    <!-- Name row -->
+                    <Grid ColumnDefinitions="*,10,*" Margin="0,0,0,14">
+                        <StackPanel Grid.Column="0" Spacing="6">
+                            <TextBlock Text="FIRST NAME" Classes="label" />
+                            <!-- REPLACE: Text="{Binding FirstName, Mode=TwoWay}" -->
+                            <Border Background="{DynamicResource BgBase}"
+                                    BorderBrush="{DynamicResource BorderSubtle}"
+                                    BorderThickness="1"
+                                    CornerRadius="{DynamicResource RadiusControl}"
+                                    Padding="0"
+                                    Margin="0,0,0,0">
+                                <TextBox Watermark=""
+                                         Text="{Binding FirstName}"
+                                         Classes="ghost"
+                                         FontSize="13" Height="42"
+                                         Padding="12,0"
+                                         VerticalContentAlignment="Center" />
+                            </Border>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2" Spacing="6">
+                            <TextBlock Text="LAST NAME" Classes="label" />
+                            <!-- REPLACE: Text="{Binding LastName, Mode=TwoWay}" -->
+                            <Border Background="{DynamicResource BgBase}"
+                                    BorderBrush="{DynamicResource BorderSubtle}"
+                                    BorderThickness="1"
+                                    CornerRadius="{DynamicResource RadiusControl}"
+                                    Padding="0"
+                                    Margin="0,0,0,0">
+                                <TextBox Watermark=""
+                                         Classes="ghost"
+                                         Text="{Binding LastName}"
+                                         FontSize="13" Height="42"
+                                         Padding="12,0"
+                                         VerticalContentAlignment="Center" />
+                            </Border>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Email -->
+                    <TextBlock Text="EMAIL" Classes="label" Margin="0,0,0,6" />
+                    <Border Background="{DynamicResource BgBase}"
+                            BorderBrush="{DynamicResource BorderSubtle}"
+                            BorderThickness="1"
+                            CornerRadius="{DynamicResource RadiusControl}"
+                            Padding="0,0"
+                            Margin="0,0,0,14">
+                        <Grid ColumnDefinitions="Auto,*">
+                            <Svg Grid.Column="0"
+                                 Path="../Assets/Icons/mail.svg"
+                                 Width="15" Height="15"
+                                 Css="{DynamicResource SvgMuted}"
+                                 VerticalAlignment="Center"
+                                 Margin="12,0,10,0" />
+                            <!-- REPLACE: Text="{Binding Email, Mode=TwoWay}" -->
+                            <TextBox Grid.Column="1"
+                                     Watermark="you@example.com"
+                                     Classes="ghost"
+                                     Text="{Binding Email}"
+                                     Background="Transparent"
+                                     BorderThickness="0"
+                                     FontSize="13"
+                                     Foreground="{DynamicResource TextPrimary}"
+                                     Height="42"
+                                     Padding="0"
+                                     VerticalContentAlignment="Center" />
+                        </Grid>
+                    </Border>
+
+                    <!-- Password -->
+                    <TextBlock Text="PASSWORD" Classes="label" Margin="0,0,0,6" />
+                    <Border Background="{DynamicResource BgBase}"
+                            BorderBrush="{DynamicResource BorderSubtle}"
+                            BorderThickness="1"
+                            CornerRadius="{DynamicResource RadiusControl}"
+                            Padding="0"
+                            Margin="0,0,0,14">
+                        <Grid ColumnDefinitions="Auto,*,Auto">
+                            <Svg Grid.Column="0"
+                                 Path="../Assets/Icons/lock.svg"
+                                 Width="15" Height="15"
+                                 Css="{DynamicResource SvgMuted}"
+                                 VerticalAlignment="Center"
+                                 Margin="12,0,10,0" />
+                            <!-- REPLACE: Text="{Binding Password, Mode=TwoWay}" -->
+                            <TextBox Grid.Column="1"
+                                     Watermark="At least 8 characters"
+                                     Classes="ghost"
+                                     Text="{Binding Password}"
+                                     RevealPassword="{Binding #showPasswordSignup.IsChecked}"
+                                     PasswordChar="●"
+                                     Background="Transparent"
+                                     BorderThickness="0"
+                                     FontSize="13"
+                                     Foreground="{DynamicResource TextPrimary}"
+                                     Height="42"
+                                     Padding="0"
+                                     VerticalContentAlignment="Center" />
+                            <!-- REPLACE: Command="{Binding TogglePasswordCommand}" -->
+                            <ToggleButton Grid.Column="2" Name="showPasswordSignup"
+                                          Background="Transparent"
+                                          CornerRadius="{DynamicResource RadiusControl}"
+                                          BorderThickness="0" Height="42"
+                                          Padding="8,0"
+                                          Cursor="Hand"
+                                          VerticalAlignment="Center">
+                                <ToggleButton.Styles>
+                                    <Style Selector="ToggleButton:checked /template/ ContentPresenter">
+                                        <Setter Property="Background" Value="Transparent" />
+                                        <Setter Property="BorderThickness" Value="0" />
+                                    </Style>
+                                </ToggleButton.Styles>
+                                <Panel>
+                                    <Svg Path="../Assets/Icons/eye.svg"
+                                         Width="15" Height="15" IsVisible="{Binding #showPasswordSignup.IsChecked}"
+                                         Css="{DynamicResource SvgMuted}" />
+                                    <Svg Path="../Assets/Icons/eye-closed.svg"
+                                         Width="15" Height="15" IsVisible="{Binding !#showPasswordSignup.IsChecked}"
+                                         Css="{DynamicResource SvgMuted}" />
+                                </Panel>
+                            </ToggleButton>
+                        </Grid>
+                    </Border>
+
+                    <!-- Confirm Password -->
+                    <TextBlock Text="CONFIRM PASSWORD" Classes="label" Margin="0,0,0,6" />
+                    <Border Background="{DynamicResource BgBase}"
+                            BorderBrush="{DynamicResource BorderSubtle}"
+                            BorderThickness="1"
+                            CornerRadius="{DynamicResource RadiusControl}"
+                            Padding="0,0"
+                            Margin="0,0,0,16">
+                        <Grid ColumnDefinitions="Auto,*">
+                            <Svg Grid.Column="0"
+                                 Path="../Assets/Icons/lock.svg"
+                                 Width="15" Height="15"
+                                 Css="{DynamicResource SvgMuted}"
+                                 VerticalAlignment="Center"
+                                 Margin="12,0,10,0" />
+                            <!-- REPLACE: Text="{Binding ConfirmPassword, Mode=TwoWay}" -->
+                            <TextBox Grid.Column="1"
+                                     Watermark="Repeat your password"
+                                     PasswordChar="●"
+                                     Text="{Binding ConfirmPassword}"
+                                     Classes="ghost"
+                                     Background="Transparent"
+                                     BorderThickness="0"
+                                     FontSize="13"
+                                     Foreground="{DynamicResource TextPrimary}"
+                                     Height="42"
+                                     Padding="0"
+                                     VerticalContentAlignment="Center" />
+                        </Grid>
+                    </Border>
+
+                    <!-- Error message -->
+                    <!-- REPLACE: IsVisible="{Binding HasError}" Text="{Binding ErrorMessage}" -->
+                    <Border Background="{DynamicResource BadgeBgRed}"
+                            BorderBrush="{DynamicResource AccentRed}"
+                            BorderThickness="1"
+                            CornerRadius="10"
+                            Padding="12,10"
+                            Margin="0,0,0,16"
+                            IsVisible="False">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Svg Path="../Assets/Icons/circle-alert.svg"
+                                 Width="14" Height="14"
+                                 Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #FF5E5E; }" />
+                            <TextBlock Text="Something went wrong. Please try again."
+                                       FontSize="12"
+                                       Foreground="{DynamicResource AccentRed}"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Create Account button -->
+                    <!-- REPLACE: Command="{Binding SignUpCommand}" IsEnabled="{Binding IsNotLoading}" -->
+                    <Button Classes="accented"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Center"
+                            Padding="0,12"
+                            Margin="0,0,0,20"
+                            Command="{Binding ConfirmCreateAccountCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Svg Path="../Assets/Icons/user-plus.svg"
+                                 Width="15" Height="15"
+                                 Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #0D0F14; }" />
+                            <TextBlock Text="Create Account"
+                                       FontSize="14" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource BgBase}"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+
+                </StackPanel>
+
+                <!-- ── Footer ──────────────────────── -->
+                <Separator Margin="0,0,0,16" />
+                <TextBlock Text="Your data is encrypted and synced securely."
+                           FontSize="11"
+                           Foreground="{DynamicResource TextDisabled}"
+                           HorizontalAlignment="Center" />
+
+            </StackPanel>
+        </Border>
+
+    </Grid>
+
+</UserControl>

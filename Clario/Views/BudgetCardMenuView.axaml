@@ -1,0 +1,85 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:views="clr-namespace:Clario.Views"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Clario.Views.BudgetCardMenuView">
+    <Border Background="{DynamicResource BgSurface}"
+            BorderBrush="{DynamicResource BorderSubtle}"
+            BorderThickness="1"
+            CornerRadius="12"
+            Padding="6"
+            Width="196"
+            BoxShadow="0 8 32 0 #3C000000">
+        <StackPanel Spacing="1">
+
+            <!-- Edit -->
+            <Button Background="Transparent"
+                    BorderThickness="0"
+                    CornerRadius="8"
+                    Padding="10,9"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Left"
+                    Cursor="Hand">
+                <Button.Flyout>
+                    <Flyout Placement="LeftEdgeAlignedTop"
+                            FlyoutPresenterTheme="{StaticResource TransparentFlyoutPresenter}">
+                        <views:BudgetFormView />
+                    </Flyout>
+                </Button.Flyout>
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <Svg Path="../Assets/Icons/pencil.svg" Width="14" Height="14" Css="{DynamicResource SvgSecondary}" />
+                    <TextBlock Text="Edit Budget" FontSize="13" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
+                </StackPanel>
+            </Button>
+
+            <!-- View Transactions -->
+            <Button Background="Transparent"
+                    BorderThickness="0"
+                    CornerRadius="8"
+                    Padding="10,9"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Left"
+                    Cursor="Hand">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <Svg Path="../Assets/Icons/list.svg" Width="14" Height="14" Css="{DynamicResource SvgSecondary}" />
+                    <TextBlock Text="View Transactions" FontSize="13" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
+                </StackPanel>
+            </Button>
+
+            <!-- Reset Spent -->
+            <Button Background="Transparent"
+                    BorderThickness="0"
+                    CornerRadius="8"
+                    Padding="10,9"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Left"
+                    Cursor="Hand">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <Svg Path="../Assets/Icons/rotate-ccw.svg" Width="14" Height="14" Css="{DynamicResource SvgSecondary}" />
+                    <TextBlock Text="Reset Spent" FontSize="13" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
+                </StackPanel>
+            </Button>
+
+            <Separator Margin="4,2" />
+
+            <!-- Delete -->
+            <Button Background="Transparent"
+                    BorderThickness="0"
+                    CornerRadius="8"
+                    Padding="10,9"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Left"
+                    Cursor="Hand">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <Svg Path="../Assets/Icons/trash-2.svg" Width="14" Height="14"
+                         Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #FF5E5E; }" />
+                    <TextBlock Text="Delete Budget" FontSize="13" Foreground="#FF5E5E" VerticalAlignment="Center" />
+                </StackPanel>
+            </Button>
+
+        </StackPanel>
+    </Border>
+
+</UserControl>

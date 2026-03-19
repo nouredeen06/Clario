@@ -1,0 +1,504 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Clario.ViewModels"
+             xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="1180" d:DesignHeight="800"
+             MinWidth="780" MinHeight="600"
+             x:DataType="vm:DashboardViewModel"
+             x:Class="Clario.Views.DashboardView">
+    <Design.DataContext>
+        <vm:DashboardViewModel />
+    </Design.DataContext>
+    <Grid ColumnDefinitions="*">
+
+        <!-- ───────────────────────────────────── MAIN CONTENT ───────────────────────────────────── -->
+        <ScrollViewer Grid.Column="0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+            <StackPanel Spacing="24" Margin="32,28,32,32">
+                <!-- ── Top Bar ─────────────────────── -->
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Classes="muted" Text="Friday, March 6, 2026" />
+                        <TextBlock Text="Financial Overview" FontSize="{StaticResource FontSizePageTitle}" FontWeight="Bold"
+                                   Foreground="{DynamicResource TextPrimary}" Margin="0,2,0,0" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                        <Border Background="{DynamicResource BgSurface}" CornerRadius="{StaticResource RadiusControl}"
+                                BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1" Padding="14,8">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Svg Path="../Assets/Icons/calendar-days.svg" Height="13" Width="13" />
+
+                                <TextBlock Text="Jan – Mar 2026" FontSize="{StaticResource FontSizeBody}"
+                                           Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Border>
+                        <Button Background="{DynamicResource AccentBlue}" Foreground="{DynamicResource BgBase}"
+                                FontWeight="SemiBold" FontSize="{StaticResource FontSizeBody}" CornerRadius="{StaticResource RadiusControl}" Padding="16,8"
+                                BorderThickness="0" Cursor="Hand" Content="+ Add Transaction" />
+
+                    </StackPanel>
+                </Grid>
+                <!-- ── KPI Cards Row ───────────────── -->
+                <Grid ColumnDefinitions="*,*,*" HorizontalAlignment="Stretch" MaxHeight="160">
+                    <Grid.Styles>
+                        <Style Selector="Grid > Border">
+                            <Setter Property="Margin" Value="0,0,16,0" />
+                        </Style>
+                    </Grid.Styles>
+                    <!-- Monthly Income -->
+                    <Border Grid.Column="0" Classes="card">
+                        <StackPanel Spacing="12">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Border Background="{DynamicResource IconBgGreen}" CornerRadius="{StaticResource RadiusIcon}" Padding="7">
+                                    <Svg Path="../Assets/Icons/trending-up.svg" Height="14" Width="14"
+                                         Css="{DynamicResource SvgGreen}" />
+                                </Border>
+                                <TextBlock Classes="label" Text="MONTHLY INCOME" VerticalAlignment="Center" />
+                            </StackPanel>
+                            <TextBlock Text="$6,850.00" FontSize="{StaticResource FontSizePageTitle}" FontWeight="Bold"
+                                       Foreground="{DynamicResource TextPrimary}" />
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <Border Classes="badge-green">
+                                    <TextBlock Text="↑ 3.2%"
+                                               FontSize="{StaticResource FontSizeLabel}" FontWeight="SemiBold"
+                                               Foreground="{DynamicResource AccentGreen}" />
+                                </Border>
+                                <TextBlock Classes="muted" Text="vs last month" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                    <!-- Monthly Expenses -->
+                    <Border Grid.Column="1" Classes="card">
+                        <StackPanel Spacing="12">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Border Background="{DynamicResource IconBgOrange}" CornerRadius="{StaticResource RadiusIcon}" Padding="7">
+                                    <Svg Path="../Assets/Icons/trending-down.svg" Height="14" Width="14"
+                                         Css="{DynamicResource SvgRed}" />
+                                </Border>
+                                <TextBlock Classes="label" Text="MONTHLY EXPENSES" VerticalAlignment="Center" />
+                            </StackPanel>
+                            <TextBlock Text="$3,240.00" FontSize="{StaticResource FontSizePageTitle}" FontWeight="Bold"
+                                       Foreground="{DynamicResource TextPrimary}" />
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <Border Classes="badge-red">
+                                    <TextBlock Text="↑ 5.1%" FontSize="{StaticResource FontSizeLabel}" FontWeight="SemiBold"
+                                               Foreground="{DynamicResource AccentRed}" />
+                                </Border>
+                                <TextBlock Classes="muted" Text="vs last month" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                    <!-- Savings Rate -->
+                    <Border Grid.Column="2" Classes="card" Margin="0">
+                        <StackPanel Spacing="12">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Border Background="{DynamicResource IconBgPurple}" CornerRadius="{StaticResource RadiusIcon}" Padding="7">
+                                    <Svg Path="../Assets/Icons/landmark.svg" Height="14" Width="14"
+                                         Css="{DynamicResource SvgPurple}" />
+                                </Border>
+                                <TextBlock Classes="label" Text="SAVINGS RATE" VerticalAlignment="Center" />
+                            </StackPanel>
+                            <TextBlock Text="52.7%" FontSize="{StaticResource FontSizePageTitle}" FontWeight="Bold"
+                                       Foreground="{DynamicResource TextPrimary}" />
+                            <ProgressBar Classes="green" Minimum="0" Maximum="100" Value="52.7" />
+
+                        </StackPanel>
+                    </Border>
+                </Grid>
+                <!-- ── Mid Row: Spending Chart + Budget ─ -->
+                <Grid ColumnDefinitions="*,340" MaxHeight="470">
+                    <!-- Spending Breakdown (placeholder chart area) -->
+                    <Border Grid.Column="0" Classes="card" Margin="0,0,16,0">
+                        <StackPanel Spacing="20">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Spending by Category" FontSize="{StaticResource FontSizeSectionHeading}" FontWeight="SemiBold"
+                                               Foreground="{DynamicResource TextPrimary}" />
+                                    <TextBlock Classes="muted" Text="March 2026" />
+                                </StackPanel>
+                                <ComboBox Grid.Column="1" SelectedIndex="0" Background="{DynamicResource BgHover}"
+                                          Foreground="{DynamicResource TextSecondary}"
+                                          BorderBrush="{DynamicResource BorderAccent}" CornerRadius="{StaticResource RadiusIcon}" Padding="10,6">
+                                    <ComboBoxItem Content="This Month" /> <ComboBoxItem Content="Last Month" />
+                                    <ComboBoxItem Content="This Quarter" />
+                                </ComboBox>
+                            </Grid>
+
+                            <lvc:CartesianChart SeriesSource="{Binding ChartData}" Height="250" Background="{DynamicResource BgSurface}"
+                                                LegendPosition="Hidden" TooltipPosition="Hidden">
+                                <lvc:CartesianChart.SeriesTemplate>
+                                    <DataTemplate x:DataType="vm:ChartData">
+                                        <lvc:XamlColumnSeries SeriesName="{Binding Name}" Fill="{Binding Fill}" Values="{Binding Values}" Padding="4"
+                                                              MaxBarWidth="9999999" YToolTipLabelFormatter="{Binding ToolTipFormatter}" />
+                                    </DataTemplate>
+                                </lvc:CartesianChart.SeriesTemplate>
+                                <lvc:CartesianChart.XAxes>
+                                    <lvc:XamlAxis IsVisible="False" />
+                                </lvc:CartesianChart.XAxes>
+                                <lvc:CartesianChart.YAxes>
+                                    <lvc:XamlLogarithmicAxis LogBase="10" IsVisible="False" MinLimit="1" />
+                                </lvc:CartesianChart.YAxes>
+                            </lvc:CartesianChart>
+                            <ItemsControl ItemsSource="{Binding ChartData}" Margin="0 -10 ">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Rows="1" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:ChartData">
+                                        <TextBlock Text="{Binding Name}" HorizontalAlignment="Center" Foreground="{DynamicResource TextDisabled}" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <Border HorizontalAlignment="Stretch" Height="1" Background="{DynamicResource BorderSubtle}" Margin="5 0" />
+                            <ItemsControl ItemsSource="{Binding ChartData}" Margin="0 -10 0 0 ">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Rows="1" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:ChartData">
+                                        <TextBlock Text="{Binding Values, Converter={StaticResource FirstValueConverter},StringFormat='$0,00'}"
+                                                   HorizontalAlignment="Center"
+                                                   Foreground="{Binding Fill, Converter={StaticResource SkPaintToBrushConverter}}" FontWeight="SemiBold" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <!-- <Grid RowDefinitions="*,Auto" Height="200"> -->
+                            <!--     <Grid Grid.Row="0" ColumnDefinitions="*,*,*,*,*,*" VerticalAlignment="Stretch"> -->
+                            <!--         <Grid Grid.Column="0" RowDefinitions="*,Auto" Margin="6,0"> -->
+                            <!--             <Border Grid.Row="0" VerticalAlignment="Bottom" CornerRadius="4,4,0,0" -->
+                            <!--                     Height="140" Background="{DynamicResource AccentBlue}" /> -->
+                            <!--             <TextBlock Grid.Row="1" Text="Housing" Classes="muted" -->
+                            <!--                        HorizontalAlignment="Center" Margin="0,6,0,0" /> -->
+                            <!--         </Grid> -->
+                            <!--         <Grid Grid.Column="1" RowDefinitions="*,Auto" Margin="6,0"> -->
+                            <!--             <Border Grid.Row="0" VerticalAlignment="Bottom" CornerRadius="4,4,0,0" -->
+                            <!--                     Height="80" Background="{DynamicResource AccentGreen}" /> -->
+                            <!--             <TextBlock Grid.Row="1" Text="Food" Classes="muted" -->
+                            <!--                        HorizontalAlignment="Center" Margin="0,6,0,0" /> -->
+                            <!--         </Grid> -->
+                            <!--         <Grid Grid.Column="2" RowDefinitions="*,Auto" Margin="6,0"> -->
+                            <!--             <Border Grid.Row="0" VerticalAlignment="Bottom" CornerRadius="4,4,0,0" -->
+                            <!--                     Height="55" Background="{DynamicResource AccentYellow}" /> -->
+                            <!--             <TextBlock Grid.Row="1" Text="Transport" Classes="muted" -->
+                            <!--                        HorizontalAlignment="Center" Margin="0,6,0,0" /> -->
+                            <!--         </Grid> -->
+                            <!--         <Grid Grid.Column="3" RowDefinitions="*,Auto" Margin="6,0"> -->
+                            <!--             <Border Grid.Row="0" VerticalAlignment="Bottom" CornerRadius="4,4,0,0" -->
+                            <!--                     Height="45" Background="#FF7E5E" /> -->
+                            <!--             <TextBlock Grid.Row="1" Text="Health" Classes="muted" -->
+                            <!--                        HorizontalAlignment="Center" Margin="0,6,0,0" /> -->
+                            <!--         </Grid> -->
+                            <!--         <Grid Grid.Column="4" RowDefinitions="*,Auto" Margin="6,0"> -->
+                            <!--             <Border Grid.Row="0" VerticalAlignment="Bottom" CornerRadius="4,4,0,0" -->
+                            <!--                     Height="35" Background="{DynamicResource AccentPurple}" /> -->
+                            <!--             <TextBlock Grid.Row="1" Text="Leisure" Classes="muted" -->
+                            <!--                        HorizontalAlignment="Center" Margin="0,6,0,0" /> -->
+                            <!--         </Grid> -->
+                            <!--         <Grid Grid.Column="5" RowDefinitions="*,Auto" Margin="6,0"> -->
+                            <!--             <Border Grid.Row="0" VerticalAlignment="Bottom" CornerRadius="4,4,0,0" -->
+                            <!--                     Height="25" Background="{DynamicResource AccentPink}" /> -->
+                            <!--             <TextBlock Grid.Row="1" Text="Other" Classes="muted" -->
+                            <!--                        HorizontalAlignment="Center" Margin="0,6,0,0" /> -->
+                            <!--         </Grid> -->
+                            <!--     </Grid> -->
+                            <!--     ~1~ baseline @1@ -->
+                            <!--     <Border Grid.Row="1" Height="1" Background="{DynamicResource BorderSubtle}" -->
+                            <!--             Margin="0,8,0,0" /> -->
+                            <!-- </Grid> -->
+                            <!-- ~1~ Legend amounts @1@ -->
+                            <!-- <Grid ColumnDefinitions="*,*,*,*,*,*"> -->
+                            <!--     <TextBlock Grid.Column="0" Text="$1,200" FontSize="{StaticResource FontSizeMeta}" FontWeight="SemiBold" -->
+                            <!--                Foreground="{DynamicResource AccentBlue}" HorizontalAlignment="Center" /> -->
+                            <!--     <TextBlock Grid.Column="1" Text="$680" FontSize="{StaticResource FontSizeMeta}" FontWeight="SemiBold" -->
+                            <!--                Foreground="{DynamicResource AccentGreen}" HorizontalAlignment="Center" /> -->
+                            <!--     <TextBlock Grid.Column="2" Text="$420" FontSize="{StaticResource FontSizeMeta}" FontWeight="SemiBold" -->
+                            <!--                Foreground="{DynamicResource AccentYellow}" HorizontalAlignment="Center" /> -->
+                            <!--     <TextBlock Grid.Column="3" Text="$340" FontSize="{StaticResource FontSizeMeta}" FontWeight="SemiBold" -->
+                            <!--                Foreground="#FF7E5E" HorizontalAlignment="Center" /> -->
+                            <!--     <TextBlock Grid.Column="4" Text="$290" FontSize="{StaticResource FontSizeMeta}" FontWeight="SemiBold" -->
+                            <!--                Foreground="{DynamicResource AccentPurple}" HorizontalAlignment="Center" /> -->
+                            <!--     <TextBlock Grid.Column="5" Text="$210" FontSize="{StaticResource FontSizeMeta}" FontWeight="SemiBold" -->
+                            <!--                Foreground="{DynamicResource AccentPink}" HorizontalAlignment="Center" /> -->
+                            <!-- </Grid> -->
+                        </StackPanel>
+                    </Border>
+                    <!-- Budget Tracker -->
+                    <Border Grid.Column="1" Classes="card">
+                        <ScrollViewer>
+                            <StackPanel Spacing="20">
+                                <StackPanel>
+                                    <TextBlock Text="Budget Tracker" FontSize="{StaticResource FontSizeSectionHeading}" FontWeight="SemiBold"
+                                               Foreground="{DynamicResource TextPrimary}" />
+                                    <TextBlock Classes="muted" Text="Monthly limits" />
+                                </StackPanel>
+                                <!-- Budget Item 1 -->
+                                <StackPanel Spacing="8">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="4">
+                                            <Svg Path="../Assets/Icons/house.svg" Height="13" Width="13"
+                                                 VerticalAlignment="Center" />
+                                            <TextBlock Text="Housing" FontSize="{StaticResource FontSizeBody}" VerticalAlignment="Center"
+                                                       Foreground="{DynamicResource TextSecondary}" />
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="1" Text="$1,200 / $1,500" FontSize="{StaticResource FontSizeMeta}"
+                                                   Foreground="{DynamicResource TextMuted}" />
+                                    </Grid>
+                                    <ProgressBar Classes="green" Minimum="0" Maximum="100" Value="80" />
+                                </StackPanel>
+                                <Separator />
+                                <!-- Budget Item 2 -->
+                                <StackPanel Spacing="8">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="4">
+                                            <Svg Path="../Assets/Icons/hamburger.svg" Height="13" Width="13" />
+                                            <TextBlock Text="Food" FontSize="{StaticResource FontSizeBody}"
+                                                       Foreground="{DynamicResource TextSecondary}" />
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="1" Text="$680 / $700" FontSize="{StaticResource FontSizeMeta}"
+                                                   Foreground="{DynamicResource TextMuted}" />
+                                    </Grid>
+                                    <ProgressBar Classes="yellow" Minimum="0" Maximum="100" Value="97" />
+                                </StackPanel>
+                                <Separator />
+                                <!-- Budget Item 3 -->
+                                <StackPanel Spacing="8">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="4">
+                                            <Svg Path="../Assets/Icons/car.svg" Height="13" Width="13" />
+                                            <TextBlock Text="Transport" FontSize="{StaticResource FontSizeBody}"
+                                                       Foreground="{DynamicResource TextSecondary}" />
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="1" Text="$420 / $400" FontSize="{StaticResource FontSizeMeta}"
+                                                   Foreground="{DynamicResource AccentRed}" />
+                                    </Grid>
+                                    <ProgressBar Classes="red" Minimum="0" Maximum="100" Value="105" />
+                                </StackPanel>
+                                <Separator />
+                                <!-- Budget Item 4 -->
+                                <StackPanel Spacing="8">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="4">
+                                            <Svg Path="../Assets/Icons/heart-pulse.svg" Height="13" Width="13" />
+                                            <TextBlock Text="Health" FontSize="{StaticResource FontSizeBody}"
+                                                       Foreground="{DynamicResource TextSecondary}" />
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="1" Text="$340 / $500" FontSize="{StaticResource FontSizeMeta}"
+                                                   Foreground="{DynamicResource TextMuted}" />
+                                    </Grid>
+                                    <ProgressBar Classes="green" Minimum="0" Maximum="100" Value="68" />
+                                </StackPanel>
+                                <Separator />
+                                <!-- Budget Item 5 -->
+                                <StackPanel Spacing="8">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="4">
+                                            <Svg Path="../Assets/Icons/gamepad-2.svg" Height="13" Width="13" />
+                                            <TextBlock Text="Entertainment" FontSize="{StaticResource FontSizeBody}"
+                                                       Foreground="{DynamicResource TextSecondary}" />
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="1" Text="$290 / $300" FontSize="{StaticResource FontSizeMeta}"
+                                                   Foreground="{DynamicResource TextMuted}" />
+                                    </Grid>
+                                    <ProgressBar Classes="yellow" Minimum="0" Maximum="100" Value="96" />
+                                </StackPanel>
+
+                            </StackPanel>
+                        </ScrollViewer>
+
+                    </Border>
+                </Grid>
+                <!-- ── Bottom Row: Recent Transactions + Accounts ─ -->
+                <Grid ColumnDefinitions="*,300" MaxHeight="500">
+                    <!-- Recent Transactions -->
+                    <Border Grid.Column="0" Classes="card" Margin="0,0,16,0">
+                        <StackPanel Spacing="18">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Recent Transactions" FontSize="{StaticResource FontSizeSectionHeading}" FontWeight="SemiBold"
+                                               Foreground="{DynamicResource TextPrimary}" />
+                                    <TextBlock Classes="muted" Text="Last 7 days" />
+                                </StackPanel>
+                                <Button Grid.Column="1" Background="Transparent"
+                                        Foreground="{DynamicResource AccentBlue}" BorderThickness="0" FontSize="{StaticResource FontSizeBody}"
+                                        Cursor="Hand" Content="View all →" VerticalAlignment="Center" Command="{Binding ViewAllTransactionsCommand}" />
+                            </Grid>
+
+                            <!-- Transaction Row Template -->
+                            <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,4,0,0">
+                                <Border Grid.Column="0" Background="{DynamicResource IconBgGreen}" CornerRadius="{StaticResource RadiusControl}"
+                                        Width="42" Height="42" Margin="0,0,14,0">
+                                    <Svg Path="../Assets/Icons/shopping-cart.svg" Height="18" Width="18"
+                                         Css="{DynamicResource SvgGreen}" />
+                                </Border>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="Grocery Shopping" FontSize="{StaticResource FontSizeBody}" FontWeight="SemiBold"
+                                               Foreground="{DynamicResource TextSecondary}" />
+                                    <TextBlock Text="Food · Mar 5" Classes="muted" />
+                                </StackPanel>
+                                <TextBlock Grid.Column="2" Text="- $127.40" FontSize="{StaticResource FontSizeAmount}" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource AccentRed}" VerticalAlignment="Center" />
+                            </Grid>
+                            <Separator />
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <Border Grid.Column="0" Background="{DynamicResource IconBgPurple}" CornerRadius="{StaticResource RadiusControl}"
+                                        Width="42" Height="42" Margin="0,0,14,0">
+                                    <Svg Path="../Assets/Icons/banknote-arrow-up.svg" Height="18" Width="18"
+                                         Css="{DynamicResource SvgPurple}" />
+                                </Border>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="Salary Deposit" FontSize="{StaticResource FontSizeBody}" FontWeight="SemiBold"
+                                               Foreground="{DynamicResource TextSecondary}" />
+                                    <TextBlock Text="Income · Mar 4" Classes="muted" />
+                                </StackPanel>
+                                <TextBlock Grid.Column="2" Text="+ $3,425.00" FontSize="{StaticResource FontSizeAmount}" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource AccentGreen}" VerticalAlignment="Center" />
+                            </Grid>
+                            <Separator />
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <Border Grid.Column="0" Background="{DynamicResource IconBgOrange}" CornerRadius="{StaticResource RadiusControl}"
+                                        Width="42" Height="42" Margin="0,0,14,0">
+                                    <Svg Path="../Assets/Icons/zap.svg" Height="18" Width="18"
+                                         Css="{DynamicResource SvgOrange}" />
+                                </Border>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="Electricity Bill" FontSize="{StaticResource FontSizeBody}" FontWeight="SemiBold"
+                                               Foreground="{DynamicResource TextSecondary}" />
+                                    <TextBlock Text="Utilities · Mar 3" Classes="muted" />
+                                </StackPanel>
+                                <TextBlock Grid.Column="2" Text="- $88.00" FontSize="{StaticResource FontSizeAmount}" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource AccentRed}" VerticalAlignment="Center" />
+                            </Grid>
+                            <Separator />
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <Border Grid.Column="0" Background="{DynamicResource IconBgPink}" CornerRadius="{StaticResource RadiusControl}"
+                                        Width="42" Height="42" Margin="0,0,14,0">
+                                    <Svg Path="../Assets/Icons/pill.svg" Height="18" Width="18"
+                                         Css="{DynamicResource SvgPink}" />
+                                </Border>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="Pharmacy" FontSize="{StaticResource FontSizeBody}" FontWeight="SemiBold"
+                                               Foreground="{DynamicResource TextSecondary}" />
+                                    <TextBlock Text="Health · Mar 2" Classes="muted" />
+                                </StackPanel>
+                                <TextBlock Grid.Column="2" Text="- $34.50" FontSize="{StaticResource FontSizeAmount}" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource AccentRed}" VerticalAlignment="Center" />
+                            </Grid>
+                            <Separator />
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <Border Grid.Column="0" Background="{DynamicResource IconBgGreen}" CornerRadius="{StaticResource RadiusControl}"
+                                        Width="42" Height="42" Margin="0,0,14,0">
+                                    <Svg Path="../Assets/Icons/hand-coins.svg" Height="18" Width="18"
+                                         Css="{DynamicResource SvgGreen}" />
+                                </Border>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="Freelance Payment" FontSize="{StaticResource FontSizeBody}" FontWeight="SemiBold"
+                                               Foreground="{DynamicResource TextSecondary}" />
+                                    <TextBlock Text="Income · Mar 1" Classes="muted" />
+                                </StackPanel>
+                                <TextBlock Grid.Column="2" Text="+ $850.00" FontSize="{StaticResource FontSizeAmount}" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource AccentGreen}" VerticalAlignment="Center" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                    <!-- Accounts Summary -->
+                    <Border Grid.Column="1" Classes="card">
+                        <StackPanel Spacing="18">
+                            <StackPanel>
+                                <TextBlock Text="Accounts" FontSize="{StaticResource FontSizeSectionHeading}" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource TextPrimary}" />
+
+                                <TextBlock Classes="muted" Text="4 linked accounts" />
+                            </StackPanel>
+                            <!-- Account 1 -->
+                            <Border Background="{DynamicResource BgBase}" CornerRadius="{StaticResource RadiusInset}" Padding="14,12"
+                                    BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1">
+                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                    <Border Grid.Column="0" Background="{DynamicResource IconBgBlue}" CornerRadius="{StaticResource RadiusIcon}"
+                                            Width="36" Height="36" Margin="0,0,12,0">
+                                        <Svg Path="../Assets/Icons/landmark.svg" Height="16" Width="16"
+                                             Css="{DynamicResource SvgBlue}" />
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="Main Checking" FontSize="{StaticResource FontSizeMeta}" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource TextSecondary}" />
+                                        <TextBlock Text="•••• 4821" FontSize="{StaticResource FontSizeLabel}" Classes="muted" />
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="2" Text="$12,450" FontSize="{StaticResource FontSizeBody}" FontWeight="Bold"
+                                               Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center" />
+                                </Grid>
+                            </Border>
+                            <!-- Account 2 -->
+                            <Border Background="{DynamicResource BgBase}" CornerRadius="{StaticResource RadiusInset}" Padding="14,12"
+                                    BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1">
+                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                    <Border Grid.Column="0" Background="{DynamicResource IconBgGreen}" CornerRadius="{StaticResource RadiusIcon}"
+                                            Width="36" Height="36" Margin="0,0,12,0">
+                                        <Svg Path="../Assets/Icons/piggy-bank.svg" Height="16" Width="16"
+                                             Css="{DynamicResource SvgGreen}" />
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="Savings Account" FontSize="{StaticResource FontSizeMeta}" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource TextSecondary}" />
+                                        <TextBlock Text="•••• 2034" FontSize="{StaticResource FontSizeLabel}" Classes="muted" />
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="2" Text="$38,700" FontSize="{StaticResource FontSizeBody}" FontWeight="Bold"
+                                               Foreground="{DynamicResource AccentGreen}" VerticalAlignment="Center" />
+                                </Grid>
+                            </Border>
+                            <!-- Account 3 -->
+                            <Border Background="{DynamicResource BgBase}" CornerRadius="{StaticResource RadiusInset}" Padding="14,12"
+                                    BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1">
+                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                    <Border Grid.Column="0" Background="{DynamicResource IconBgOrange}"
+                                            CornerRadius="{StaticResource RadiusIcon}" Width="36" Height="36" Margin="0,0,12,0">
+                                        <Svg Path="../Assets/Icons/credit-card.svg" Height="16" Width="16"
+                                             Css="{DynamicResource SvgOrange}" />
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="Credit Card" FontSize="{StaticResource FontSizeMeta}" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource TextSecondary}" />
+                                        <TextBlock Text="•••• 9170" FontSize="{StaticResource FontSizeLabel}" Classes="muted" />
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="2" Text="-$1,830" FontSize="{StaticResource FontSizeBody}" FontWeight="Bold"
+                                               Foreground="{DynamicResource AccentRed}" VerticalAlignment="Center" />
+                                </Grid>
+                            </Border>
+                            <!-- Account 4 -->
+                            <Border Background="{DynamicResource BgBase}" CornerRadius="{StaticResource RadiusInset}" Padding="14,12"
+                                    BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1">
+                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                    <Border Grid.Column="0" Background="{DynamicResource IconBgPurple}"
+                                            CornerRadius="{StaticResource RadiusIcon}" Width="36" Height="36" Margin="0,0,12,0">
+                                        <Svg Path="../Assets/Icons/chart-column-big.svg" Height="16" Width="16"
+                                             Css="{DynamicResource SvgPurple}" />
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="Investment" FontSize="{StaticResource FontSizeMeta}" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource TextSecondary}" />
+                                        <TextBlock Text="Portfolio" FontSize="{StaticResource FontSizeLabel}" Classes="muted" />
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="2" Text="$35,000" FontSize="{StaticResource FontSizeBody}" FontWeight="Bold"
+                                               Foreground="{DynamicResource AccentBlue}" VerticalAlignment="Center" />
+                                </Grid>
+                            </Border>
+                            <!-- Total -->
+                            <Separator />
+                            <Grid ColumnDefinitions="*,Auto">
+                                <TextBlock Grid.Column="0" Text="Total Balance" FontSize="{StaticResource FontSizeBody}" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource TextMuted}" />
+
+                                <TextBlock Grid.Column="1" Text="$84,320" FontSize="{StaticResource FontSizeSectionHeading}" FontWeight="Bold"
+                                           Foreground="{DynamicResource TextPrimary}" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

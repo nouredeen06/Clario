@@ -1,0 +1,32 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="using:Clario"
+             xmlns:converters="clr-namespace:Clario.Converters"
+             x:Class="Clario.App"
+             RequestedThemeVariant="Dark">
+    <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+    <Application.DataTemplates>
+        <local:ViewLocator />
+    </Application.DataTemplates>
+    <Application.Resources>
+        <converters:FirstValueConverter x:Key="FirstValueConverter" />
+        <converters:SKPaintToBrushConverter x:Key="SkPaintToBrushConverter" />
+        <converters:SvgPathFromName x:Key="SvgPathFromName" />
+        <converters:AccountFromIdConverter x:Key="AccountFromIdConverter" />
+        <converters:HexToColorConverter x:Key="HexToColorConverter" />
+        <converters:TransactionTypeToAmountColorConverter x:Key="AmountColorConverter" />
+        <converters:DateFormatConverter x:Key="DateFormatConverter" />
+        <converters:IsEqualValueConverter x:Key="EqualValueConverter" />
+        <converters:NetworthSumConverter x:Key="NetworthSumConverter" />
+        <converters:AccountMaskToStringConverter x:Key="MaskToStringConverter" />
+        <converters:AmountSignConverter x:Key="AmountSignConverter" />
+        <converters:DecimalSignConverter x:Key="DecimalSignConverter" />
+        <converters:PercentageConverter x:Key="PercentageConverter" />
+        <converters:DecimalColorConverter x:Key="DecimalColorConverter" />
+    </Application.Resources>
+    <Application.Styles>
+        <FluentTheme />
+        <StyleInclude Source="../Theme/AppTheme.axaml" />
+    </Application.Styles>
+</Application>

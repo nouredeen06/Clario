@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net8.0-android</TargetFramework>
+        <TargetPlatformVersion>34</TargetPlatformVersion>
+        <SupportedOSPlatformVersion>21</SupportedOSPlatformVersion>
+        <Nullable>enable</Nullable>
+        <ApplicationId>com.CompanyName.Clario</ApplicationId>
+        <ApplicationVersion>1</ApplicationVersion>
+        <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+        <AndroidPackageFormat>apk</AndroidPackageFormat>
+        <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
+        <RootNamespace>Clario.Android</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <AndroidResource Include="Icon.png">
+            <Link>Resources\drawable\Icon.png</Link>
+        </AndroidResource>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia.Android"/>
+        <PackageReference Include="Avalonia.Svg.Skia" />
+        <PackageReference Include="LiveChartsCore.SkiaSharpView.Avalonia" />
+        <PackageReference Include="Supabase" />
+        <PackageReference Include="Xamarin.AndroidX.Core.SplashScreen"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Clario\Clario.csproj" />
+    </ItemGroup>
+</Project>

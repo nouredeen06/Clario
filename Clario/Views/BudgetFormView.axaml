@@ -1,0 +1,227 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:styles="clr-namespace:Clario.Theme.Styles"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Clario.Views.BudgetFormView">
+    <Border Background="{DynamicResource BgSurface}"
+            BorderBrush="{DynamicResource BorderSubtle}"
+            BorderThickness="1"
+            CornerRadius="16"
+            Padding="24"
+            Width="380"
+            BoxShadow="0 12 40 0 #4C000000">
+        <StackPanel Spacing="0">
+
+            <!-- ── Header ─────────────────────────── -->
+            <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,0,0,22">
+                <Border Grid.Column="0"
+                        Background="{DynamicResource IconBgBlue}"
+                        CornerRadius="10"
+                        Width="38" Height="38"
+                        Margin="0,0,12,0">
+                    <Svg Path="../Assets/Icons/wallet.svg" Width="17" Height="17" Css="{DynamicResource SvgBlue}" />
+                </Border>
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="1">
+                    <!-- REPLACE: bind to DialogTitle -->
+                    <TextBlock Text="Edit Budget"
+                               FontSize="15" FontWeight="Bold"
+                               Foreground="{DynamicResource TextPrimary}" />
+                    <!-- REPLACE: bind to SelectedCategory -->
+                    <TextBlock Text="Food &amp; Dining"
+                               FontSize="11"
+                               Foreground="{DynamicResource TextMuted}" />
+                </StackPanel>
+                <Button Grid.Column="2"
+                        Background="Transparent" BorderThickness="0"
+                        Padding="6" VerticalAlignment="Top" Cursor="Hand">
+                    <Svg Path="../Assets/Icons/x.svg" Width="15" Height="15" Css="{DynamicResource SvgMuted}" />
+                </Button>
+            </Grid>
+
+            <!-- ── Category ───────────────────────── -->
+            <TextBlock Text="CATEGORY" Classes="label" Margin="0,0,0,6" />
+            <Border Background="{DynamicResource BgBase}"
+                    BorderBrush="{DynamicResource BorderSubtle}"
+                    BorderThickness="1"
+                    CornerRadius="10"
+                    Margin="0,0,0,18">
+                <Grid ColumnDefinitions="Auto,*">
+                    <Border Grid.Column="0"
+                            Background="{DynamicResource IconBgGreen}"
+                            CornerRadius="8"
+                            Width="34" Height="34"
+                            Margin="8,0,0,0"
+                            VerticalAlignment="Center">
+                        <!-- REPLACE: icon changes with SelectedCategory -->
+                        <Svg Path="../Assets/Icons/utensils.svg" Width="15" Height="15" Css="{DynamicResource SvgGreen}" />
+                    </Border>
+                    <!-- REPLACE: SelectedItem="{Binding SelectedCategory}" -->
+                    <ComboBox Grid.Column="1"
+                              Background="Transparent" BorderThickness="0"
+                              Padding="10,11" FontSize="13"
+                              HorizontalAlignment="Stretch"
+                              SelectedIndex="0">
+                        <ComboBoxItem Content="Food &amp; Dining" />
+                        <ComboBoxItem Content="Housing" />
+                        <ComboBoxItem Content="Transport" />
+                        <ComboBoxItem Content="Health" />
+                        <ComboBoxItem Content="Leisure" />
+                        <ComboBoxItem Content="Shopping" />
+                        <ComboBoxItem Content="Education" />
+                        <ComboBoxItem Content="Subscriptions" />
+                        <ComboBoxItem Content="Other" />
+                    </ComboBox>
+                </Grid>
+            </Border>
+
+            <!-- ── Monthly Limit ──────────────────── -->
+            <TextBlock Text="MONTHLY LIMIT" Classes="label" Margin="0,0,0,6" />
+            <Border Background="{DynamicResource BgBase}"
+                    BorderBrush="{DynamicResource BorderSubtle}"
+                    BorderThickness="1"
+                    CornerRadius="10"
+                    Padding="14,0"
+                    Margin="0,0,0,8">
+                <Grid ColumnDefinitions="Auto,*">
+                    <TextBlock Grid.Column="0" Text="$"
+                               FontSize="15" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextMuted}"
+                               VerticalAlignment="Center" Margin="0,0,4,0" />
+                    <!-- REPLACE: Text="{Binding LimitAmount, Mode=TwoWay}" -->
+                    <TextBox Grid.Column="1" Text="500" Watermark="0.00"
+                             Background="Transparent" BorderThickness="0"
+                             FontSize="15" FontWeight="SemiBold"
+                             Foreground="{DynamicResource TextPrimary}"
+                             Height="44" Padding="0" VerticalContentAlignment="Center" />
+                </Grid>
+            </Border>
+
+            <!-- Quick-pick amounts -->
+            <StackPanel Orientation="Horizontal" Spacing="6" Margin="0,0,0,18">
+                <Border Background="{DynamicResource BgBase}" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1" CornerRadius="20" Padding="10,4"
+                        Cursor="Hand">
+                    <TextBlock Text="$100" FontSize="11" Foreground="{DynamicResource TextMuted}" />
+                </Border>
+                <Border Background="{DynamicResource BgBase}" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1" CornerRadius="20" Padding="10,4"
+                        Cursor="Hand">
+                    <TextBlock Text="$250" FontSize="11" Foreground="{DynamicResource TextMuted}" />
+                </Border>
+                <Border Background="{DynamicResource AccentBlue}" CornerRadius="20" Padding="10,4" Cursor="Hand">
+                    <TextBlock Text="$500" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource BgBase}" />
+                </Border>
+                <Border Background="{DynamicResource BgBase}" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1" CornerRadius="20" Padding="10,4"
+                        Cursor="Hand">
+                    <TextBlock Text="$1,000" FontSize="11" Foreground="{DynamicResource TextMuted}" />
+                </Border>
+            </StackPanel>
+
+            <!-- ── Rollover ───────────────────────── -->
+            <Border Background="{DynamicResource BgBase}"
+                    BorderBrush="{DynamicResource BorderSubtle}"
+                    BorderThickness="1"
+                    CornerRadius="10"
+                    Padding="14,11"
+                    Margin="0,0,0,18">
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel Grid.Column="0" Spacing="2">
+                        <TextBlock Text="Rollover unused budget"
+                                   FontSize="13" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextPrimary}" />
+                        <TextBlock Text="Carry leftover amount into next month"
+                                   FontSize="11" Foreground="{DynamicResource TextMuted}" />
+                    </StackPanel>
+                    <!-- REPLACE: IsChecked="{Binding RolloverEnabled}" -->
+                    <ToggleSwitch Grid.Column="1" styles:ToggleSwitchExtensions.KnobWidth="16"
+                                  styles:ToggleSwitchExtensions.KnobHeight="16" VerticalAlignment="Center" OffContent="" OnContent="" />
+                </Grid>
+            </Border>
+
+            <!-- ── Alert Threshold ────────────────── -->
+            <TextBlock Text="ALERT THRESHOLD" Classes="label" Margin="0,0,0,6" />
+            <Border Background="{DynamicResource BgBase}"
+                    BorderBrush="{DynamicResource BorderSubtle}"
+                    BorderThickness="1"
+                    CornerRadius="10"
+                    Margin="0,0,0,8">
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel Grid.Column="0" Spacing="2" Margin="14,11,0,11">
+                        <TextBlock Text="Warn me when I reach"
+                                   FontSize="13" Foreground="{DynamicResource TextSecondary}" />
+                        <!-- REPLACE: bind to AlertThresholdLabel -->
+                        <TextBlock Text="80% of limit  ($400)"
+                                   FontSize="11" Foreground="{DynamicResource TextMuted}" />
+                    </StackPanel>
+                    <!-- Stepper -->
+                    <Border Grid.Column="1"
+                            Background="{DynamicResource BgSurface}"
+                            BorderBrush="{DynamicResource BorderSubtle}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Margin="8">
+                        <StackPanel Orientation="Horizontal">
+                            <Button Background="Transparent" BorderThickness="0" Padding="8,6" Cursor="Hand">
+                                <Svg Path="../Assets/Icons/minus.svg" Width="12" Height="12" Css="{DynamicResource SvgMuted}" />
+                            </Button>
+                            <!-- REPLACE: bind to AlertThreshold -->
+                            <TextBlock Text="80%"
+                                       FontSize="13" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextPrimary}"
+                                       VerticalAlignment="Center" Margin="4,0" />
+                            <Button Background="Transparent" BorderThickness="0" Padding="8,6" Cursor="Hand">
+                                <Svg Path="../Assets/Icons/plus.svg" Width="12" Height="12" Css="{DynamicResource SvgMuted}" />
+                            </Button>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <!-- Threshold quick-picks -->
+            <StackPanel Orientation="Horizontal" Spacing="6" Margin="0,0,0,24">
+                <Border Background="{DynamicResource BgBase}" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1" CornerRadius="20" Padding="10,4"
+                        Cursor="Hand">
+                    <TextBlock Text="60%" FontSize="11" Foreground="{DynamicResource TextMuted}" />
+                </Border>
+                <Border Background="{DynamicResource BgBase}" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1" CornerRadius="20" Padding="10,4"
+                        Cursor="Hand">
+                    <TextBlock Text="70%" FontSize="11" Foreground="{DynamicResource TextMuted}" />
+                </Border>
+                <Border Background="{DynamicResource AccentBlue}" CornerRadius="20" Padding="10,4" Cursor="Hand">
+                    <TextBlock Text="80%" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource BgBase}" />
+                </Border>
+                <Border Background="{DynamicResource BgBase}" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1" CornerRadius="20" Padding="10,4"
+                        Cursor="Hand">
+                    <TextBlock Text="90%" FontSize="11" Foreground="{DynamicResource TextMuted}" />
+                </Border>
+            </StackPanel>
+
+            <!-- ── Actions ────────────────────────── -->
+            <Grid ColumnDefinitions="*,*">
+                <!-- REPLACE: Command="{Binding CancelCommand}" -->
+                <Button Grid.Column="0"
+                        Classes="base"
+                        Margin="0,0,6,0" Padding="0,10"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        FontSize="13" Content="Cancel" />
+
+                <!-- REPLACE: Command="{Binding SaveCommand}" -->
+                <Button Grid.Column="1"
+                        Classes="accented"
+                        Margin="6,0,0,0" Padding="0,10"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Svg Path="../Assets/Icons/check.svg" Width="13" Height="13"
+                             Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #0D0F14; }" />
+                        <TextBlock Text="Save" FontSize="13" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource BgBase}" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+            </Grid>
+
+        </StackPanel>
+    </Border>
+
+</UserControl>

@@ -1,0 +1,212 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <Calendar SelectionMode="SingleRange"></Calendar>
+        </Border>
+    </Design.PreviewWith>
+
+    <Style Selector="Calendar">
+        <Setter Property="CornerRadius" Value="{DynamicResource RadiusControl}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BgSurface}"></Setter>
+    </Style>
+    <Style Selector="CalendarItem">
+        <Setter Property="Foreground" Value="{DynamicResource CalendarViewForeground}" />
+        <Setter Property="Background" Value="{DynamicResource BgSidebar}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BgSurface}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource RadiusControl}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="FontSize" Value="{DynamicResource CalendarFontSize}" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border BorderThickness="{TemplateBinding BorderThickness}"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        CornerRadius="{TemplateBinding CornerRadius}"
+                        ClipToBounds="True">
+                    <!-- To keep calendar from resizing when switching DisplayMode
+                 In WinUI Min-Width from TemplateSettings
+                 basically...MinWidth of DayItem = 40, 40 * 7 = 280 + margins/padding = ~294
+                 Viewport height is set from # of rows displayed (2-8) in Month mode, = ~290 for 6 weeks (+ day names)
+                 -->
+                    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" RowDefinitions="40,*" MinWidth="294"
+                          Background="{DynamicResource BgSidebar}">
+                        <Grid ColumnDefinitions="5*,*,*">
+                            <Button Name="PART_HeaderButton"
+                                    Theme="{StaticResource FluentCalendarButton}"
+                                    Foreground="{TemplateBinding Foreground}"
+                                    Padding="12,0,0,0"
+                                    HorizontalContentAlignment="Left" />
+                            <Button Name="PART_PreviousButton"
+                                    Grid.Column="1"
+                                    Theme="{StaticResource FluentCalendarButton}"
+                                    Foreground="{TemplateBinding Foreground}"
+                                    Padding="1"
+                                    HorizontalContentAlignment="Left">
+                                <!--Path mimics Segoe MDL2 Assets font glyph used in WinUI-->
+                                <Path Stroke="{DynamicResource CalendarViewForeground}"
+                                      StrokeThickness="1.5"
+                                      Data="M 0,9 L 9,0 L 18,9"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center" />
+                            </Button>
+                            <Button Name="PART_NextButton"
+                                    Grid.Column="2"
+                                    Theme="{StaticResource FluentCalendarButton}"
+                                    Foreground="{TemplateBinding Foreground}"
+                                    Padding="1"
+                                    HorizontalContentAlignment="Left">
+                                <!--Path mimics Segoe MDL2 Assets font glyph used in WinUI-->
+                                <Path Stroke="{DynamicResource CalendarViewForeground}"
+                                      StrokeThickness="1.5"
+                                      Data="M 0,0 L 9,9 L 18,0"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center" />
+                            </Button>
+                        </Grid>
+                        <!--Border below is used only for MonthView but it can't be moved inside of Grid because CalendarItem expects it to be empty and it will cause side-effects-->
+                        <Border Name="BackgroundLayer" Background="{TemplateBinding BorderBrush}" Margin="0,38,0,0"
+                                IsVisible="{Binding #PART_MonthView.IsVisible}" Grid.Row="1" />
+                        <Grid Name="PART_MonthView" Grid.Row="1" IsVisible="False" MinHeight="290">
+                            <Grid.RowDefinitions>
+                                <!--This should always be the week day names??-->
+                                <RowDefinition Height="38" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                        </Grid>
+                        <Grid Name="PART_YearView"
+                              Background="{TemplateBinding BorderBrush}"
+                              MinHeight="290"
+                              Grid.Row="1"
+                              IsVisible="False">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                        </Grid>
+                    </Grid>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BorderBrush" Value="{DynamicResource CalendarViewNavigationButtonBorderBrushPointerOver}" />
+            <Setter Property="Foreground" Value="{DynamicResource CalendarViewNavigationButtonForegroundPointerOver}" />
+        </Style>
+        <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="{DynamicResource CalendarViewNavigationButtonForegroundPressed}" />
+        </Style>
+        <Style Selector="^:disabled /template/ ContentPresenter">
+            <Setter Property="Foreground" Value="{DynamicResource CalendarViewWeekDayForegroundDisabled}" />
+        </Style>
+    </Style>
+
+    <Style Selector="CalendarDayButton">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Panel>
+                    <!-- To mimic WinUI SystemFocusVisual, Focus visual is drawn outside the bounds of the item -->
+                    <Border Name="Root" Background="{TemplateBinding Background}"
+                            BorderThickness="0" ClipToBounds="True" CornerRadius="{DynamicResource RadiusIcon}">
+
+                        <ContentPresenter Name="PART_ContentPresenter"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          Content="{TemplateBinding Content}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          Margin="{TemplateBinding Padding}" />
+
+                    </Border>
+
+                    <!-- Drawn Border should render on top of background to preserve the 1px margin between items-->
+                    <Border Name="Border"
+                            BorderThickness="2"
+                            BorderBrush="{TemplateBinding BorderBrush}" />
+                </Panel>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^:pointerover /template/ Border#Border">
+            <Setter Property="CornerRadius" Value="{DynamicResource RadiusIcon}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtle}" />
+        </Style>
+
+        <Style Selector="^:pressed /template/ Border#Border">
+            <Setter Property="CornerRadius" Value="{DynamicResource RadiusIcon}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource CalendarViewPressedBorderBrush}" />
+        </Style>
+
+        <Style Selector="^:selected">
+            <Style Selector="^ /template/ Border#Border">
+                <Setter Property="CornerRadius" Value="{DynamicResource RadiusIcon}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource AccentBlue}" />
+            </Style>
+            <Style Selector="^:pointerover /template/ Border#Border">
+                <Setter Property="CornerRadius" Value="{DynamicResource RadiusIcon}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource AccentBlue}" />
+            </Style>
+            <Style Selector="^:pressed /template/ Border#Border">
+                <Setter Property="CornerRadius" Value="{DynamicResource RadiusIcon}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource CalendarViewPressedBorderBrush}" />
+            </Style>
+        </Style>
+
+        <Style Selector="^:today">
+            <Style Selector="^ /template/ Border#Root">
+                <Setter Property="Background" Value="{DynamicResource IconBgBlue}" />
+            </Style>
+            <!-- These are probably set in code, but consistent -->
+            <Style Selector="^:pointerover /template/ Border#Border">
+                <Setter Property="BorderBrush" Value="{DynamicResource AccentBlue}" />
+            </Style>
+            <Style Selector="^:pressed /template/ Border#Border">
+                <Setter Property="BorderBrush" Value="{DynamicResource CalendarViewPressedBorderBrush}" />
+            </Style>
+            <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Foreground" Value="{DynamicResource TextPrimary}" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+            </Style>
+        </Style>
+        <Style Selector="^:inactive">
+            <Style Selector="^ /template/ Border#Root">
+                <Setter Property="Background">
+                    <SolidColorBrush Color="#7B9CFF" Opacity="0.05">
+                        <!-- <DynamicResource ResourceKey="AccentBlue"></DynamicResource> -->
+                    </SolidColorBrush>
+                </Setter>
+            </Style>
+            <!-- These are probably set in code, but consistent -->
+            <Style Selector="^:pointerover /template/ Border#Border">
+                <Setter Property="BorderBrush" Value="{DynamicResource AccentBlue}" />
+            </Style>
+            <Style Selector="^:pressed /template/ Border#Border">
+                <Setter Property="BorderBrush" Value="{DynamicResource CalendarViewPressedBorderBrush}" />
+            </Style>
+            <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Foreground" Value="{DynamicResource TextPrimary}" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+            </Style>
+        </Style>
+    </Style>
+</Styles>

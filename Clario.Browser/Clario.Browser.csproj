@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WebAssembly">
+    <PropertyGroup>
+        <TargetFramework>net8.0-browser</TargetFramework>
+        <OutputType>Exe</OutputType>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia.Browser"/>
+        <PackageReference Include="Avalonia.Svg.Skia" />
+        <PackageReference Include="LiveChartsCore.SkiaSharpView.Avalonia" />
+        <PackageReference Include="Supabase" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Clario\Clario.csproj" />
+    </ItemGroup>
+</Project>
