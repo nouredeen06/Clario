@@ -75,4 +75,10 @@ public class GeneralDataRepo
         Accounts = accounts.Models;
         return accounts.Models;
     }
+
+    public async Task<List<Budget>> FetchBudgets()
+    {
+        var budgets = await SupabaseService.Client.From<Budget>().Get();
+        return budgets.Models;
+    }
 }

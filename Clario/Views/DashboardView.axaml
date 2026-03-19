@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:Clario.ViewModels"
              xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
+             xmlns:model="clr-namespace:Clario.Models"
              mc:Ignorable="d" d:DesignWidth="1180" d:DesignHeight="800"
              MinWidth="780" MinHeight="600"
              x:DataType="vm:DashboardViewModel"
@@ -117,22 +118,19 @@
                                                Foreground="{DynamicResource TextPrimary}" />
                                     <TextBlock Classes="muted" Text="March 2026" />
                                 </StackPanel>
-                                <ComboBox Grid.Column="1" SelectedIndex="0" Background="{DynamicResource BgHover}"
+                                <ComboBox Grid.Column="1" SelectedIndex="0"
+                                          ItemsSource="{Binding ChartTimePeriods}"
+                                          SelectedItem="{Binding SelectedChartTimePeriod}"
+                                          Background="{DynamicResource BgHover}"
                                           Foreground="{DynamicResource TextSecondary}"
-                                          BorderBrush="{DynamicResource BorderAccent}" CornerRadius="{StaticResource RadiusIcon}" Padding="10,6">
-                                    <ComboBoxItem Content="This Month" /> <ComboBoxItem Content="Last Month" />
-                                    <ComboBoxItem Content="This Quarter" />
+                                          BorderBrush="{DynamicResource BorderAccent}"
+                                          CornerRadius="{StaticResource RadiusIcon}"
+                                          Padding="10,6">
                                 </ComboBox>
                             </Grid>
 
-                            <lvc:CartesianChart SeriesSource="{Binding ChartData}" Height="250" Background="{DynamicResource BgSurface}"
+                            <lvc:CartesianChart Series="{Binding SpendingByCategoryChartSeries}" Height="250" Background="{DynamicResource BgSurface}"
                                                 LegendPosition="Hidden" TooltipPosition="Hidden">
-                                <lvc:CartesianChart.SeriesTemplate>
-                                    <DataTemplate x:DataType="vm:ChartData">
-                                        <lvc:XamlColumnSeries SeriesName="{Binding Name}" Fill="{Binding Fill}" Values="{Binding Values}" Padding="4"
-                                                              MaxBarWidth="9999999" YToolTipLabelFormatter="{Binding ToolTipFormatter}" />
-                                    </DataTemplate>
-                                </lvc:CartesianChart.SeriesTemplate>
                                 <lvc:CartesianChart.XAxes>
                                     <lvc:XamlAxis IsVisible="False" />
                                 </lvc:CartesianChart.XAxes>
@@ -140,27 +138,27 @@
                                     <lvc:XamlLogarithmicAxis LogBase="10" IsVisible="False" MinLimit="1" />
                                 </lvc:CartesianChart.YAxes>
                             </lvc:CartesianChart>
-                            <ItemsControl ItemsSource="{Binding ChartData}" Margin="0 -10 ">
+                            <ItemsControl ItemsSource="{Binding SpendingByCategoryChartData}" Margin="0 -10 ">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <UniformGrid Rows="1" />
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
-                                    <DataTemplate x:DataType="vm:ChartData">
+                                    <DataTemplate x:DataType="model:ColumnChartData">
                                         <TextBlock Text="{Binding Name}" HorizontalAlignment="Center" Foreground="{DynamicResource TextDisabled}" />
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
                             <Border HorizontalAlignment="Stretch" Height="1" Background="{DynamicResource BorderSubtle}" Margin="5 0" />
-                            <ItemsControl ItemsSource="{Binding ChartData}" Margin="0 -10 0 0 ">
+                            <ItemsControl ItemsSource="{Binding SpendingByCategoryChartData}" Margin="0 -10 0 0 ">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <UniformGrid Rows="1" />
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
-                                    <DataTemplate x:DataType="vm:ChartData">
+                                    <DataTemplate x:DataType="model:ColumnChartData">
                                         <TextBlock Text="{Binding Values, Converter={StaticResource FirstValueConverter},StringFormat='$0,00'}"
                                                    HorizontalAlignment="Center"
                                                    Foreground="{Binding Fill, Converter={StaticResource SkPaintToBrushConverter}}" FontWeight="SemiBold" />

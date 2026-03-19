@@ -304,6 +304,7 @@
 
     <Style Selector="Border.badge-green">
         <Setter Property="Background" Value="{DynamicResource BadgeBgGreen}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentGreen}" />
         <Setter Property="CornerRadius" Value="{DynamicResource RadiusPill}" />
         <Setter Property="Padding" Value="{DynamicResource BadgePadding}" />
     </Style>
@@ -956,5 +957,56 @@
         <Setter Property="Opacity" Value="0.5" />
     </Style>
 
+    <!-- ── Budget Card — On Track ─────────────────────── -->
+    <Style Selector="Border.budget-card">
+        <Setter Property="Background" Value="{DynamicResource BgSurface}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtle}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="16" />
+        <Setter Property="Padding" Value="20" />
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+
+    <!-- ── Budget Card — Warning ──────────────────────── -->
+    <Style Selector="Border.budget-card-warning">
+        <Setter Property="Background" Value="{DynamicResource BgSurface}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentYellow}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="16" />
+        <Setter Property="Padding" Value="20" />
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+
+    <!-- ── Budget Card — Over Budget ─────────────────── -->
+    <Style Selector="Border.budget-card-over">
+        <Setter Property="Background" Value="{DynamicResource BgSurface}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentRed}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="16" />
+        <Setter Property="Padding" Value="20" />
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+
+    <!-- ── Progress Bar — Yellow ─────────────────────── -->
+    <Style Selector="ProgressBar.yellow /template/ Border#PART_Indicator">
+        <Setter Property="Background" Value="{DynamicResource AccentYellow}" />
+        <Setter Property="CornerRadius" Value="3" />
+    </Style>
+
+    <!-- ── Badge — Warning ───────────────────────────── -->
+    <Style Selector="Border.badge-warning">
+        <Setter Property="Background" Value="{DynamicResource BadgeBgYellow}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentYellow}" />
+        <Setter Property="CornerRadius" Value="20" />
+        <Setter Property="Padding" Value="6,2" />
+    </Style>
+
+    <!-- ── Badge — Over ──────────────────────────────── -->
+    <Style Selector="Border.badge-over">
+        <Setter Property="Background" Value="{DynamicResource BadgeBgRed}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentRed}" />
+        <Setter Property="CornerRadius" Value="20" />
+        <Setter Property="Padding" Value="6,2" />
+    </Style>
 
 </Styles>

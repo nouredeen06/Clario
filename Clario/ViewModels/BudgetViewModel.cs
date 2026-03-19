@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using Avalonia.Media;
+using Clario.Data;
+using Clario.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using LiveChartsCore;
 using LiveChartsCore.Kernel;
@@ -15,38 +19,80 @@ public partial class BudgetViewModel : ViewModelBase
 {
     public required ViewModelBase parentViewModel;
 
-    [ObservableProperty] private ObservableCollection<PieData> _spendingBreakdown =
-    [
-        new() { Name = "Food & Dining", Values = [340d], Fill = new SolidColorPaint(SKColor.Parse("#2ECC8A")), InnerRadius = 60 },
-        new() { Name = "Housing", Values = [540d], Fill = new SolidColorPaint(SKColor.Parse("#FF7E5E")), InnerRadius = 60 },
-        new() { Name = "Transport", Values = [110d], Fill = new SolidColorPaint(SKColor.Parse("#7B9CFF")), InnerRadius = 60 },
-        new() { Name = "Shopping", Values = [380d], Fill = new SolidColorPaint(SKColor.Parse("#FF5E5E")), InnerRadius = 60 },
-        new() { Name = "Entertainment", Values = [170d], Fill = new SolidColorPaint(SKColor.Parse("#9B7BFF")), InnerRadius = 60 },
-        new() { Name = "Health", Values = [69d], Fill = new SolidColorPaint(SKColor.Parse("#FF5E9B")), InnerRadius = 60 }
-    ];
-}
+    [ObservableProperty] private List<Budget> _budgets = new();
 
-public partial class PieData : ObservableObject
-{
-    [ObservableProperty] private string _name;
-    [ObservableProperty] private double[] _values;
-    [ObservableProperty] private SolidColorPaint _fill;
-    [ObservableProperty] private IBrush _bg;
-    [ObservableProperty] private double _innerRadius = 60;
-    [ObservableProperty] private Func<ChartPoint, string> _formatter;
-
-    partial void OnFillChanged(SolidColorPaint value)
+    public BudgetViewModel()
     {
-        var color = Color.FromArgb(value.Color.Alpha, value.Color.Red, value.Color.Green, value.Color.Blue);
-        Bg = new SolidColorBrush(color);
+        _ = Initialize();
     }
 
-    public PieData()
+    public async Task Initialize()
     {
-        Formatter = point =>
+        var budgets = await DataRepo.General.FetchBudgets();
+        var categories = await DataRepo.General.FetchCategories();
+        var transactions = await DataRepo.General.FetchTransactions();
+        foreach (var budget in budgets)
         {
-            var pct = point.StackedValue!.Share * 100;
-            return $"${point.Coordinate.PrimaryValue:N0} ({pct:N1}%)";
-        };
+            budget.Category = categories.FirstOrDefault(x => x.Id == budget.CategoryId);
+
+            switch (budget.Period.ToLower())
+            {
+                case "monthly":
+                    var budgetTransactions = transactions.Where(x => x.Date.Month == DateTime.Now.Month && x.CategoryId == budget.CategoryId).ToList();
+                    budget.Spent = budgetTransactions.Sum(x => x.Amount);
+                    budget.TransactionsCount = budgetTransactions.Count;
+                    break;
+                case "quarterly":
+                    var quarterTransactions = transactions.Where(x =>
+                        x.Date.Month >= DateTime.Now.Month - 3 && x.Date.Month <= DateTime.Now.Month && x.CategoryId == budget.CategoryId).ToList();
+                    budget.Spent = quarterTransactions.Sum(x => x.Amount);
+                    budget.TransactionsCount = quarterTransactions.Count;
+                    break;
+                case "yearly":
+                    var yearTransactions = transactions.Where(x => x.Date.Year == DateTime.Now.Year && x.CategoryId == budget.CategoryId).ToList();
+                    budget.Spent = yearTransactions.Sum(x => x.Amount);
+                    budget.TransactionsCount = yearTransactions.Count;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+
+        if (budgets.Any(x => x.IsOnTrack))
+        {
+            Budgets.Add(new Budget() { Category = new Category() { Name = "ON TRACK" }, GroupHeader = true });
+            var onTrack = budgets.Where(x => x.IsOnTrack).OrderByDescending(x => x.PercentageUsed).ToList();
+            foreach (var budget in onTrack)
+            {
+                Budgets.Add(budget);
+            }
+        }
+
+        if (budgets.Any(x => x.IsWarning))
+        {
+            Budgets.Add(new Budget() { Category = new Category() { Name = "APPROACHING LIMIT" }, GroupHeader = true });
+            var approaching = budgets.Where(x => x.IsWarning).OrderByDescending(x => x.PercentageUsed).ToList();
+            foreach (var budget in approaching)
+            {
+                Budgets.Add(budget);
+            }
+        }
+
+        if (budgets.Any(x => x.IsOverBudget))
+        {
+            Budgets.Add(new Budget() { Category = new Category() { Name = "OVER BUDGET" }, GroupHeader = true });
+            var overBudget = budgets.Where(x => x.IsOverBudget).OrderByDescending(x => x.PercentageUsed).ToList();
+            foreach (var budget in overBudget)
+            {
+                Budgets.Add(budget);
+            }
+        }
+
+        foreach (var budget in Budgets)
+        {
+            if (budget.GroupHeader) Console.WriteLine($"{budget.Category?.Name}");
+            else Console.WriteLine($"\t{budget.Category?.Name} {budget.PercentageUsed:P0} used, {budget.Spent} out of {budget.LimitAmount}");
+        }
     }
 }

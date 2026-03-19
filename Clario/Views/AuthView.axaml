@@ -13,7 +13,7 @@
         <Border Background="{DynamicResource BgBase}" />
         <!-- <Calendar SelectionMode="SingleRange"> -->
         <!-- </Calendar> -->
-        
+
         <!-- ── Subtle grid pattern overlay ──────── -->
         <!-- <Border Opacity="0.03" Background="{DynamicResource BgBase}"> -->
         <!-- -->
@@ -39,7 +39,7 @@
                         CornerRadius="16"
                         Height="100"
                         HorizontalAlignment="Center">
-                        <Image Source="../Assets/Logo textmark.png"></Image>
+                        <!-- <Image Source="../Assets/Logo textmark.png"></Image> -->
                     </Border>
                     <!-- REPLACE: app name -->
                     <StackPanel Spacing="4" HorizontalAlignment="Center">
