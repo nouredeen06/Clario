@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Clario.Data;
 using Clario.Models;
-using Clario.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -15,30 +13,29 @@ namespace Clario.ViewModels;
 public partial class AccountsViewModel : ViewModelBase
 {
     public required ViewModelBase parentViewModel;
-    private List<Account> _accounts = new();
+    public required List<Account> Accounts = new();
+    public required List<Transaction> Transactions = new();
     [ObservableProperty] private ObservableCollection<Account> _visibleAccounts = new();
     [ObservableProperty] private decimal _totalBalance = 0;
     [ObservableProperty] private Account _selectedAccount;
 
     public AccountsViewModel()
     {
-        _ = Initialize();
+    
     }
 
-    private async Task Initialize()
+    public async Task Initialize()
     {
-        _accounts = await DataRepo.General.FetchAccounts();
-        await FetchAndProcessAccountInfo();
+        FetchAndProcessAccountInfo();
         GroupAccounts();
         SelectedAccount = VisibleAccounts.First(x => !x.GroupHeader);
     }
 
-    private async Task FetchAndProcessAccountInfo()
+    private void FetchAndProcessAccountInfo()
     {
-        var transactions = await DataRepo.General.FetchTransactions();
-        foreach (var account in _accounts)
+        foreach (var account in Accounts)
         {
-            var accountTransactions = transactions.Where(t => t.AccountId == account.Id).ToList();
+            var accountTransactions = Transactions.Where(t => t.AccountId == account.Id).ToList();
             account.TransactionsCount = accountTransactions.Count;
             account.CurrentBalance = account.OpeningBalance + accountTransactions.Sum(t => t.Type == "income" ? t.Amount : -t.Amount);
             account.TotalIncomeThisMonth = accountTransactions.Where(t => t.Date.Month == DateTime.Now.Month && t.Type == "income").Sum(t => t.Amount);
@@ -65,7 +62,7 @@ public partial class AccountsViewModel : ViewModelBase
 
         foreach (var type in accountTypes)
         {
-            var accountsOfType = _accounts.Where(a => a.Type == type.Key).ToList();
+            var accountsOfType = Accounts.Where(a => a.Type == type.Key).ToList();
             if (accountsOfType.Any())
             {
                 var header = new Account { Name = type.Value.ToUpper(), GroupHeader = true };

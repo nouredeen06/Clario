@@ -296,7 +296,7 @@
                                                        Foreground="{Binding  Type,Converter={StaticResource AmountColorConverter}}"
                                                        VerticalAlignment="Center">
                                                 <TextBlock.Text>
-                                                    <MultiBinding Converter="{StaticResource AmountSignConverter}">
+                                                    <MultiBinding Converter="{StaticResource AmountSignConverter}" ConverterParameter="round">
                                                         <Binding Path="Amount" />
                                                         <Binding Path="Type" />
                                                     </MultiBinding>

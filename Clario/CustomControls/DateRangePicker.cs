@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Calendar = Avalonia.Controls.Calendar;
 
 namespace Clario.CustomControls;
 
@@ -19,7 +21,6 @@ public class DateRangePicker : TemplatedControl
         set => SetValue(SelectionModeProperty, value);
     }
 
-
     public static readonly StyledProperty<IList<DateTime>> SelectedDatesProperty =
         AvaloniaProperty.Register<DateRangePicker, IList<DateTime>>(
             nameof(SelectedDates), new List<DateTime>());
@@ -28,6 +29,16 @@ public class DateRangePicker : TemplatedControl
     {
         get => GetValue(SelectedDatesProperty);
         set => SetValue(SelectedDatesProperty, value);
+    }
+
+    public static readonly StyledProperty<DateTime?> SelectedDateProperty =
+        AvaloniaProperty.Register<DateRangePicker, DateTime?>(
+            nameof(SelectedDate), null);
+
+    public DateTime? SelectedDate
+    {
+        get => GetValue(SelectedDateProperty);
+        set => SetValue(SelectedDateProperty, value);
     }
 
     public static readonly StyledProperty<string> DisplayTextProperty =
@@ -40,114 +51,180 @@ public class DateRangePicker : TemplatedControl
         set => SetValue(DisplayTextProperty, value);
     }
 
-    private Button _button;
-    private Popup _popup;
-    private Calendar _calendar;
+
+    private Button? _button;
+    private Popup? _popup;
+    private Calendar? _calendar;
 
 
-    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
-    {
-        base.OnPropertyChanged(change);
-        if (change.Property == SelectedDatesProperty && _calendar != null)
-        {
-            _calendar.SelectedDates.Clear();
+    private bool _isSyncing = false;
 
-            foreach (var date in SelectedDates)
-            {
-                _calendar.SelectedDates.Add(date);
-            }
-
-            if (SelectionMode == CalendarSelectionMode.SingleDate)
-                _popup.IsOpen = false;
-        }
-    }
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         base.OnApplyTemplate(e);
+
+
+        if (_button != null) _button.Click -= OnButtonClick;
+        if (_calendar != null) _calendar.SelectedDatesChanged -= OnCalendarDatesChanged;
+
         _button = e.NameScope.Find<Button>("PART_Button");
         _popup = e.NameScope.Find<Popup>("PART_Popup");
         _calendar = e.NameScope.Find<Calendar>("PART_Calendar");
 
         if (_button != null)
-        {
-            _button.Click += (_, __) => _popup.IsOpen = true;
-            _button.PointerEntered += (_, __) => PseudoClasses.Add(":pointerover");
-            _button.PointerExited += (_, __) => PseudoClasses.Remove(":pointerover");
-            _button.PointerPressed += (_, __) => PseudoClasses.Add(":pressed");
-            _button.PointerReleased += (_, __) => PseudoClasses.Remove(":pressed");
-        }
+            _button.Click += OnButtonClick;
 
         if (_calendar != null)
         {
-            _calendar.SelectedDatesChanged += (_, __) =>
-            {
-                SelectedDates.Clear();
-                foreach (var date in _calendar.SelectedDates)
-                {
-                    SelectedDates.Add(date);
-                }
-
-                if (SelectionMode == CalendarSelectionMode.SingleDate && SelectedDates.Count == 1) _popup.IsOpen = false;
-                else if (SelectionMode == CalendarSelectionMode.SingleRange && SelectedDates.Count == 2) _popup.IsOpen = false;
-                UpdateDisplayText();
-            };
             _calendar.AllowTapRangeSelection = true;
+
+
+            _calendar.SelectedDatesChanged += OnCalendarDatesChanged;
+            // _calendar.PointerPressed 
+
+
+            SyncToCalendar();
         }
 
         UpdateDisplayText();
     }
 
+
+    private void OnButtonClick(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (_popup is null) return;
+
+
+        SyncToCalendar();
+        _popup.IsOpen = true;
+    }
+
+    private void OnCalendarDatesChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (_isSyncing) return;
+        
+        if (_popup is null || !_popup.IsOpen) return;
+        Console.WriteLine("test");
+        var newDates = _calendar!.SelectedDates.OrderBy(d => d).ToList();
+
+        _isSyncing = true;
+        try
+        {
+            SelectedDates = newDates;
+
+
+            SelectedDate = newDates.Count > 0 ? newDates[0] : null;
+
+            UpdateDisplayText();
+
+
+            bool shouldClose = SelectionMode switch
+            {
+                CalendarSelectionMode.SingleDate => newDates.Count >= 1,
+                CalendarSelectionMode.SingleRange => newDates.Count >= 2,
+                _ => false
+            };
+
+            if (shouldClose)
+                _popup.IsOpen = false;
+        }
+        finally
+        {
+            _isSyncing = false;
+        }
+    }
+
+
+    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+    {
+        base.OnPropertyChanged(change);
+
+        if (_isSyncing) return;
+
+        if (change.Property == SelectedDatesProperty)
+        {
+            _isSyncing = true;
+            try
+            {
+                var dates = SelectedDates?.OrderBy(d => d).ToList() ?? new List<DateTime>();
+                SelectedDate = dates.Count > 0 ? dates[0] : null;
+                SyncToCalendar();
+                UpdateDisplayText();
+            }
+            finally
+            {
+                _isSyncing = false;
+            }
+        }
+        else if (change.Property == SelectedDateProperty)
+        {
+            _isSyncing = true;
+            try
+            {
+                SelectedDates = SelectedDate.HasValue
+                    ? new List<DateTime> { SelectedDate.Value }
+                    : new List<DateTime>();
+                SyncToCalendar();
+                UpdateDisplayText();
+            }
+            finally
+            {
+                _isSyncing = false;
+            }
+        }
+    }
+
+
+    private void SyncToCalendar()
+    {
+        if (_calendar is null || _isSyncing) return;
+
+        _isSyncing = true;
+        try
+        {
+            _calendar.SelectedDates.Clear();
+            if (SelectedDates is not null)
+            {
+                foreach (var date in SelectedDates)
+                    _calendar.SelectedDates.Add(date);
+            }
+        }
+        finally
+        {
+            _isSyncing = false;
+        }
+    }
+
     private void UpdateDisplayText()
     {
-        if (SelectedDates == null || SelectedDates.Count == 0)
+        var culture = new CultureInfo("en-US");
+
+        if (SelectedDates is null || SelectedDates.Count == 0)
         {
-            switch (SelectionMode)
+            DisplayText = SelectionMode switch
             {
-                case CalendarSelectionMode.SingleDate:
-                    DisplayText = "Select Date";
-                    break;
-
-                case CalendarSelectionMode.SingleRange:
-                    DisplayText = "Select Date Range";
-                    break;
-                default:
-                    DisplayText = "Select Date";
-                    break;
-            }
-
+                CalendarSelectionMode.SingleDate => "Select Date",
+                CalendarSelectionMode.SingleRange => "Select Date Range",
+                _ => "Select Date"
+            };
             return;
         }
 
         var ordered = SelectedDates.OrderBy(d => d).ToList();
 
-        switch (SelectionMode)
+        DisplayText = SelectionMode switch
         {
-            case CalendarSelectionMode.SingleDate:
-                DisplayText = ordered[0].ToString("MMM dd, yyyy");
-                break;
+            CalendarSelectionMode.SingleDate => ordered[0].ToString("MMM dd, yyyy", culture),
 
-            case CalendarSelectionMode.SingleRange:
-                if (ordered.Count == 1)
-                {
-                    DisplayText = ordered[0].ToString("MMM dd, yyyy");
-                }
-                else
-                {
-                    DisplayText =
-                        $"{ordered.First():MMM dd, yyyy} → {ordered.Last():MMM dd, yyyy}";
-                }
+            CalendarSelectionMode.SingleRange => ordered.Count == 1
+                ? ordered[0].ToString("MMM dd, yyyy", culture)
+                : $"{ordered.First().ToString("MMM dd, yyyy", culture)} → {ordered.Last().ToString("MMM dd, yyyy", culture)}",
 
-                break;
+            CalendarSelectionMode.MultipleRange => string.Join(", ",
+                ordered.Select(d => d.ToString("MMM dd, yyyy", culture))),
 
-            case CalendarSelectionMode.MultipleRange:
-                DisplayText = string.Join(", ",
-                    ordered.Select(d => d.ToString("MMM dd, yyyy")));
-                break;
-
-            default:
-                DisplayText = ordered[0].ToString("MMM dd, yyyy");
-                break;
-        }
+            _ => ordered[0].ToString("MMM dd, yyyy", culture)
+        };
     }
 }

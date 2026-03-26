@@ -7,6 +7,7 @@
              xmlns:views="clr-namespace:Clario.Views"
              xmlns:system="clr-namespace:System;assembly=System.Runtime"
              xmlns:skiaSharpView="clr-namespace:LiveChartsCore.SkiaSharpView;assembly=LiveChartsCore.SkiaSharpView"
+             xmlns:model="clr-namespace:Clario.Models"
              x:DataType="vm:BudgetViewModel"
              mc:Ignorable="d" d:DesignWidth="1180" d:DesignHeight="800"
              x:Class="Clario.Views.BudgetView">
@@ -28,7 +29,7 @@
 
             <StackPanel Grid.Column="0">
                 <!-- REPLACE: bind to CurrentPeriodLabel e.g. "March 2026" -->
-                <TextBlock Text="March 2026"
+                <TextBlock Text="{Binding CurrentPeriodFormatted}"
                            FontSize="12"
                            Foreground="{DynamicResource TextMuted}" />
                 <TextBlock Text="Budget"
@@ -51,15 +52,17 @@
                     <StackPanel Orientation="Horizontal">
                         <!-- REPLACE: Command="{Binding PreviousPeriodCommand}" -->
                         <Button Background="Transparent"
+                                Classes="nav textless"
                                 BorderThickness="0"
                                 Padding="10,8"
-                                Cursor="Hand">
+                                Cursor="Hand"
+                                Command="{Binding PreviousPeriodCommand}">
                             <Svg Path="../Assets/Icons/chevron-left.svg"
                                  Width="14" Height="14"
                                  Css="{DynamicResource SvgMuted}" />
                         </Button>
                         <!-- REPLACE: bind to CurrentPeriodLabel -->
-                        <TextBlock Text="Mar 2026"
+                        <TextBlock Text="{Binding CurrentPeriodFormatted}"
                                    FontSize="13"
                                    FontWeight="SemiBold"
                                    Foreground="{DynamicResource TextPrimary}"
@@ -67,9 +70,11 @@
                                    Margin="4,0" />
                         <!-- REPLACE: Command="{Binding NextPeriodCommand}" -->
                         <Button Background="Transparent"
+                                Classes="nav textless"
                                 BorderThickness="0"
                                 Padding="10,8"
-                                Cursor="Hand">
+                                Cursor="Hand"
+                                Command="{Binding NextPeriodCommand}">
                             <Svg Path="../Assets/Icons/chevron-right.svg"
                                  Width="14" Height="14"
                                  Css="{DynamicResource SvgMuted}" />
@@ -116,365 +121,139 @@
                           VerticalScrollBarVisibility="Auto"
                           HorizontalScrollBarVisibility="Disabled"
                           Margin="0,0,12,0" Padding="0 0 8 0">
-                <StackPanel Spacing="12" Margin="0 0 0 28">
-
-                    <!-- ── On Track ───────────────────────── -->
-                    <TextBlock Text="ON TRACK"
-                               Classes="label"
-                               Margin="0,0,0,4" />
-
-                    <!-- REPLACE: ItemsSource="{Binding OnTrackBudgets}" with DataTemplate -->
-
-                    <!-- Budget Card — Food (healthy) -->
-                    <Border Background="{DynamicResource BgSurface}"
-                            BorderBrush="{DynamicResource BorderSubtle}"
-                            BorderThickness="1"
-                            CornerRadius="16"
-                            Padding="20"
-                            Cursor="Hand">
-                        <StackPanel Spacing="14">
-
-                            <!-- Header row -->
-                            <Grid ColumnDefinitions="Auto,*,Auto,Auto">
-                                <Border Grid.Column="0"
-                                        Background="{DynamicResource IconBgGreen}"
-                                        CornerRadius="10"
-                                        Width="40" Height="40"
-                                        Margin="0,0,14,0">
-                                    <Svg Path="../Assets/Icons/utensils.svg"
-                                         Width="18" Height="18"
-                                         Css="{DynamicResource SvgGreen}" />
-                                </Border>
-                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
-                                    <!-- REPLACE: bind to Budget.CategoryName -->
-                                    <TextBlock Text="Food &amp; Dining"
-                                               FontSize="14"
-                                               FontWeight="SemiBold"
-                                               Foreground="{DynamicResource TextPrimary}" />
-                                    <!-- REPLACE: bind to Budget.TransactionCount -->
-                                    <TextBlock Text="8 transactions"
-                                               FontSize="11"
-                                               Foreground="{DynamicResource TextMuted}" />
-                                </StackPanel>
-                                <!-- Spent / Limit -->
-                                <StackPanel Grid.Column="2"
-                                            HorizontalAlignment="Right"
-                                            VerticalAlignment="Center"
-                                            Spacing="2"
-                                            Margin="0,0,12,0">
-                                    <!-- REPLACE: bind to Budget.SpentFormatted -->
-                                    <TextBlock Text="$340"
-                                               FontSize="14"
-                                               FontWeight="Bold"
-                                               Foreground="{DynamicResource TextPrimary}"
-                                               HorizontalAlignment="Right" />
-                                    <!-- REPLACE: bind to Budget.LimitFormatted -->
-                                    <TextBlock Text="of $500"
-                                               FontSize="11"
-                                               Foreground="{DynamicResource TextMuted}"
-                                               HorizontalAlignment="Right" />
-                                </StackPanel>
-                                <!-- Edit button -->
-                                <!-- REPLACE: Command="{Binding EditBudgetCommand}" CommandParameter="{Binding}" -->
-                                <Button Grid.Column="3"
-                                        Background="Transparent"
-                                        BorderThickness="0"
-                                        Padding="4"
-                                        VerticalAlignment="Center"
+                <ItemsControl ItemsSource="{Binding VisibleBudgets}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Spacing="12" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="model:Budget">
+                            <Panel>
+                                <TextBlock IsVisible="{Binding GroupHeader}"
+                                           Text="{Binding Category.Name}"
+                                           Classes="label"
+                                           Margin="0,0,0,4" />
+                                <Border IsVisible="{Binding !GroupHeader}"
+                                        Classes.budget-card="{Binding IsOnTrack}"
+                                        Classes.budget-card-warning="{Binding IsWarning}"
+                                        Classes.budget-card-over="{Binding IsOverBudget}"
+                                        Background="{DynamicResource BgSurface}"
+                                        CornerRadius="16"
+                                        Padding="20"
                                         Cursor="Hand">
-                                    <Button.Flyout>
-                                        <Flyout Placement="BottomEdgeAlignedRight"
-                                                FlyoutPresenterTheme="{StaticResource TransparentFlyoutPresenter}">
-                                            <views:BudgetCardMenuView />
-                                        </Flyout>
-                                    </Button.Flyout>
-                                    <Svg Path="../Assets/Icons/ellipsis.svg"
-                                         Width="15" Height="15"
-                                         Css="{DynamicResource SvgMuted}" />
-                                </Button>
-                            </Grid>
+                                    <StackPanel Spacing="14">
+                                        <!-- Header row -->
+                                        <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+                                            <Border Grid.Column="0"
+                                                    CornerRadius="10"
+                                                    Width="40" Height="40"
+                                                    Margin="0,0,14,0">
+                                                <Border.Background>
+                                                    <SolidColorBrush
+                                                        Color="{Binding Category.Color,Converter={StaticResource HexToColorConverter}, ConverterParameter=color}"
+                                                        Opacity="0.15" />
+                                                </Border.Background>
+                                                <Svg Path="{Binding  Category.Icon, Converter={StaticResource SvgPathFromName}}"
+                                                     Width="18" Height="18"
+                                                     Css="{Binding Category.Color,Converter={StaticResource HexToColorConverter}, ConverterParameter=css}" />
+                                            </Border>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                                                <!-- REPLACE: bind to Budget.CategoryName -->
+                                                <TextBlock Text="{Binding Category.Name}"
+                                                           FontSize="14"
+                                                           FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource TextPrimary}" />
+                                                <!-- REPLACE: bind to Budget.TransactionCount -->
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding TransactionsCount}"
+                                                               FontSize="11"
+                                                               Foreground="{DynamicResource TextMuted}" />
+                                                    <TextBlock Text=" transactions"
+                                                               FontSize="11"
+                                                               Foreground="{DynamicResource TextMuted}" />
+                                                </StackPanel>
+                                            </StackPanel>
+                                            <!-- Spent / Limit -->
+                                            <StackPanel Grid.Column="2"
+                                                        HorizontalAlignment="Right"
+                                                        VerticalAlignment="Center"
+                                                        Spacing="2"
+                                                        Margin="0,0,12,0">
+                                                <!-- REPLACE: bind to Budget.SpentFormatted -->
+                                                <TextBlock Text="{Binding SpentFormatted}"
+                                                           FontSize="14"
+                                                           FontWeight="Bold"
+                                                           Foreground="{DynamicResource TextPrimary}"
+                                                           HorizontalAlignment="Right" />
+                                                <!-- REPLACE: bind to Budget.LimitFormatted -->
+                                                <TextBlock Text="{Binding AmountFormatted}"
+                                                           FontSize="11"
+                                                           Foreground="{DynamicResource TextMuted}"
+                                                           HorizontalAlignment="Right" />
+                                            </StackPanel>
+                                            <!-- Edit button -->
+                                            <!-- REPLACE: Command="{Binding EditBudgetCommand}" CommandParameter="{Binding}" -->
+                                            <Button Grid.Column="3"
+                                                    Background="Transparent"
+                                                    BorderThickness="0"
+                                                    Padding="4"
+                                                    VerticalAlignment="Center"
+                                                    Cursor="Hand">
+                                                <Button.Flyout>
+                                                    <Flyout Placement="BottomEdgeAlignedRight"
+                                                            FlyoutPresenterTheme="{StaticResource TransparentFlyoutPresenter}">
+                                                        <views:BudgetCardMenuView />
+                                                    </Flyout>
+                                                </Button.Flyout>
+                                                <Svg Path="../Assets/Icons/ellipsis.svg"
+                                                     Width="15" Height="15"
+                                                     Css="{DynamicResource SvgMuted}" />
+                                            </Button>
+                                        </Grid>
 
-                            <!-- Progress bar + remaining -->
-                            <StackPanel Spacing="6">
-                                <!-- REPLACE: Value="{Binding Budget.PercentageUsed}" -->
-                                <ProgressBar Classes="green"
-                                             Value="68"
-                                             Minimum="0"
-                                             Maximum="100"
-                                             Height="6" />
-                                <Grid ColumnDefinitions="*,Auto">
-                                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6">
-                                        <Border Background="{DynamicResource IconBgGreen}"
-                                                CornerRadius="20"
-                                                Padding="6,2">
-                                            <TextBlock Text="68% used"
-                                                       FontSize="11"
-                                                       Foreground="{DynamicResource AccentGreen}" />
-                                        </Border>
+                                        <!-- Progress bar + remaining -->
+                                        <StackPanel Spacing="6">
+                                            <!-- REPLACE: Value="{Binding Budget.PercentageUsed}" -->
+                                            <ProgressBar Classes.green="{Binding IsOnTrack}"
+                                                         Classes.yellow="{Binding IsWarning}"
+                                                         Classes.red="{Binding IsOverBudget}"
+                                                         Value="{Binding Spent}"
+                                                         Minimum="0"
+                                                         Maximum="{Binding LimitAmount}"
+                                                         Height="6" />
+                                            <Grid ColumnDefinitions="*,Auto">
+                                                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6">
+                                                    <Border Classes.badge-green="{Binding IsOnTrack}"
+                                                            Classes.badge-warning="{Binding IsWarning}"
+                                                            Classes.badge-over="{Binding IsOverBudget}"
+                                                            CornerRadius="20"
+                                                            Padding="6,2">
+                                                        <StackPanel Orientation="Horizontal" Spacing="4">
+                                                            <Svg Path="../Assets/Icons/triangle-alert.svg" Css="{DynamicResource SvgYellow}"
+                                                                 IsVisible="{Binding IsWarning}" Height="13" VerticalAlignment="Center" />
+                                                            <Svg Path="../Assets/Icons/circle-alert.svg" Css="{DynamicResource SvgRed}"
+                                                                 IsVisible="{Binding IsOverBudget}" Height="13" VerticalAlignment="Center" />
+                                                            <TextBlock Text="{Binding PercentageFormatted}"
+                                                                       FontSize="11" VerticalAlignment="Center" />
+                                                        </StackPanel>
+                                                    </Border>
+                                                </StackPanel>
+                                                <!-- REPLACE: bind to Budget.RemainingFormatted -->
+                                                <TextBlock Grid.Column="1"
+                                                           Text="{Binding RemainingFormatted}"
+                                                           FontSize="11"
+                                                           Foreground="{DynamicResource TextMuted}"
+                                                           VerticalAlignment="Center" />
+                                            </Grid>
+                                        </StackPanel>
+
                                     </StackPanel>
-                                    <!-- REPLACE: bind to Budget.RemainingFormatted -->
-                                    <TextBlock Grid.Column="1"
-                                               Text="$160 left"
-                                               FontSize="11"
-                                               Foreground="{DynamicResource TextMuted}"
-                                               VerticalAlignment="Center" />
-                                </Grid>
-                            </StackPanel>
-
-                        </StackPanel>
-                    </Border>
-
-                    <!-- Budget Card — Transport (healthy) -->
-                    <Border Background="{DynamicResource BgSurface}"
-                            BorderBrush="{DynamicResource BorderSubtle}"
-                            BorderThickness="1"
-                            CornerRadius="16"
-                            Padding="20"
-                            Cursor="Hand">
-                        <StackPanel Spacing="14">
-                            <Grid ColumnDefinitions="Auto,*,Auto,Auto">
-                                <Border Grid.Column="0" Background="{DynamicResource IconBgBlue}" CornerRadius="10" Width="40" Height="40" Margin="0,0,14,0">
-                                    <Svg Path="../Assets/Icons/car.svg" Width="18" Height="18" Css="{DynamicResource SvgBlue}" />
                                 </Border>
-                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
-                                    <TextBlock Text="Transport" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" />
-                                    <TextBlock Text="3 transactions" FontSize="11" Foreground="{DynamicResource TextMuted}" />
-                                </StackPanel>
-                                <StackPanel Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Spacing="2" Margin="0,0,12,0">
-                                    <TextBlock Text="$110" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextPrimary}"
-                                               HorizontalAlignment="Right" />
-                                    <TextBlock Text="of $200" FontSize="11" Foreground="{DynamicResource TextMuted}" HorizontalAlignment="Right" />
-                                </StackPanel>
-                                <Button Grid.Column="3" Background="Transparent" BorderThickness="0" Padding="4" VerticalAlignment="Center" Cursor="Hand">
-                                    <Button.Flyout>
-                                        <Flyout Placement="BottomEdgeAlignedRight"
-                                                FlyoutPresenterTheme="{StaticResource TransparentFlyoutPresenter}">
-                                            <views:BudgetCardMenuView />
-                                        </Flyout>
-                                    </Button.Flyout>
-                                    <Svg Path="../Assets/Icons/ellipsis.svg" Width="15" Height="15" Css="{DynamicResource SvgMuted}" />
-                                </Button>
-                            </Grid>
-                            <StackPanel Spacing="6">
-                                <ProgressBar Classes="green" Value="55" Minimum="0" Maximum="100" Height="6" />
-                                <Grid ColumnDefinitions="*,Auto">
-                                    <Border Grid.Column="0" Background="{DynamicResource IconBgGreen}" CornerRadius="20" Padding="6,2"
-                                            HorizontalAlignment="Left">
-                                        <TextBlock Text="55% used" FontSize="11" Foreground="{DynamicResource AccentGreen}" />
-                                    </Border>
-                                    <TextBlock Grid.Column="1" Text="$90 left" FontSize="11" Foreground="{DynamicResource TextMuted}"
-                                               VerticalAlignment="Center" />
-                                </Grid>
-                            </StackPanel>
-                        </StackPanel>
-                    </Border>
-
-                    <!-- Budget Card — Health (healthy) -->
-                    <Border Background="{DynamicResource BgSurface}"
-                            BorderBrush="{DynamicResource BorderSubtle}"
-                            BorderThickness="1"
-                            CornerRadius="16"
-                            Padding="20"
-                            Cursor="Hand">
-                        <StackPanel Spacing="14">
-                            <Grid ColumnDefinitions="Auto,*,Auto,Auto">
-                                <Border Grid.Column="0" Background="{DynamicResource IconBgPink}" CornerRadius="10" Width="40" Height="40" Margin="0,0,14,0">
-                                    <Svg Path="../Assets/Icons/heart-pulse.svg" Width="18" Height="18" Css="{DynamicResource SvgPink}" />
-                                </Border>
-                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
-                                    <TextBlock Text="Health" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" />
-                                    <TextBlock Text="2 transactions" FontSize="11" Foreground="{DynamicResource TextMuted}" />
-                                </StackPanel>
-                                <StackPanel Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Spacing="2" Margin="0,0,12,0">
-                                    <TextBlock Text="$69" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextPrimary}"
-                                               HorizontalAlignment="Right" />
-                                    <TextBlock Text="of $150" FontSize="11" Foreground="{DynamicResource TextMuted}" HorizontalAlignment="Right" />
-                                </StackPanel>
-                                <Button Grid.Column="3" Background="Transparent" BorderThickness="0" Padding="4" VerticalAlignment="Center" Cursor="Hand">
-                                    <Button.Flyout>
-                                        <Flyout Placement="BottomEdgeAlignedRight"
-                                                FlyoutPresenterTheme="{StaticResource TransparentFlyoutPresenter}">
-                                            <views:BudgetCardMenuView />
-                                        </Flyout>
-                                    </Button.Flyout>
-                                    <Svg Path="../Assets/Icons/ellipsis.svg" Width="15" Height="15" Css="{DynamicResource SvgMuted}" />
-                                </Button>
-                            </Grid>
-                            <StackPanel Spacing="6">
-                                <ProgressBar Classes="green" Value="46" Minimum="0" Maximum="100" Height="6" />
-                                <Grid ColumnDefinitions="*,Auto">
-                                    <Border Grid.Column="0" Background="{DynamicResource IconBgGreen}" CornerRadius="20" Padding="6,2"
-                                            HorizontalAlignment="Left">
-                                        <TextBlock Text="46% used" FontSize="11" Foreground="{DynamicResource AccentGreen}" />
-                                    </Border>
-                                    <TextBlock Grid.Column="1" Text="$81 left" FontSize="11" Foreground="{DynamicResource TextMuted}"
-                                               VerticalAlignment="Center" />
-                                </Grid>
-                            </StackPanel>
-                        </StackPanel>
-                    </Border>
-
-                    <!-- ── Approaching Limit ───────────────── -->
-                    <TextBlock Text="APPROACHING LIMIT"
-                               Classes="label"
-                               Margin="0,12,0,4" />
-
-                    <!-- REPLACE: ItemsSource="{Binding WarningBudgets}" with DataTemplate -->
-
-                    <!-- Budget Card — Leisure (warning ~85%) -->
-                    <Border Background="{DynamicResource BgSurface}"
-                            BorderBrush="{DynamicResource AccentYellow}"
-                            BorderThickness="1"
-                            CornerRadius="16"
-                            Padding="20"
-                            Cursor="Hand">
-                        <StackPanel Spacing="14">
-                            <Grid ColumnDefinitions="Auto,*,Auto,Auto">
-                                <Border Grid.Column="0" Background="{DynamicResource IconBgPurple}" CornerRadius="10" Width="40" Height="40" Margin="0,0,14,0">
-                                    <Svg Path="../Assets/Icons/gamepad-2.svg" Width="18" Height="18" Css="{DynamicResource SvgPurple}" />
-                                </Border>
-                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
-                                    <TextBlock Text="Entertainment" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" />
-                                    <TextBlock Text="5 transactions" FontSize="11" Foreground="{DynamicResource TextMuted}" />
-                                </StackPanel>
-                                <StackPanel Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Spacing="2" Margin="0,0,12,0">
-                                    <TextBlock Text="$170" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource AccentYellow}"
-                                               HorizontalAlignment="Right" />
-                                    <TextBlock Text="of $200" FontSize="11" Foreground="{DynamicResource TextMuted}" HorizontalAlignment="Right" />
-                                </StackPanel>
-                                <Button Grid.Column="3" Background="Transparent" BorderThickness="0" Padding="4" VerticalAlignment="Center" Cursor="Hand">
-                                    <Button.Flyout>
-                                        <Flyout Placement="BottomEdgeAlignedRight"
-                                                FlyoutPresenterTheme="{StaticResource TransparentFlyoutPresenter}">
-                                            <views:BudgetCardMenuView />
-                                        </Flyout>
-                                    </Button.Flyout>
-                                    <Svg Path="../Assets/Icons/ellipsis.svg" Width="15" Height="15" Css="{DynamicResource SvgMuted}" />
-                                </Button>
-                            </Grid>
-                            <StackPanel Spacing="6">
-                                <ProgressBar Classes="yellow" Value="85" Minimum="0" Maximum="100" Height="6" />
-                                <Grid ColumnDefinitions="*,Auto">
-                                    <Border Grid.Column="0" Background="{DynamicResource BadgeBgYellow}" CornerRadius="20" Padding="6,2"
-                                            HorizontalAlignment="Left">
-                                        <StackPanel Orientation="Horizontal" Spacing="5">
-                                            <Svg Path="../Assets/Icons/triangle-alert.svg" Width="11" Height="11"
-                                                 Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #F5C842; }" />
-                                            <TextBlock Text="85% used" FontSize="11" Foreground="{DynamicResource AccentYellow}" VerticalAlignment="Center" />
-                                        </StackPanel>
-                                    </Border>
-                                    <TextBlock Grid.Column="1" Text="$30 left" FontSize="11" Foreground="{DynamicResource TextMuted}"
-                                               VerticalAlignment="Center" />
-                                </Grid>
-                            </StackPanel>
-                        </StackPanel>
-                    </Border>
-
-                    <!-- Budget Card — Housing (warning ~90%) -->
-                    <Border Background="{DynamicResource BgSurface}"
-                            BorderBrush="{DynamicResource AccentYellow}"
-                            BorderThickness="1"
-                            CornerRadius="16"
-                            Padding="20"
-                            Cursor="Hand">
-                        <StackPanel Spacing="14">
-                            <Grid ColumnDefinitions="Auto,*,Auto,Auto">
-                                <Border Grid.Column="0" Background="{DynamicResource IconBgOrange}" CornerRadius="10" Width="40" Height="40" Margin="0,0,14,0">
-                                    <Svg Path="../Assets/Icons/house.svg" Width="18" Height="18" Css="{DynamicResource SvgOrange}" />
-                                </Border>
-                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
-                                    <TextBlock Text="Housing" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" />
-                                    <TextBlock Text="4 transactions" FontSize="11" Foreground="{DynamicResource TextMuted}" />
-                                </StackPanel>
-                                <StackPanel Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Spacing="2" Margin="0,0,12,0">
-                                    <TextBlock Text="$540" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource AccentYellow}"
-                                               HorizontalAlignment="Right" />
-                                    <TextBlock Text="of $600" FontSize="11" Foreground="{DynamicResource TextMuted}" HorizontalAlignment="Right" />
-                                </StackPanel>
-                                <Button Grid.Column="3" Background="Transparent" BorderThickness="0" Padding="4" VerticalAlignment="Center" Cursor="Hand">
-                                    <Button.Flyout>
-                                        <Flyout Placement="BottomEdgeAlignedRight"
-                                                FlyoutPresenterTheme="{StaticResource TransparentFlyoutPresenter}">
-                                            <views:BudgetCardMenuView />
-                                        </Flyout>
-                                    </Button.Flyout>
-                                    <Svg Path="../Assets/Icons/ellipsis.svg" Width="15" Height="15" Css="{DynamicResource SvgMuted}" />
-                                </Button>
-                            </Grid>
-                            <StackPanel Spacing="6">
-                                <ProgressBar Classes="yellow" Value="90" Minimum="0" Maximum="100" Height="6" />
-                                <Grid ColumnDefinitions="*,Auto">
-                                    <Border Grid.Column="0" Background="{DynamicResource BadgeBgYellow}" CornerRadius="20" Padding="6,2"
-                                            HorizontalAlignment="Left">
-                                        <StackPanel Orientation="Horizontal" Spacing="5">
-                                            <Svg Path="../Assets/Icons/triangle-alert.svg" Width="11" Height="11"
-                                                 Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #F5C842; }" />
-                                            <TextBlock Text="90% used" FontSize="11" Foreground="{DynamicResource AccentYellow}" VerticalAlignment="Center" />
-                                        </StackPanel>
-                                    </Border>
-                                    <TextBlock Grid.Column="1" Text="$60 left" FontSize="11" Foreground="{DynamicResource TextMuted}"
-                                               VerticalAlignment="Center" />
-                                </Grid>
-                            </StackPanel>
-                        </StackPanel>
-                    </Border>
-
-                    <!-- ── Over Budget ────────────────────── -->
-                    <TextBlock Text="OVER BUDGET"
-                               Classes="label"
-                               Margin="0,12,0,4" />
-
-                    <!-- REPLACE: ItemsSource="{Binding OverBudgets}" with DataTemplate -->
-
-                    <!-- Budget Card — Other (over budget) -->
-                    <Border Background="{DynamicResource BgSurface}"
-                            BorderBrush="{DynamicResource AccentRed}"
-                            BorderThickness="1"
-                            CornerRadius="16"
-                            Padding="20"
-                            Cursor="Hand">
-                        <StackPanel Spacing="14">
-                            <Grid ColumnDefinitions="Auto,*,Auto,Auto">
-                                <Border Grid.Column="0" Background="{DynamicResource IconBgRed}" CornerRadius="10" Width="40" Height="40" Margin="0,0,14,0">
-                                    <Svg Path="../Assets/Icons/shopping-bag.svg" Width="18" Height="18" Css="{DynamicResource SvgRed}" />
-                                </Border>
-                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
-                                    <TextBlock Text="Shopping" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" />
-                                    <TextBlock Text="7 transactions" FontSize="11" Foreground="{DynamicResource TextMuted}" />
-                                </StackPanel>
-                                <StackPanel Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Spacing="2" Margin="0,0,12,0">
-                                    <TextBlock Text="$380" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource AccentRed}" HorizontalAlignment="Right" />
-                                    <TextBlock Text="of $300" FontSize="11" Foreground="{DynamicResource TextMuted}" HorizontalAlignment="Right" />
-                                </StackPanel>
-                                <Button Grid.Column="3" Background="Transparent" BorderThickness="0" Padding="4" VerticalAlignment="Center" Cursor="Hand">
-                                    <Button.Flyout>
-                                        <Flyout Placement="BottomEdgeAlignedRight"
-                                                FlyoutPresenterTheme="{StaticResource TransparentFlyoutPresenter}">
-                                            <views:BudgetCardMenuView />
-                                        </Flyout>
-                                    </Button.Flyout>
-                                    <Svg Path="../Assets/Icons/ellipsis.svg" Width="15" Height="15" Css="{DynamicResource SvgMuted}" />
-                                </Button>
-                            </Grid>
-                            <StackPanel Spacing="6">
-                                <!-- Clamped to 100 visually, real % shown in badge -->
-                                <ProgressBar Classes="red" Value="100" Minimum="0" Maximum="100" Height="6" />
-                                <Grid ColumnDefinitions="*,Auto">
-                                    <Border Grid.Column="0" Background="{DynamicResource BadgeBgRed}" CornerRadius="20" Padding="6,2"
-                                            HorizontalAlignment="Left">
-                                        <StackPanel Orientation="Horizontal" Spacing="5">
-                                            <Svg Path="../Assets/Icons/circle-alert.svg" Width="11" Height="11"
-                                                 Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #FF5E5E; }" />
-                                            <TextBlock Text="$80 over budget" FontSize="11" Foreground="{DynamicResource AccentRed}" VerticalAlignment="Center" />
-                                        </StackPanel>
-                                    </Border>
-                                    <TextBlock Grid.Column="1" Text="127%" FontSize="11" Foreground="{DynamicResource AccentRed}" VerticalAlignment="Center" />
-                                </Grid>
-                            </StackPanel>
-                        </StackPanel>
-                    </Border>
-
-                </StackPanel>
+                            </Panel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </ScrollViewer>
 
             <!-- ─────────────────────────────────────
@@ -503,22 +282,25 @@
                                 <Grid ColumnDefinitions="*,Auto">
                                     <TextBlock Grid.Column="0" Text="Total Budgeted" FontSize="12" Foreground="{DynamicResource TextMuted}" />
                                     <!-- REPLACE: bind to TotalBudgetedFormatted -->
-                                    <TextBlock Grid.Column="1" Text="$1,950" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" />
+                                    <TextBlock Grid.Column="1" Text="{Binding TotalBudgeted, StringFormat='$0'}" FontSize="13" FontWeight="SemiBold"
+                                               Foreground="{DynamicResource TextPrimary}" />
                                 </Grid>
                                 <Grid ColumnDefinitions="*,Auto">
                                     <TextBlock Grid.Column="0" Text="Total Spent" FontSize="12" Foreground="{DynamicResource TextMuted}" />
                                     <!-- REPLACE: bind to TotalSpentFormatted -->
-                                    <TextBlock Grid.Column="1" Text="$1,609" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" />
+                                    <TextBlock Grid.Column="1" Text="{Binding TotalSpent, StringFormat='$0'}" FontSize="13" FontWeight="SemiBold"
+                                               Foreground="{DynamicResource TextPrimary}" />
                                 </Grid>
 
                                 <!-- Overall progress bar -->
                                 <StackPanel Spacing="5" Margin="0,4,0,0">
                                     <!-- REPLACE: Value="{Binding OverallPercentageUsed}" -->
-                                    <ProgressBar Classes="green" Value="82" Minimum="0" Maximum="100" Height="8" />
+                                    <ProgressBar Classes="green" Value="{Binding TotalSpent}" Minimum="0" Maximum="{Binding TotalBudgeted}" Height="8" />
                                     <Grid ColumnDefinitions="*,Auto">
-                                        <TextBlock Grid.Column="0" Text="82% of total budget" FontSize="11" Foreground="{DynamicResource TextMuted}" />
+                                        <TextBlock Grid.Column="0" Text="{Binding SpentPercentageFormatted}" FontSize="11"
+                                                   Foreground="{DynamicResource TextMuted}" />
                                         <!-- REPLACE: bind to TotalRemainingFormatted -->
-                                        <TextBlock Grid.Column="1" Text="$341 left" FontSize="11" Foreground="{DynamicResource AccentGreen}" />
+                                        <TextBlock Grid.Column="1" Text="{Binding TotalLeftFormatted}" FontSize="11" Foreground="{DynamicResource AccentGreen}" />
                                     </Grid>
                                 </StackPanel>
                             </StackPanel>
@@ -540,7 +322,7 @@
                                     <TextBlock Grid.Column="1" Text="On track" FontSize="13" Foreground="{DynamicResource TextSecondary}"
                                                VerticalAlignment="Center" />
                                     <!-- REPLACE: bind to OnTrackCount -->
-                                    <TextBlock Grid.Column="2" Text="3 budgets" FontSize="12" Foreground="{DynamicResource AccentGreen}"
+                                    <TextBlock Grid.Column="2" Text="{Binding OnTrackCountFormatted}" FontSize="12" Foreground="{DynamicResource AccentGreen}"
                                                VerticalAlignment="Center" />
                                 </Grid>
 
@@ -557,7 +339,8 @@
                                     <TextBlock Grid.Column="1" Text="Approaching limit" FontSize="13" Foreground="{DynamicResource TextSecondary}"
                                                VerticalAlignment="Center" />
                                     <!-- REPLACE: bind to WarningCount -->
-                                    <TextBlock Grid.Column="2" Text="2 budgets" FontSize="12" Foreground="{DynamicResource AccentYellow}"
+                                    <TextBlock Grid.Column="2" Text="{Binding ApproachingCountFormatted}" FontSize="12"
+                                               Foreground="{DynamicResource AccentYellow}"
                                                VerticalAlignment="Center" />
                                 </Grid>
 
@@ -574,7 +357,7 @@
                                     <TextBlock Grid.Column="1" Text="Over budget" FontSize="13" Foreground="{DynamicResource TextSecondary}"
                                                VerticalAlignment="Center" />
                                     <!-- REPLACE: bind to OverBudgetCount -->
-                                    <TextBlock Grid.Column="2" Text="1 budget" FontSize="12" Foreground="{DynamicResource AccentRed}"
+                                    <TextBlock Grid.Column="2" Text="{Binding OverBudgetCountFormatted}" FontSize="12" Foreground="{DynamicResource AccentRed}"
                                                VerticalAlignment="Center" />
                                 </Grid>
 
@@ -602,17 +385,23 @@
                                 <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
                                     <TextBlock Text="Period Progress" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" />
                                     <!-- REPLACE: bind to PeriodProgressLabel e.g. "22 of 31 days" -->
-                                    <TextBlock Text="22 of 31 days elapsed" FontSize="11" Foreground="{DynamicResource TextMuted}" />
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding PeriodDaysPassed}" FontSize="11" Foreground="{DynamicResource TextMuted}" />
+                                        <TextBlock Text=" of " FontSize="11" Foreground="{DynamicResource TextMuted}" />
+                                        <TextBlock Text="{Binding PeriodLength}" FontSize="11" Foreground="{DynamicResource TextMuted}" />
+                                        <TextBlock Text=" days elapsed" FontSize="11" Foreground="{DynamicResource TextMuted}" />
+                                    </StackPanel>
                                 </StackPanel>
                             </Grid>
 
                             <!-- REPLACE: Value="{Binding PeriodDayPercentage}" -->
-                            <ProgressBar Classes="blue" Value="71" Minimum="0" Maximum="100" Height="6" />
+                            <ProgressBar Classes="blue" Value="{Binding PeriodDaysPassed}" Minimum="0" Maximum="{Binding PeriodLength}" Height="6" />
 
                             <Grid ColumnDefinitions="*,Auto">
                                 <TextBlock Grid.Column="0" Text="Days remaining" FontSize="12" Foreground="{DynamicResource TextMuted}" />
                                 <!-- REPLACE: bind to DaysRemainingLabel -->
-                                <TextBlock Grid.Column="1" Text="9 days" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource AccentBlue}" />
+                                <TextBlock Grid.Column="1" Text="{Binding PeriodDaysLeftFormatted}" FontSize="12" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource AccentBlue}" />
                             </Grid>
 
                             <Separator />
@@ -625,7 +414,7 @@
                                 </StackPanel>
                                 <!-- REPLACE: bind to DailyRemainingFormatted -->
                                 <TextBlock Grid.Column="1"
-                                           Text="$37.90"
+                                           Text="{Binding DailyBudgetLeftFormatted}"
                                            FontSize="16"
                                            FontWeight="Bold"
                                            Foreground="{DynamicResource TextPrimary}"
@@ -649,30 +438,22 @@
                                        Foreground="{DynamicResource TextPrimary}" />
 
                             <Border Height="150" ClipToBounds="True">
-                                <lvc:PieChart SeriesSource="{Binding SpendingBreakdown}" Height="300" LegendPosition="Hidden" InitialRotation="-180"
+                                <lvc:PieChart Series="{Binding SpendingBreakdownChartSeries}" Height="300" LegendPosition="Hidden" InitialRotation="-180"
                                               MaxAngle="180" FlowDirection="LeftToRight" VerticalAlignment="Top" Background="{DynamicResource BgSurface}">
-                                    <lvc:PieChart.SeriesTemplate>
-                                        <DataTemplate x:DataType="vm:PieData">
-                                            <lvc:XamlPieSeries SeriesName="{Binding Name}"
-                                                               Values="{Binding Values}"
-                                                               Fill="{Binding Fill}"
-                                                               InnerRadius="{Binding InnerRadius}"
-                                                               ToolTipLabelFormatter="{Binding Formatter}" />
-                                        </DataTemplate>
-                                    </lvc:PieChart.SeriesTemplate>
                                 </lvc:PieChart>
                             </Border>
-                            <ItemsControl ItemsSource="{Binding SpendingBreakdown}" Margin="0 16 0 0">
+                            <ItemsControl ItemsSource="{Binding SpendingBreakdownLegends}" Margin="0 16 0 0">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
-                                        <WrapPanel ItemSpacing="16" />
+                                        <WrapPanel ItemSpacing="0" />
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
-                                    <DataTemplate DataType="vm:PieData">
-                                        <StackPanel Orientation="Horizontal" Spacing="4">
-                                            <Border Height="10" Width="10" CornerRadius="5" Background="{Binding Bg}" />
-                                            <TextBlock Text="{Binding Name}" />
+                                    <DataTemplate DataType="model:Budget">
+                                        <StackPanel Orientation="Horizontal" Spacing="4" IsVisible="{Binding !GroupHeader }" Margin="0 0 8 0">
+                                            <Border Height="10" Width="10" CornerRadius="5"
+                                                    Background="{Binding Category.Color,Converter={StaticResource HexToColorConverter},ConverterParameter='brush'}" />
+                                            <TextBlock Text="{Binding Category.Name}" />
                                         </StackPanel>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
@@ -788,30 +569,32 @@
                                 <Grid ColumnDefinitions="*,Auto">
                                     <TextBlock Grid.Column="0" Text="Monthly goal" FontSize="12" Foreground="{DynamicResource TextMuted}" />
                                     <!-- REPLACE: bind to SavingsGoalFormatted -->
-                                    <TextBlock Grid.Column="1" Text="$500" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" />
+                                    <TextBlock Grid.Column="1" Text="{Binding Profile.SavingsGoal, StringFormat='$0'}" FontSize="12" FontWeight="SemiBold"
+                                               Foreground="{DynamicResource TextPrimary}" />
                                 </Grid>
                                 <Grid ColumnDefinitions="*,Auto">
                                     <TextBlock Grid.Column="0" Text="Projected savings" FontSize="12" Foreground="{DynamicResource TextMuted}" />
                                     <!-- REPLACE: bind to ProjectedSavingsFormatted -->
-                                    <TextBlock Grid.Column="1" Text="$341" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource AccentYellow}" />
+                                    <TextBlock Grid.Column="1" Text="{Binding TotalLeftFormatted}" FontSize="12" FontWeight="SemiBold"
+                                               Foreground="{DynamicResource AccentYellow}" />
                                 </Grid>
                             </StackPanel>
 
                             <!-- REPLACE: Value="{Binding SavingsGoalPercentage}" -->
-                            <ProgressBar Classes="yellow" Value="68" Minimum="0" Maximum="100" Height="6" />
+                            <ProgressBar Classes="yellow" Value="{Binding TotalLeft}" Minimum="0" Maximum="{Binding Profile.SavingsGoal}" Height="6" />
 
                             <Border Background="{DynamicResource BadgeBgYellow}"
                                     CornerRadius="10"
                                     Padding="12,8">
-                                <StackPanel Orientation="Horizontal" Spacing="8">
-                                    <Svg Path="../Assets/Icons/info.svg" Width="14" Height="14"
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                                    <Svg Grid.Column="0" Path="../Assets/Icons/info.svg" Width="14" Height="14"
                                          Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #F5C842; }" />
-                                    <TextBlock Text="Reduce spending by $159 to hit your goal"
+                                    <TextBlock Grid.Column="1" Text="{Binding SavingsHint}"
                                                FontSize="12"
                                                Foreground="{DynamicResource AccentYellow}"
                                                TextWrapping="Wrap"
                                                VerticalAlignment="Center" />
-                                </StackPanel>
+                                </Grid>
                             </Border>
                         </StackPanel>
                     </Border>

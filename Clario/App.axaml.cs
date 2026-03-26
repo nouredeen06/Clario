@@ -2,11 +2,10 @@ using System;
 using System.Globalization;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Data.Core;
 using Avalonia.Data.Core.Plugins;
 using System.Linq;
-using System.Threading;
 using Avalonia.Markup.Xaml;
+using Avalonia.Styling;
 using Clario.Data;
 using Clario.Services;
 using Clario.ViewModels;
@@ -16,15 +15,42 @@ namespace Clario;
 
 public partial class App : Application
 {
+    public static bool IsMobile { get; private set; }
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
+        RequestedThemeVariant = ThemeVariant.Dark;
     }
 
     public override async void OnFrameworkInitializationCompleted()
     {
         base.OnFrameworkInitializationCompleted();
 
+        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktopLoading)
+        {
+            // Avoid duplicate validations from both Avalonia and the CommunityToolkit. 
+            // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
+            DisableAvaloniaDataAnnotationValidation();
+
+            desktopLoading.MainWindow = new MainWindow
+            {
+                DataContext = new LoadingViewModel()
+            };
+            desktopLoading.MainWindow.Show();
+        }
+
+        else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatformLoading)
+        {
+            Console.WriteLine("ANDROID PATH HIT");
+            singleViewPlatformLoading.MainView = new MainAppMobile()
+            {
+                DataContext = new LoadingViewModel()
+            };
+        }
+
+        IsMobile = ApplicationLifetime is ISingleViewApplicationLifetime;
+        
         var culture = new CultureInfo("en-US");
 
         CultureInfo.DefaultThreadCurrentCulture = culture;
@@ -36,7 +62,6 @@ public partial class App : Application
         }
         catch
         {
-            /* session invalid or expired */
         }
 
         var user = SupabaseService.Client.Auth.CurrentUser;
@@ -53,19 +78,13 @@ public partial class App : Application
             // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
             DisableAvaloniaDataAnnotationValidation();
 
-            desktop.MainWindow = new MainWindow
-            {
-                DataContext = user is not null ? new MainViewModel() : new AuthViewModel()
-            };
-            desktop.MainWindow.Show();
+            desktop.MainWindow!.DataContext = user is not null ? new MainViewModel() : new AuthViewModel();
         }
 
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
         {
-            singleViewPlatform.MainView = new MainView
-            {
-                DataContext = user is not null ? new MainViewModel() : new AuthViewModel()
-            };
+            Console.WriteLine("ANDROID PATH HIT");
+            singleViewPlatform.MainView!.DataContext = user is not null ? new MainViewModel() : new AuthViewModel();
         }
     }
 

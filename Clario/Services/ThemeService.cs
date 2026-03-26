@@ -1,7 +1,5 @@
-﻿using System.Diagnostics;
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Styling;
-using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Clario.Services;
 

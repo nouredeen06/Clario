@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Clario.Data;
-using CommunityToolkit.Mvvm.ComponentModel;
+using Newtonsoft.Json;
 using Supabase.Postgrest.Attributes;
 using Supabase.Postgrest.Models;
 
@@ -26,11 +26,12 @@ public class Transaction : BaseModel
         {
             _categoryId = value;
 
-            Category = DataRepo.General.Categories?.FirstOrDefault(x => x.Id == value);
+            Category = DataRepo.General.FetchCategories().Result.FirstOrDefault(x => x.Id == value);
         }
     }
 
-    public Category? Category { get; set; }
+    [JsonIgnore] public Category? Category { get; set; }
+
     [Column("amount")] public decimal Amount { get; set; }
 
     [Column("type")] public string Type { get; set; } = string.Empty; // "income" or "expense"
@@ -40,8 +41,8 @@ public class Transaction : BaseModel
     [Column("note")] public string? Note { get; set; }
 
     [Column("date")] public DateTime Date { get; set; }
-    
+
     [Column("created_at")] public DateTime CreatedAt { get; set; }
 
-    public bool GroupHeader { get; set; } = false;
+    [JsonIgnore] public bool GroupHeader { get; set; } = false;
 }

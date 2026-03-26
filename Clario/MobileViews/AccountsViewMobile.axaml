@@ -1,0 +1,480 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Clario.ViewModels"
+             xmlns:model="clr-namespace:Clario.Models"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Clario.MobileViews.AccountsViewMobile"
+             x:DataType="vm:AccountsViewModel"
+             x:Name="AccountsPage"
+             Classes="mobile">
+    <Design.DataContext>
+        <vm:AccountsViewModel />
+    </Design.DataContext>
+
+    <!-- Root grid — content + overlay stacked -->
+    <Grid>
+
+        <!-- ── Main content ───────────────────────── -->
+        <Grid RowDefinitions="Auto,*"
+              Background="{DynamicResource BgBase}">
+
+            <!-- Top bar -->
+            <Grid Grid.Row="0"
+                  ColumnDefinitions="*,Auto"
+                  Margin="16,16,16,12">
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="Accounts"
+                               FontSize="22"
+                               FontWeight="Bold"
+                               Foreground="{DynamicResource TextPrimary}" />
+                </StackPanel>
+                <Button Grid.Column="1"
+                        Classes="accented"
+                        Padding="12,8"
+                        VerticalAlignment="Center">
+                    <Svg Path="../Assets/Icons/plus.svg"
+                         Width="16" Height="16"
+                         Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #0D0F14; }" />
+                </Button>
+            </Grid>
+
+            <!-- Account list -->
+            <ScrollViewer Grid.Row="1"
+                          VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled">
+                <StackPanel Margin="16,0,16,24" Spacing="0">
+
+                    <!-- Net worth banner -->
+                    <Border Background="{DynamicResource BgSurface}"
+                            BorderBrush="{DynamicResource BorderSubtle}"
+                            BorderThickness="1"
+                            CornerRadius="14"
+                            Padding="16,14"
+                            Margin="0,0,0,16">
+                        <Grid ColumnDefinitions="Auto,*,Auto">
+                            <Border Grid.Column="0"
+                                    Background="{DynamicResource IconBgBlue}"
+                                    CornerRadius="10"
+                                    Width="38" Height="38"
+                                    Margin="0,0,12,0">
+                                <Svg Path="../Assets/Icons/circle-dollar-sign.svg"
+                                     Width="17" Height="17"
+                                     Css="{DynamicResource SvgBlue}" />
+                            </Border>
+                            <TextBlock Grid.Column="1"
+                                       Text="Total Net Worth"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextPrimary}"
+                                       VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="2"
+                                       Text="{Binding TotalBalance, StringFormat='$0.00'}"
+                                       FontSize="17"
+                                       FontWeight="Bold"
+                                       Foreground="{DynamicResource AccentBlue}"
+                                       VerticalAlignment="Center" />
+                        </Grid>
+                    </Border>
+
+                    <!-- Account cards -->
+                    <ItemsControl ItemsSource="{Binding VisibleAccounts}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Spacing="10" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="model:Account">
+                                <Panel>
+                                    <!-- Group header -->
+                                    <TextBlock Text="{Binding Name}"
+                                               Classes="label"
+                                               Margin="4,8,0,6"
+                                               IsVisible="{Binding GroupHeader}" />
+
+                                    <!-- Account card -->
+                                    <Button Classes="account"
+                                            IsVisible="{Binding !GroupHeader}"
+                                            HorizontalAlignment="Stretch"
+                                            Command="{Binding DataContext.SelectAccountCommand, ElementName=AccountsPage}"
+                                            CommandParameter="{Binding .}">
+                                        <Grid ColumnDefinitions="Auto,*,Auto">
+                                            <!-- Icon -->
+                                            <Border Grid.Column="0"
+                                                    CornerRadius="12"
+                                                    Width="44" Height="44"
+                                                    Margin="0,0,14,0">
+                                                <Border.Background>
+                                                    <SolidColorBrush
+                                                        Color="{Binding Color, Converter={StaticResource HexToColorConverter}, ConverterParameter=color}"
+                                                        Opacity="0.15" />
+                                                </Border.Background>
+                                                <Svg Path="{Binding Icon, Converter={StaticResource SvgPathFromName}}"
+                                                     Width="20" Height="20"
+                                                     Css="{Binding Color, Converter={StaticResource HexToColorConverter}, ConverterParameter=css}" />
+                                            </Border>
+                                            <!-- Name + institution -->
+                                            <StackPanel Grid.Column="1"
+                                                        VerticalAlignment="Center"
+                                                        Spacing="3">
+                                                <TextBlock Text="{Binding Name}"
+                                                           FontSize="14"
+                                                           FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource TextPrimary}" />
+                                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                                    <TextBlock Text="{Binding Institution}"
+                                                               FontSize="12"
+                                                               Foreground="{DynamicResource TextMuted}" />
+                                                    <TextBlock Text="{Binding Mask, Converter={StaticResource MaskToStringConverter}}"
+                                                               FontSize="12"
+                                                               Foreground="{DynamicResource TextMuted}" />
+                                                </StackPanel>
+                                            </StackPanel>
+                                            <!-- Balance + trend -->
+                                            <StackPanel Grid.Column="2"
+                                                        HorizontalAlignment="Right"
+                                                        VerticalAlignment="Center"
+                                                        Spacing="3">
+                                                <TextBlock Text="{Binding CurrentBalance, StringFormat='$0.00'}"
+                                                           FontSize="15"
+                                                           FontWeight="Bold"
+                                                           Foreground="{DynamicResource TextPrimary}"
+                                                           HorizontalAlignment="Right" />
+                                                <StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Right">
+                                                    <Svg Width="11" Height="11">
+                                                        <Svg.Path>
+                                                            <MultiBinding Converter="{StaticResource DecimalColorConverter}">
+                                                                <Binding Path="MonthlyIncrease" />
+                                                                <Binding Source="../Assets/Icons/trending-down.svg" />
+                                                                <Binding Source="../Assets/Icons/trending-up.svg" />
+                                                            </MultiBinding>
+                                                        </Svg.Path>
+                                                        <Svg.Css>
+                                                            <MultiBinding Converter="{StaticResource DecimalColorConverter}">
+                                                                <Binding Path="MonthlyIncrease" />
+                                                                <DynamicResource ResourceKey="SvgRed" />
+                                                                <DynamicResource ResourceKey="SvgGreen" />
+                                                            </MultiBinding>
+                                                        </Svg.Css>
+                                                    </Svg>
+                                                    <TextBlock Text="{Binding MonthlyIncrease, Converter={StaticResource DecimalSignConverter}}"
+                                                               FontSize="11">
+                                                        <TextBlock.Foreground>
+                                                            <MultiBinding Converter="{StaticResource DecimalColorConverter}">
+                                                                <Binding Path="MonthlyIncrease" />
+                                                                <DynamicResource ResourceKey="AccentRed" />
+                                                                <DynamicResource ResourceKey="AccentGreen" />
+                                                            </MultiBinding>
+                                                        </TextBlock.Foreground>
+                                                    </TextBlock>
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Button>
+                                </Panel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+
+        <!-- ── Bottom sheet overlay ───────────────── -->
+        <Grid IsVisible="False"
+              x:Name="OverlayGrid">
+
+            <!-- Dim background -->
+            <Border Background="#80000000"
+                    x:Name="DimOverlay" />
+
+            <!-- Sheet -->
+            <Border x:Name="BottomSheet"
+                    Background="{DynamicResource BgSurface}"
+                    CornerRadius="20,20,0,0"
+                    VerticalAlignment="Bottom"
+                    MaxHeight="800"
+                    Padding="0,0,0,0">
+                <Border.RenderTransform>
+                    <TranslateTransform Y="0" />
+                </Border.RenderTransform>
+
+                <Grid RowDefinitions="Auto,*">
+
+                    <!-- Sheet handle + header -->
+                    <Grid Grid.Row="0" RowDefinitions="Auto,Auto">
+                        <!-- Drag handle -->
+                        <Border Grid.Row="0"
+                                Width="36" Height="4"
+                                Background="{DynamicResource BorderAccent}"
+                                CornerRadius="2"
+                                HorizontalAlignment="Center"
+                                Margin="0,12,0,0" />
+
+                        <!-- Header -->
+                        <Grid Grid.Row="1"
+                              ColumnDefinitions="Auto,*,Auto"
+                              Margin="20,16,20,0">
+                            <Border Grid.Column="0"
+                                    CornerRadius="12"
+                                    Width="44" Height="44"
+                                    Margin="0,0,14,0">
+                                <Border.Background>
+                                    <SolidColorBrush
+                                        Color="{Binding SelectedAccount.Color, Converter={StaticResource HexToColorConverter}, ConverterParameter=color}"
+                                        Opacity="0.15" />
+                                </Border.Background>
+                                <Svg Path="{Binding SelectedAccount.Icon, Converter={StaticResource SvgPathFromName}}"
+                                     Width="20" Height="20"
+                                     Css="{Binding SelectedAccount.Color, Converter={StaticResource HexToColorConverter}, ConverterParameter=css}" />
+                            </Border>
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                                <TextBlock Text="{Binding SelectedAccount.Name}"
+                                           FontSize="16"
+                                           FontWeight="Bold"
+                                           Foreground="{DynamicResource TextPrimary}" />
+                                <TextBlock Text="{Binding SelectedAccount.Institution}"
+                                           FontSize="12"
+                                           Foreground="{DynamicResource TextMuted}" />
+                            </StackPanel>
+                            <!-- Close button -->
+                            <Button Grid.Column="2"
+                                    Background="{DynamicResource BgBase}"
+                                    BorderThickness="0"
+                                    CornerRadius="20"
+                                    Width="34" Height="34"
+                                    Padding="0"
+                                    HorizontalContentAlignment="Center"
+                                    VerticalAlignment="Top"
+                                    x:Name="CloseButton">
+                                <Svg Path="../Assets/Icons/x.svg"
+                                     Width="14" Height="14"
+                                     Css="{DynamicResource SvgMuted}" />
+                            </Button>
+                        </Grid>
+                    </Grid>
+
+                    <!-- Sheet scrollable content -->
+                    <ScrollViewer Grid.Row="1"
+                                  VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Disabled"
+                                  Margin="0,16,0,0">
+                        <StackPanel Margin="20,0,20,32" Spacing="14">
+
+                            <!-- Balance -->
+                            <Border Background="{DynamicResource BgBase}"
+                                    CornerRadius="14"
+                                    Padding="16,14">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="CURRENT BALANCE" Classes="label" />
+                                    <TextBlock Text="{Binding SelectedAccount.CurrentBalance, StringFormat='$0.00'}"
+                                               FontSize="28"
+                                               FontWeight="Bold"
+                                               Foreground="{DynamicResource TextPrimary}" />
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Details grid -->
+                            <Border Background="{DynamicResource BgBase}"
+                                    CornerRadius="14"
+                                    Padding="16,14">
+                                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto">
+                                    <StackPanel Grid.Column="0" Grid.Row="0" Spacing="3" Margin="0,0,0,14">
+                                        <TextBlock Text="TYPE" Classes="label" />
+                                        <TextBlock Text="{Binding SelectedAccount.Type}" FontSize="13" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource TextPrimary}" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Grid.Row="0" Spacing="3" Margin="0,0,0,14">
+                                        <TextBlock Text="INSTITUTION" Classes="label" />
+                                        <TextBlock Text="{Binding SelectedAccount.Institution}" FontSize="13" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource TextPrimary}" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="0" Grid.Row="1" Spacing="3" Margin="0,0,0,14">
+                                        <TextBlock Text="ACCOUNT NO." Classes="label" />
+                                        <TextBlock Text="{Binding SelectedAccount.Mask, Converter={StaticResource MaskToStringConverter}}" FontSize="13"
+                                                   FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Grid.Row="1" Spacing="3" Margin="0,0,0,14">
+                                        <TextBlock Text="CURRENCY" Classes="label" />
+                                        <TextBlock Text="{Binding SelectedAccount.Currency}" FontSize="13" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource TextPrimary}" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="0" Grid.Row="2" Spacing="3">
+                                        <TextBlock Text="OPENED" Classes="label" />
+                                        <TextBlock
+                                            Text="{Binding SelectedAccount.OpenedAt, Converter={StaticResource DateFormatConverter}, ConverterParameter='MMM yyyy'}"
+                                            FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Grid.Row="2" Spacing="3">
+                                        <TextBlock Text="TRANSACTIONS" Classes="label" />
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding SelectedAccount.TransactionsCount}" FontSize="13" FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource TextPrimary}" />
+                                            <TextBlock Text=" total" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- Monthly flow -->
+                            <Border Background="{DynamicResource BgBase}" CornerRadius="14" Padding="16,14">
+                                <StackPanel Spacing="12">
+                                    <TextBlock Text="This Month" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" />
+                                    <Grid ColumnDefinitions="Auto,*,Auto">
+                                        <Border Grid.Column="0" Background="{DynamicResource IconBgGreen}" CornerRadius="8" Width="32" Height="32"
+                                                Margin="0,0,12,0">
+                                            <Svg Path="../Assets/Icons/arrow-down-left.svg" Width="14" Height="14" Css="{DynamicResource SvgGreen}" />
+                                        </Border>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="1">
+                                            <TextBlock Text="Money In" FontSize="11" Foreground="{DynamicResource TextMuted}" />
+                                            <TextBlock Text="{Binding SelectedAccount.TotalIncomeThisMonth, StringFormat='$0.00'}" FontSize="14"
+                                                       FontWeight="SemiBold" Foreground="{DynamicResource AccentGreen}" />
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="2" Text="{Binding SelectedAccount.IncomeTransactionsThisMonth}" FontSize="11"
+                                                   Foreground="{DynamicResource TextDisabled}" VerticalAlignment="Center" />
+                                    </Grid>
+                                    <Grid ColumnDefinitions="Auto,*,Auto">
+                                        <Border Grid.Column="0" Background="{DynamicResource IconBgRed}" CornerRadius="8" Width="32" Height="32"
+                                                Margin="0,0,12,0">
+                                            <Svg Path="../Assets/Icons/arrow-up-right.svg" Width="14" Height="14" Css="{DynamicResource SvgRed}" />
+                                        </Border>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="1">
+                                            <TextBlock Text="Money Out" FontSize="11" Foreground="{DynamicResource TextMuted}" />
+                                            <TextBlock Text="{Binding SelectedAccount.TotalExpenseThisMonth, StringFormat='$0.00'}" FontSize="14"
+                                                       FontWeight="SemiBold" Foreground="{DynamicResource AccentRed}" />
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="2" Text="{Binding SelectedAccount.ExpenseTransactionsThisMonth}" FontSize="11"
+                                                   Foreground="{DynamicResource TextDisabled}" VerticalAlignment="Center" />
+                                    </Grid>
+                                    <Separator />
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <TextBlock Grid.Column="0" Text="Net" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextMuted}"
+                                                   VerticalAlignment="Center" />
+                                        <TextBlock Grid.Column="1" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource AccentGreen}">
+                                            <TextBlock.Text>
+                                                <MultiBinding Converter="{StaticResource NetworthSumConverter}">
+                                                    <Binding Path="SelectedAccount.TotalIncomeThisMonth" />
+                                                    <Binding Path="SelectedAccount.TotalExpenseThisMonth" />
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Recent transactions -->
+                            <Border Background="{DynamicResource BgBase}" CornerRadius="14" Padding="16,14">
+                                <StackPanel Spacing="12">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <TextBlock Grid.Column="0" Text="Recent Transactions" FontSize="14" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center" />
+                                        <Button Grid.Column="1" Background="Transparent" BorderThickness="0" Padding="0" Cursor="Hand"
+                                                Command="{Binding ShowAccountTransactionsCommand}">
+                                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                                <TextBlock Text="View all" FontSize="12" Foreground="{DynamicResource AccentBlue}" VerticalAlignment="Center" />
+                                                <Svg Path="../Assets/Icons/chevron-right.svg" Width="12" Height="12" Css="{DynamicResource SvgBlue}" />
+                                            </StackPanel>
+                                        </Button>
+                                    </Grid>
+                                    <ItemsControl ItemsSource="{Binding SelectedAccount.RecentTransactions}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel Spacing="12" />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate DataType="model:Transaction">
+                                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                                    <Border Grid.Column="0" CornerRadius="8" Width="32" Height="32" Margin="0,0,12,0">
+                                                        <Border.Background>
+                                                            <SolidColorBrush
+                                                                Color="{Binding Category.Color, Converter={StaticResource HexToColorConverter}, ConverterParameter=color}"
+                                                                Opacity="0.15" />
+                                                        </Border.Background>
+                                                        <Svg Path="{Binding Category.Icon, Converter={StaticResource SvgPathFromName}}" Width="14" Height="14"
+                                                             Css="{Binding Category.Color, Converter={StaticResource HexToColorConverter}, ConverterParameter=css}" />
+                                                    </Border>
+                                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="1">
+                                                        <TextBlock Text="{Binding Description}" FontSize="12" FontWeight="SemiBold"
+                                                                   Foreground="{DynamicResource TextPrimary}" />
+                                                        <TextBlock
+                                                            Text="{Binding Date, Converter={StaticResource DateFormatConverter}, ConverterParameter='MMM d'}"
+                                                            FontSize="11" Foreground="{DynamicResource TextMuted}" />
+                                                    </StackPanel>
+                                                    <TextBlock Grid.Column="2" FontSize="12" FontWeight="SemiBold"
+                                                               Foreground="{Binding Type, Converter={StaticResource AmountColorConverter}}"
+                                                               VerticalAlignment="Center">
+                                                        <TextBlock.Text>
+                                                            <MultiBinding Converter="{StaticResource AmountSignConverter}">
+                                                                <Binding Path="Amount" />
+                                                                <Binding Path="Type" />
+                                                            </MultiBinding>
+                                                        </TextBlock.Text>
+                                                    </TextBlock>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Net worth share -->
+                            <Border Background="{DynamicResource BgBase}" CornerRadius="14" Padding="16,14">
+                                <StackPanel Spacing="10">
+                                    <TextBlock Text="Net Worth Share" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" />
+                                    <ProgressBar Classes="blue" Value="{Binding SelectedAccount.CurrentBalance}" Minimum="0" Maximum="{Binding TotalBalance}"
+                                                 Height="6" />
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <TextBlock Grid.Column="0" Text="Share of total" FontSize="12" Foreground="{DynamicResource TextMuted}"
+                                                   VerticalAlignment="Center" />
+                                        <TextBlock Grid.Column="1" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource AccentBlue}">
+                                            <TextBlock.Text>
+                                                <MultiBinding Converter="{StaticResource PercentageConverter}">
+                                                    <Binding Path="SelectedAccount.CurrentBalance" />
+                                                    <Binding Path="TotalBalance" />
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Manage -->
+                            <Border Background="{DynamicResource BgBase}" CornerRadius="14" Padding="16,14">
+                                <StackPanel Spacing="10">
+                                    <TextBlock Text="Manage" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" Margin="0,0,0,2" />
+                                    <Button Background="Transparent" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1" CornerRadius="10"
+                                            Padding="14,10" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                                        <StackPanel Orientation="Horizontal" Spacing="10">
+                                            <Svg Path="../Assets/Icons/archive.svg" Width="14" Height="14" Css="{DynamicResource SvgMuted}" />
+                                            <StackPanel Spacing="1">
+                                                <TextBlock Text="Archive Account" FontSize="12" FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource TextPrimary}" />
+                                                <TextBlock Text="Hide from active list, keep history" FontSize="11" Foreground="{DynamicResource TextMuted}" />
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Background="#2A0D0D" BorderBrush="#3A1515" BorderThickness="1" CornerRadius="10" Padding="14,10"
+                                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                                        <StackPanel Orientation="Horizontal" Spacing="10">
+                                            <Svg Path="../Assets/Icons/trash-2.svg" Width="14" Height="14"
+                                                 Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #FF5E5E; }" />
+                                            <StackPanel Spacing="1">
+                                                <TextBlock Text="Delete Account" FontSize="12" FontWeight="SemiBold" Foreground="#FF5E5E" />
+                                                <TextBlock Text="Permanently removes all data" FontSize="11" Foreground="{DynamicResource TextMuted}" />
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
+                            </Border>
+
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+
+        </Grid>
+    </Grid>
+</UserControl>

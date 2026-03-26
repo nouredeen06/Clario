@@ -10,14 +10,5 @@
         Icon="/Assets/avalonia-logo.ico"
         Title="Clario"
         x:CompileBindings="False">
-
-    <Window.DataTemplates>
-        <DataTemplate DataType="{x:Type vm:MainViewModel}">
-            <views:MainView />
-        </DataTemplate>
-        <DataTemplate DataType="{x:Type vm:AuthViewModel}">
-            <views:AuthView />
-        </DataTemplate>
-    </Window.DataTemplates>
     <ContentControl Content="{Binding}" />
 </Window>

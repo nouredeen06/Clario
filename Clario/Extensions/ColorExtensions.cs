@@ -1,5 +1,4 @@
 ﻿using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Media;
 using LiveChartsCore.SkiaSharpView.Painting;
 using SkiaSharp;

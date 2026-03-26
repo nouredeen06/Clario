@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Globalization;
-using System.Linq;
 using Avalonia.Data.Converters;
-using Clario.Data;
 
 namespace Clario.Converters;
 

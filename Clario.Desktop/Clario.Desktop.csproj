@@ -1,8 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
-        <!--If you are willing to use platform-specific APIs, use conditional compilation.
-        See https://docs.avaloniaui.net/docs/guides/platforms/platform-specific-code/dotnet for more details.-->
         <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
     </PropertyGroup>
@@ -19,7 +17,10 @@
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
         <PackageReference Include="Avalonia.Svg.Skia" />
+        <PackageReference Include="Deadpikle.AvaloniaProgressRing" />
+        <PackageReference Include="FluentAvalonia.ProgressRing" />
         <PackageReference Include="LiveChartsCore.SkiaSharpView.Avalonia" />
+        <PackageReference Include="SkiaSharp.NativeAssets.WebAssembly" />
         <PackageReference Include="Supabase" />
     </ItemGroup>
 
