@@ -22,7 +22,17 @@
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
         <PackageReference Include="CommunityToolkit.Mvvm"/>
+        <PackageReference Include="Deadpikle.AvaloniaProgressRing" />
+        <PackageReference Include="FluentAvalonia.ProgressRing" />
         <PackageReference Include="LiveChartsCore.SkiaSharpView.Avalonia" />
+        <PackageReference Include="SkiaSharp.NativeAssets.WebAssembly" />
         <PackageReference Include="Supabase" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="MobileViews\MainAppMobile.axaml.cs">
+        <DependentUpon>MobileMainView.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
     </ItemGroup>
 </Project>

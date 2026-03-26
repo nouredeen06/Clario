@@ -11,7 +11,7 @@ public class AccountFromIdConverter : IValueConverter
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         if (value is not Guid) return null;
-        var accounts = DataRepo.General.Accounts;
+        var accounts = DataRepo.General.FetchAccounts().Result;
         if (accounts is null) return null;
         return accounts.FirstOrDefault(x => x.Id == (Guid)value)?.Name;
     }

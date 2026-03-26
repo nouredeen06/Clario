@@ -22,6 +22,14 @@ public class ViewLocator : IDataTemplate
         var name = param.GetType().FullName!.Replace("ViewModel", "View", StringComparison.Ordinal);
         var type = Type.GetType(name);
 
+        if (App.IsMobile)   
+        {
+            var mobileName = name.Replace(".Views.", ".MobileViews.") + "Mobile";
+            var mobileType = Type.GetType(mobileName);
+            if (mobileType != null)
+                return (Control)Activator.CreateInstance(mobileType)!;
+        }
+
         if (type != null)
         {
             return (Control)Activator.CreateInstance(type)!;

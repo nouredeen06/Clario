@@ -3,13 +3,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:Clario.ViewModels"
+             xmlns:views="clr-namespace:Clario.Views"
              mc:Ignorable="d" d:DesignWidth="1400" d:DesignHeight="800"
-             MinWidth="1000" MinHeight="600"
              x:Class="Clario.Views.MainView"
-             x:DataType="vm:MainViewModel">
+             x:DataType="vm:MainViewModel"
+             x:Name="MainControl"
+             Background="{DynamicResource BgBase}">
     <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MainViewModel />
     </Design.DataContext>
     <Grid RowDefinitions="Auto,*">
@@ -110,18 +110,19 @@
                     <Border DockPanel.Dock="Bottom" Background="{DynamicResource BgSurface}" CornerRadius="{StaticResource RadiusInset}"
                             Padding="12,10">
                         <Grid ColumnDefinitions="*,Auto">
-                            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10">
-                                <Border Background="{DynamicResource BorderAccent}" CornerRadius="{StaticResource RadiusPill}" Width="34"
+                            <Grid Grid.Column="0" ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                <Border Grid.Column="0" Background="{DynamicResource BorderAccent}" CornerRadius="{StaticResource RadiusPill}" Width="34"
                                         Height="34">
                                     <TextBlock Text="N" FontSize="{StaticResource FontSizeAmount}" FontWeight="Bold"
                                                Foreground="{DynamicResource AccentBlue}" HorizontalAlignment="Center"
                                                VerticalAlignment="Center" />
                                 </Border>
-                                <StackPanel VerticalAlignment="Center">
-                                    <TextBlock Text="{Binding Profile.DisplayName}" FontSize="{StaticResource FontSizeBody}" FontWeight="SemiBold"
-                                               Foreground="{DynamicResource TextSecondary}" />
-                                </StackPanel>
-                            </StackPanel>
+                                <TextBlock Grid.Column="1" Text="{Binding Profile.DisplayName}" TextTrimming="CharacterEllipsis"
+                                           FontSize="{StaticResource FontSizeBody}"
+                                           FontWeight="SemiBold"
+                                           VerticalAlignment="Center"
+                                           Foreground="{DynamicResource TextSecondary}" />
+                            </Grid>
                             <Button Grid.Column="1" Classes="base" Width="24" Height="24" Padding="2" Focusable="False"
                                     Command="{Binding SwitchThemeCommand}" IsVisible="True">
                                 <Panel>
@@ -185,7 +186,13 @@
                     </StackPanel>
                 </DockPanel>
             </Border>
-            <ContentControl Grid.Column="1" Content="{Binding CurrentView}" />
+            <Grid Grid.Column="1">
+                <ContentControl Content="{Binding CurrentView}" />
+                <views:TransactionFormView
+                    DataContext="{Binding TransactionFormViewModel}" 
+                    IsVisible="{Binding DataContext.IsTransactionFormVisible,ElementName=MainControl}">
+                </views:TransactionFormView>
+            </Grid>
         </Grid>
     </Grid>
 

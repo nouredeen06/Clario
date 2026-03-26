@@ -9,17 +9,16 @@
              x:Class="Clario.Views.AuthView">
     <Grid>
 
-        <!-- ── Background ────────────────────────── -->
-        <Border Background="{DynamicResource BgBase}" />
+        <!--  Background  -->
         <!-- <Calendar SelectionMode="SingleRange"> -->
         <!-- </Calendar> -->
-        
-        <!-- ── Subtle grid pattern overlay ──────── -->
-        <!-- <Border Opacity="0.03" Background="{DynamicResource BgBase}"> -->
-        <!-- -->
+
+
+        <!-- <Border Background="{DynamicResource AccentBlue}" VerticalAlignment="Top" HorizontalAlignment="Left" Height="400" Width="400" Padding="10"> -->
+        <!--   -->
         <!-- </Border> -->
 
-        <!-- ── Center card ───────────────────────── -->
+        <!--  Center card  -->
         <Border HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Background="{DynamicResource BgSurface}"
@@ -31,7 +30,7 @@
                 BoxShadow="0 24 64 0 #40000000">
             <StackPanel Spacing="0">
 
-                <!-- ── Logo + App name ─────────────── -->
+                <!--  Logo + App name  -->
                 <StackPanel HorizontalAlignment="Center"
                             Spacing="0"
                             Margin="0,0,0,32">
@@ -39,7 +38,7 @@
                         CornerRadius="16"
                         Height="100"
                         HorizontalAlignment="Center">
-                        <Image Source="../Assets/Logo textmark.png"></Image>
+                        <!-- <Image Source="../Assets/Logo textmark.png"></Image> -->
                     </Border>
                     <!-- REPLACE: app name -->
                     <StackPanel Spacing="4" HorizontalAlignment="Center">
@@ -55,7 +54,7 @@
                     </StackPanel>
                 </StackPanel>
 
-                <!-- ── Tab switcher ────────────────── -->
+                <!--  Tab switcher  -->
                 <Border Background="{DynamicResource BgBase}"
                         BorderBrush="{DynamicResource BorderSubtle}"
                         BorderThickness="1"
@@ -433,7 +432,7 @@
 
                 </StackPanel>
 
-                <!-- ── Footer ──────────────────────── -->
+                <!--  Footer  -->
                 <Separator Margin="0,0,0,16" />
                 <TextBlock Text="Your data is encrypted and synced securely."
                            FontSize="11"

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using Supabase.Postgrest.Attributes;
 using Supabase.Postgrest.Models;
 
@@ -23,7 +24,7 @@ public class Account : BaseModel
     [Column("currency")] public string Currency { get; set; } = "USD";
 
     [Column("opening_balance")] public decimal OpeningBalance { get; set; }
-    public decimal CurrentBalance { get; set; }
+    [JsonIgnore] public decimal CurrentBalance { get; set; }
 
     [Column("credit_limit")] public decimal? CreditLimit { get; set; }
 
@@ -36,13 +37,13 @@ public class Account : BaseModel
     [Column("icon")] public string Icon { get; set; } = string.Empty;
 
     [Column("color")] public string Color { get; set; } = string.Empty;
-    
-    public int TransactionsCount { get; set; }
-    public int IncomeTransactionsThisMonth { get; set; }
-    public int ExpenseTransactionsThisMonth { get; set; }
-    public decimal TotalIncomeThisMonth { get; set; }
-    public decimal TotalExpenseThisMonth { get; set; }
-    public decimal MonthlyIncrease { get; set; }
-    public List<Transaction>? RecentTransactions { get; set; }
-    public bool GroupHeader { get; set; } = false;
+
+    [JsonIgnore] public int TransactionsCount { get; set; }
+    [JsonIgnore] public int IncomeTransactionsThisMonth { get; set; }
+    [JsonIgnore] public int ExpenseTransactionsThisMonth { get; set; }
+    [JsonIgnore] public decimal TotalIncomeThisMonth { get; set; }
+    [JsonIgnore] public decimal TotalExpenseThisMonth { get; set; }
+    [JsonIgnore] public decimal MonthlyIncrease { get; set; }
+    [JsonIgnore] public List<Transaction>? RecentTransactions { get; set; }
+    [JsonIgnore] public bool GroupHeader { get; set; } = false;
 }

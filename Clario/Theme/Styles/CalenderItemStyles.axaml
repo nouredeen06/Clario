@@ -8,7 +8,7 @@
 
     <Style Selector="Calendar">
         <Setter Property="CornerRadius" Value="{DynamicResource RadiusControl}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource BgSurface}"></Setter>
+        <Setter Property="BorderBrush" Value="{DynamicResource BgSurface}"/>
     </Style>
     <Style Selector="CalendarItem">
         <Setter Property="Foreground" Value="{DynamicResource CalendarViewForeground}" />

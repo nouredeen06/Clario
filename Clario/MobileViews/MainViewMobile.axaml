@@ -1,0 +1,114 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Clario.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Clario.MobileViews.MainViewMobile"
+             x:CompileBindings="False"
+             Classes="mobile">
+    <Grid RowDefinitions="*,Auto"
+          Background="{DynamicResource BgBase}">
+
+        <!-- ── Content area ──────────────────────── -->
+        <ContentControl Grid.Row="0"
+                        Content="{Binding CurrentView}" />
+
+        <!-- ── Bottom tab bar ────────────────────── -->
+        <Border Grid.Row="1"
+                Background="{DynamicResource BgSurface}"
+                BorderBrush="{DynamicResource BorderSubtle}"
+                BorderThickness="0,1,0,0"
+                Padding="8,10,8,14">
+            <Grid ColumnDefinitions="*,*,*,*,*">
+
+                <!-- Dashboard -->
+                <Button Grid.Column="0"
+                        Classes="nav"
+                        Classes.active="{Binding isOnDashboard}"
+                        Command="{Binding GoToDashboardCommand}"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        Padding="0,6">
+                    <StackPanel Spacing="4" HorizontalAlignment="Center">
+                        <Svg Path="../Assets/Icons/layout-dashboard.svg"
+                             Width="22" Height="22"
+                             HorizontalAlignment="Center" />
+                        <TextBlock Text="Home"
+                                   FontSize="10"
+                                   HorizontalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+
+                <!-- Transactions -->
+                <Button Grid.Column="1"
+                        Classes="nav"
+                        Classes.active="{Binding isOnTransactions}"
+                        Command="{Binding GoToTransactionsCommand}"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        Padding="0,6">
+                    <StackPanel Spacing="4" HorizontalAlignment="Center">
+                        <Svg Path="../Assets/Icons/arrow-right-left.svg"
+                             Width="22" Height="22"
+                             HorizontalAlignment="Center" />
+                        <TextBlock Text="Transactions"
+                                   FontSize="10"
+                                   HorizontalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+
+                <!-- Add (center FAB-style) -->
+                <Button Grid.Column="2"
+                        Classes="accented"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Width="52" Height="52"
+                        CornerRadius="26"
+                        Padding="0">
+                    <Svg Path="../Assets/Icons/plus.svg"
+                         Width="22" Height="22"
+                         Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #0D0F14; }" />
+                </Button>
+
+                <!-- Accounts -->
+                <Button Grid.Column="3"
+                        Classes="nav"
+                        Classes.active="{Binding isOnAccounts}"
+                        Command="{Binding GoToAccountsCommand}"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        Padding="0,6">
+                    <StackPanel Spacing="4" HorizontalAlignment="Center">
+                        <Svg Path="../Assets/Icons/chart-pie.svg"
+                             Width="22" Height="22"
+                             HorizontalAlignment="Center" />
+                        <TextBlock Text="Accounts"
+                                   FontSize="10"
+                                   HorizontalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+
+                <!-- Budget -->
+                <Button Grid.Column="4"
+                        Classes="nav"
+                        Classes.active="{Binding isOnBudget}"
+                        Command="{Binding GoToBudgetCommand}"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        Padding="0,6">
+                    <StackPanel Spacing="4" HorizontalAlignment="Center">
+                        <Svg Path="../Assets/Icons/wallet.svg"
+                             Width="22" Height="22"
+                             HorizontalAlignment="Center" />
+                        <TextBlock Text="Budget"
+                                   FontSize="10"
+                                   HorizontalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+
+            </Grid>
+        </Border>
+
+    </Grid>
+</UserControl>

@@ -2,10 +2,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="using:Clario"
              xmlns:converters="clr-namespace:Clario.Converters"
+             xmlns:views="clr-namespace:Clario.Views"
+             xmlns:vm="clr-namespace:Clario.ViewModels"
+             xmlns:styling="clr-namespace:FluentAvalonia.Styling;assembly=FluentAvalonia"
              x:Class="Clario.App"
-             RequestedThemeVariant="Dark">
+             RequestedThemeVariant="Default">
     <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
-
     <Application.DataTemplates>
         <local:ViewLocator />
     </Application.DataTemplates>
@@ -24,9 +26,12 @@
         <converters:DecimalSignConverter x:Key="DecimalSignConverter" />
         <converters:PercentageConverter x:Key="PercentageConverter" />
         <converters:DecimalColorConverter x:Key="DecimalColorConverter" />
+        <converters:BoolToColorConverter x:Key="BoolToColorConverter" />
+        <converters:BoolToCssConverter x:Key="BoolToCssConverter" />
     </Application.Resources>
     <Application.Styles>
         <FluentTheme />
         <StyleInclude Source="../Theme/AppTheme.axaml" />
+        <StyleInclude Source="avares://AvaloniaProgressRing/Styles/ProgressRing.xaml"/>
     </Application.Styles>
 </Application>

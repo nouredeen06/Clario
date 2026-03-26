@@ -325,7 +325,8 @@
                 <Button Grid.Column="1"
                         Classes="accented"
                         Padding="16,9"
-                        VerticalAlignment="Center">
+                        VerticalAlignment="Center"
+                        Command="{Binding CreateTransactionCommand}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <Svg Path="../Assets/Icons/plus.svg"
                              Width="14" Height="14"
@@ -334,7 +335,7 @@
                                    FontSize="13"
                                    FontWeight="SemiBold"
                                    Foreground="{DynamicResource BgBase}"
-                                   VerticalAlignment="Center" />
+                                   VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
             </Grid>
@@ -405,23 +406,34 @@
                                                     <TextBlock Text="{Binding Description}"
                                                                Classes="label" />
                                                 </Border>
-                                                <Border Padding="20,12" IsVisible="{Binding !GroupHeader}"
-                                                        BorderBrush="{DynamicResource BorderSubtle}"
+                                                <Border Classes="editable" Padding="20,12" IsVisible="{Binding !GroupHeader}"
+                                                        BorderBrush="{DynamicResource BorderSubtle}" Background="{DynamicResource BgSurface}"
                                                         BorderThickness="0,1,0,0">
                                                     <Grid ColumnDefinitions="44,*,160,120,100,100">
 
                                                         <Border Grid.Column="0"
                                                                 CornerRadius="{DynamicResource RadiusIcon}"
                                                                 Width="34" Height="34"
-                                                                VerticalAlignment="Center">
+                                                                VerticalAlignment="Center" Padding="0">
                                                             <Border.Background>
                                                                 <SolidColorBrush
                                                                     Color="{Binding Category.Color,Converter={StaticResource HexToColorConverter}, ConverterParameter=color}"
                                                                     Opacity="0.15" />
                                                             </Border.Background>
-                                                            <Svg Path="{Binding  Category.Icon,Converter={StaticResource SvgPathFromName}}"
-                                                                 Width="16" Height="16"
-                                                                 Css="{Binding Category.Color,Converter={StaticResource HexToColorConverter}, ConverterParameter=css}" />
+                                                            <Panel>
+                                                                <Svg Classes="hide" Path="{Binding  Category.Icon,Converter={StaticResource SvgPathFromName}}"
+                                                                     Width="16"
+                                                                     Height="16"
+                                                                     Css="{Binding Category.Color,Converter={StaticResource HexToColorConverter}, ConverterParameter=css}" />
+                                                                <Button Classes="base reveal" CornerRadius="{DynamicResource RadiusSmall}" Width="34"
+                                                                        Height="34" Margin="0"
+                                                                        Command="{Binding DataContext.EditTransactionCommand,ElementName=transactionsControl}"
+                                                                        CommandParameter="{Binding .}">
+                                                                    <Svg Path="../Assets/Icons/pencil.svg" Width="16" Height="16"
+                                                                         Css="{DynamicResource SvgSecondary}" />
+                                                                </Button>
+                                                            </Panel>
+
                                                         </Border>
 
                                                         <StackPanel Grid.Column="1"

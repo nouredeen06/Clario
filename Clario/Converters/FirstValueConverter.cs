@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using System.Runtime.InteropServices.JavaScript;
 using Avalonia.Data.Converters;
 
 namespace Clario.Converters;

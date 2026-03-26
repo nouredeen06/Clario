@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Avalonia.Data.Converters;
-using LiveChartsCore.SkiaSharpView.Avalonia;
 
 namespace Clario.Converters;
 

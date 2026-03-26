@@ -14,8 +14,8 @@ public class PercentageConverter : IMultiValueConverter
 
         if (value[0] is decimal part && value[1] is decimal total && part > 0)
         {
-            var percentage = Math.Round(part / total, 2);
-            return percentage.ToString("0%");
+            var percentage = Math.Round(part / total, 3);
+            return percentage.ToString("0.0%");
         }
 
         return "0%";

@@ -14,20 +14,22 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <AndroidResource Include="Icon.png">
-            <Link>Resources\drawable\Icon.png</Link>
-        </AndroidResource>
-    </ItemGroup>
-
-    <ItemGroup>
         <PackageReference Include="Avalonia.Android"/>
         <PackageReference Include="Avalonia.Svg.Skia" />
+        <PackageReference Include="Deadpikle.AvaloniaProgressRing" />
+        <PackageReference Include="FluentAvalonia.ProgressRing" />
         <PackageReference Include="LiveChartsCore.SkiaSharpView.Avalonia" />
+        <PackageReference Include="SkiaSharp.NativeAssets.WebAssembly" />
         <PackageReference Include="Supabase" />
         <PackageReference Include="Xamarin.AndroidX.Core.SplashScreen"/>
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\Clario\Clario.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Resources\drawable-night-v31\" />
+      <Folder Include="Resources\drawable-v31\" />
     </ItemGroup>
 </Project>

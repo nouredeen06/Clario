@@ -11,7 +11,8 @@
         </Border>
     </Design.PreviewWith>
     <StyleInclude Source="Styles/ToggleSwitchStyles.axaml" />
-    <StyleInclude Source="Styles/CalenderItemStyles.axaml" />
+    <!-- <StyleInclude Source="Styles/CalenderItemStyles.axaml" /> -->
+    <StyleInclude Source="Styles/CalendarStyles.axaml" />
     <StyleInclude Source="../CustomControls/DateRangePicker.axaml" />
     <Styles.Resources>
         <ResourceDictionary>
@@ -87,7 +88,6 @@
 
                     <!-- ACCENTS -->
                     <SolidColorBrush x:Key="AccentBlue" Color="#7B9CFF" />
-
                     <SolidColorBrush x:Key="AccentGreen" Color="#2ECC8A" />
                     <SolidColorBrush x:Key="AccentYellow" Color="#F5C842" />
                     <SolidColorBrush x:Key="AccentRed" Color="#FF5E5E" />
@@ -463,8 +463,8 @@
 
     <Style Selector="Button.nav">
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Foreground" Value="{DynamicResource TextDisabled}" />
-        <Setter Property="Svg.Css" Value="{DynamicResource SvgDisabled}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource TextMuted}" />
+        <Setter Property="Svg.Css" Value="{DynamicResource SvgMuted}" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Padding" Value="{DynamicResource NavButtonPadding}" />
         <Setter Property="CornerRadius" Value="{DynamicResource RadiusControl}" />
@@ -487,8 +487,40 @@
 
     <Style Selector="Button.nav:disabled /template/ ContentPresenter">
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="TextElement.Foreground" Value="{DynamicResource TextDisabled}" />
-        <Setter Property="Svg.Css" Value="{DynamicResource SvgDisabled}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource TextMuted}" />
+        <Setter Property="Svg.Css" Value="{DynamicResource SvgMuted}" />
+        <Setter Property="Opacity" Value="0.4" />
+    </Style>
+
+
+    <Style Selector=".mobile Button.nav">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource TextMuted}" />
+        <Setter Property="Svg.Css" Value="{DynamicResource SvgMuted}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="{DynamicResource NavButtonPadding}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource RadiusControl}" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FocusAdorner" Value="{x:Null}" />
+    </Style>
+
+    <Style Selector=".mobile Button.nav:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BgHover}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource TextSecondary}" />
+        <Setter Property="Svg.Css" Value="{DynamicResource SvgSecondary}" />
+    </Style>
+
+    <Style Selector=".mobile Button.nav:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BgHover}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource TextPrimary}" />
+        <Setter Property="Svg.Css" Value="{DynamicResource SvgPrimary}" />
+    </Style>
+
+    <Style Selector=".mobile Button.nav:disabled /template/ ContentPresenter">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource TextMuted}" />
+        <Setter Property="Svg.Css" Value="{DynamicResource SvgMuted}" />
         <Setter Property="Opacity" Value="0.4" />
     </Style>
 
@@ -513,12 +545,24 @@
         <Setter Property="Svg.Css" Value="{DynamicResource SvgBlue}" />
     </Style>
 
+    <Style Selector=".mobile Button.nav:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource TextDisabled}" />
+        <Setter Property="Svg.Css" Value="{DynamicResource SvgDisabled}" />
+    </Style>
+
+    <Style Selector=".mobile Button.nav:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource TextDisabled}" />
+        <Setter Property="Svg.Css" Value="{DynamicResource SvgDisabled}" />
+    </Style>
 
     <!-- ACCENTED BUTTON -->
 
     <Style Selector="Button.accented">
         <Setter Property="Background" Value="{DynamicResource AccentBlue}" />
         <Setter Property="Foreground" Value="{DynamicResource BgBase}" />
+        <Setter Property="Svg.Css" Value="{DynamicResource SvgBase}" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="FontSize" Value="{DynamicResource FontSizeBody}" />
         <Setter Property="CornerRadius" Value="{DynamicResource RadiusControl}" />
@@ -559,11 +603,15 @@
 
     <Style Selector="Button.base:pointerover /template/ ContentPresenter">
         <Setter Property="Background" Value="{DynamicResource BgHover}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtle}" />
+        <Setter Property="BorderThickness" Value="1" />
         <Setter Property="TextElement.Foreground" Value="{DynamicResource TextPrimary}" />
     </Style>
 
     <Style Selector="Button.base:pressed /template/ ContentPresenter">
         <Setter Property="Background" Value="{DynamicResource BorderSubtle}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtle}" />
+        <Setter Property="BorderThickness" Value="1" />
     </Style>
 
     <Style Selector="Button.base:disabled /template/ ContentPresenter">
@@ -578,6 +626,19 @@
     </Style>
 
 
+    <Style Selector="Border.editable Button.reveal">
+        <Setter Property="IsVisible" Value="False" />
+        <Setter Property="CornerRadius" Value="{DynamicResource RadiusSmall}" />
+    </Style>
+    <Style Selector="Border.editable:pointerover Button.reveal">
+        <Setter Property="IsVisible" Value="True" />
+    </Style>
+    <Style Selector="Border.editable Svg.hide">
+        <Setter Property="IsVisible" Value="True" />
+    </Style>
+    <Style Selector="Border.editable:pointerover Svg.hide">
+        <Setter Property="IsVisible" Value="False" />
+    </Style>
     <!-- TOGGLE BUTTON -->
 
     <Style Selector="ToggleButton">
@@ -683,6 +744,25 @@
     </Style>
     <Style Selector="TextBox.ghost:disabled">
         <Setter Property="Opacity" Value="1" />
+    </Style>
+
+    <!-- DATE RANGE PICKER -->
+
+    <Style Selector="cc|DateRangePicker.ghost">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimary}" />
+        <Setter Property="FontSize" Value="13" />
+    </Style>
+
+    <Style Selector="cc|DateRangePicker.ghost:pointerover /template/ Button#PART_Button">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+    </Style>
+
+    <Style Selector="cc|DateRangePicker.ghost:pressed /template/ Button#PART_Button">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
     </Style>
 
     <!-- COMBOBOX -->

@@ -1,5 +1,4 @@
 ﻿using System;
-using CommunityToolkit.Mvvm.ComponentModel;
 using Supabase.Postgrest.Attributes;
 using Supabase.Postgrest.Models;
 

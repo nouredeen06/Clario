@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
-using Clario.Data;
-using Clario.Models.GeneralModels;
 using Clario.Services;
-using Clario.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Supabase.Gotrue;
@@ -37,6 +34,7 @@ public partial class AuthViewModel : ViewModelBase
 
     public AuthViewModel()
     {
+        Console.WriteLine("auth vm loaded");
         setDefaults();
     }
 

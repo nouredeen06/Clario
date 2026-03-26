@@ -1,0 +1,356 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:model="clr-namespace:Clario.Models"
+             xmlns:vm="clr-namespace:Clario.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Clario.MobileViews.TransactionsViewMobile"
+             x:DataType="vm:TransactionsViewModel"
+             Classes="mobile">
+    <Grid RowDefinitions="Auto,Auto,*,Auto"
+          Background="{DynamicResource BgBase}">
+
+        <!-- ── Top Bar ───────────────────────────── -->
+        <Grid Grid.Row="0"
+              ColumnDefinitions="*,Auto"
+              Margin="16,16,16,0">
+            <StackPanel Grid.Column="0">
+                <TextBlock Text="Transactions"
+                           FontSize="22"
+                           FontWeight="Bold"
+                           Foreground="{DynamicResource TextPrimary}" />
+            </StackPanel>
+            <!-- Filter button -->
+            <Button Grid.Column="1"
+                    Background="{DynamicResource BgSurface}"
+                    BorderBrush="{DynamicResource BorderSubtle}"
+                    BorderThickness="1"
+                    CornerRadius="10"
+                    Padding="10,8"
+                    Cursor="Hand">
+                <Button.Flyout>
+                    <Flyout Placement="BottomEdgeAlignedRight"
+                            FlyoutPresenterTheme="{StaticResource TransparentFlyoutPresenter}">
+                        <Border Background="{DynamicResource BgSurface}"
+                                BorderBrush="{DynamicResource BorderSubtle}"
+                                BorderThickness="1"
+                                CornerRadius="16"
+                                Padding="20"
+                                Width="300"
+                                BoxShadow="0 8 32 0 #3C000000">
+                            <StackPanel Spacing="0">
+
+                                <TextBlock Text="FILTERS"
+                                           Classes="label"
+                                           Margin="0,0,0,14" />
+
+                                <!-- Search -->
+                                <TextBox Watermark="Search transactions..."
+                                         Text="{Binding SearchText}"
+                                         FontSize="13"
+                                         Height="38"
+                                         Padding="12,0"
+                                         VerticalContentAlignment="Center"
+                                         Margin="0,0,0,14" />
+
+                                <!-- Date range -->
+                                <TextBlock Classes="label" Text="DATE RANGE" Margin="0,0,0,6" />
+                                <ComboBox HorizontalAlignment="Stretch"
+                                          ItemsSource="{Binding DateRangeOptions}"
+                                          SelectedItem="{Binding SelectedDateRangeOption}"
+                                          Padding="10,8"
+                                          FontSize="13"
+                                          Margin="0,0,0,14" />
+
+                                <!-- Type toggle -->
+                                <TextBlock Classes="label" Text="TYPE" Margin="0,0,0,6" />
+                                <Border Background="{DynamicResource BgBase}"
+                                        BorderBrush="{DynamicResource BorderSubtle}"
+                                        BorderThickness="1"
+                                        CornerRadius="{DynamicResource RadiusControl}"
+                                        Padding="3"
+                                        Margin="0,0,0,14">
+                                    <Grid ColumnDefinitions="*,*,*">
+                                        <Button Grid.Column="0"
+                                                Classes="nav"
+                                                Classes.accented="{Binding FilterTypeAll}"
+                                                HorizontalAlignment="Stretch"
+                                                HorizontalContentAlignment="Center"
+                                                Focusable="False"
+                                                CornerRadius="7"
+                                                Padding="0,6"
+                                                Command="{Binding SetTransactionTypeCommand}"
+                                                CommandParameter="all">
+                                            <TextBlock Text="All" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                                        </Button>
+                                        <Button Grid.Column="1"
+                                                Classes="nav"
+                                                Classes.accented="{Binding FilterTypeIncome}"
+                                                HorizontalAlignment="Stretch"
+                                                HorizontalContentAlignment="Center"
+                                                Focusable="False"
+                                                CornerRadius="7"
+                                                Padding="0,6"
+                                                Command="{Binding SetTransactionTypeCommand}"
+                                                CommandParameter="income">
+                                            <TextBlock Text="Income" FontSize="12" HorizontalAlignment="Center" />
+                                        </Button>
+                                        <Button Grid.Column="2"
+                                                Classes="nav"
+                                                Classes.accented="{Binding FilterTypeExpense}"
+                                                HorizontalAlignment="Stretch"
+                                                HorizontalContentAlignment="Center"
+                                                Focusable="False"
+                                                CornerRadius="7"
+                                                Padding="0,6"
+                                                Command="{Binding SetTransactionTypeCommand}"
+                                                CommandParameter="expense">
+                                            <TextBlock Text="Expense" FontSize="12" HorizontalAlignment="Center" />
+                                        </Button>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Category -->
+                                <TextBlock Classes="label" Text="CATEGORY" Margin="0,0,0,6" />
+                                <ComboBox HorizontalAlignment="Stretch"
+                                          SelectedItem="{Binding SelectedCategory}"
+                                          ItemsSource="{Binding Categories}"
+                                          DisplayMemberBinding="{Binding Name}"
+                                          Padding="10,8"
+                                          FontSize="13"
+                                          Margin="0,0,0,14" />
+
+                                <!-- Account -->
+                                <TextBlock Classes="label" Text="ACCOUNT" Margin="0,0,0,6" />
+                                <ComboBox HorizontalAlignment="Stretch"
+                                          ItemsSource="{Binding Accounts}"
+                                          SelectedItem="{Binding SelectedAccount}"
+                                          DisplayMemberBinding="{Binding Name}"
+                                          Padding="10,8"
+                                          FontSize="13"
+                                          Margin="0,0,0,14" />
+
+                                <!-- Sort -->
+                                <TextBlock Classes="label" Text="SORT BY" Margin="0,0,0,6" />
+                                <ComboBox HorizontalAlignment="Stretch"
+                                          ItemsSource="{Binding SortOptions}"
+                                          SelectedItem="{Binding SelectedSortOption}"
+                                          Padding="10,8"
+                                          FontSize="13"
+                                          Margin="0,0,0,16" />
+
+                                <!-- Actions -->
+                                <Grid ColumnDefinitions="*,*">
+                                    <Button Grid.Column="0"
+                                            Classes="base"
+                                            Margin="0,0,6,0"
+                                            Padding="0,10"
+                                            HorizontalAlignment="Stretch"
+                                            HorizontalContentAlignment="Center"
+                                            FontSize="13"
+                                            Command="{Binding ResetFiltersCommand}"
+                                            Content="Reset" />
+                                    <Button Grid.Column="1"
+                                            Classes="accented"
+                                            Margin="6,0,0,0"
+                                            Padding="0,10"
+                                            HorizontalAlignment="Stretch"
+                                            HorizontalContentAlignment="Center"
+                                            Command="{Binding ApplyFiltersCommand}">
+                                        <TextBlock Text="Apply"
+                                                   FontSize="13"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource BgBase}"
+                                                   HorizontalAlignment="Center" />
+                                    </Button>
+                                </Grid>
+
+                            </StackPanel>
+                        </Border>
+                    </Flyout>
+                </Button.Flyout>
+                <Svg Path="../Assets/Icons/sliders-horizontal.svg"
+                     Width="16" Height="16"
+                     Css="{DynamicResource SvgSecondary}" />
+            </Button>
+        </Grid>
+
+        <!-- ── Summary strip ─────────────────────── -->
+        <Grid Grid.Row="1"
+              ColumnDefinitions="*,*,*"
+              Margin="16,12,16,0">
+
+            <!-- Income -->
+            <Border Grid.Column="0"
+                    Background="{DynamicResource BgSurface}"
+                    BorderBrush="{DynamicResource BorderSubtle}"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    Padding="12,10"
+                    Margin="0,0,4,0">
+                <StackPanel Spacing="2">
+                    <TextBlock Text="Income"
+                               FontSize="11"
+                               Foreground="{DynamicResource TextMuted}" />
+                    <TextBlock Text="{Binding TotalIncome, StringFormat='$0.00'}"
+                               FontSize="13"
+                               FontWeight="Bold"
+                               Foreground="{DynamicResource AccentGreen}" />
+                </StackPanel>
+            </Border>
+
+            <!-- Expenses -->
+            <Border Grid.Column="1"
+                    Background="{DynamicResource BgSurface}"
+                    BorderBrush="{DynamicResource BorderSubtle}"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    Padding="12,10"
+                    Margin="4,0">
+                <StackPanel Spacing="2">
+                    <TextBlock Text="Expenses"
+                               FontSize="11"
+                               Foreground="{DynamicResource TextMuted}" />
+                    <TextBlock Text="{Binding TotalExpenses, StringFormat='$0.00'}"
+                               FontSize="13"
+                               FontWeight="Bold"
+                               Foreground="{DynamicResource AccentRed}" />
+                </StackPanel>
+            </Border>
+
+            <!-- Net -->
+            <Border Grid.Column="2"
+                    Background="{DynamicResource BgSurface}"
+                    BorderBrush="{DynamicResource BorderSubtle}"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    Padding="12,10"
+                    Margin="4,0,0,0">
+                <StackPanel Spacing="2">
+                    <TextBlock Text="Net"
+                               FontSize="11"
+                               Foreground="{DynamicResource TextMuted}" />
+                    <TextBlock FontSize="13"
+                               FontWeight="Bold"
+                               Foreground="{DynamicResource AccentBlue}">
+                        <TextBlock.Text>
+                            <MultiBinding Converter="{StaticResource NetworthSumConverter}">
+                                <Binding Path="TotalIncome" />
+                                <Binding Path="TotalExpenses" />
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+
+        </Grid>
+
+        <!-- ── Transaction list ──────────────────── -->
+        <ScrollViewer Grid.Row="2"
+                      Margin="0,12,0,0"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+            <StackPanel>
+                <ItemsControl ItemsSource="{Binding FilteredTransactions}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="model:Transaction">
+                            <Panel>
+
+                                <!-- Date group header -->
+                                <Border Padding="16,14,16,6"
+                                        IsVisible="{Binding GroupHeader}">
+                                    <TextBlock Text="{Binding Description}"
+                                               Classes="label" />
+                                </Border>
+
+                                <!-- Transaction row -->
+                                <Border Padding="16,12"
+                                        IsVisible="{Binding !GroupHeader}"
+                                        BorderBrush="{DynamicResource BorderSubtle}"
+                                        BorderThickness="0,1,0,0">
+                                    <Grid ColumnDefinitions="Auto,*,Auto">
+
+                                        <!-- Icon -->
+                                        <Border Grid.Column="0"
+                                                CornerRadius="{DynamicResource RadiusIcon}"
+                                                Width="38" Height="38"
+                                                VerticalAlignment="Center"
+                                                Margin="0,0,12,0">
+                                            <Border.Background>
+                                                <SolidColorBrush
+                                                    Color="{Binding Category.Color, Converter={StaticResource HexToColorConverter}, ConverterParameter=color}"
+                                                    Opacity="0.15" />
+                                            </Border.Background>
+                                            <Svg Path="{Binding Category.Icon, Converter={StaticResource SvgPathFromName}}"
+                                                 Width="17" Height="17"
+                                                 Css="{Binding Category.Color, Converter={StaticResource HexToColorConverter}, ConverterParameter=css}" />
+                                        </Border>
+
+                                        <!-- Description + meta -->
+                                        <StackPanel Grid.Column="1"
+                                                    VerticalAlignment="Center"
+                                                    Spacing="2">
+                                            <TextBlock Text="{Binding Description}"
+                                                       FontSize="13"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource TextPrimary}" />
+                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                <TextBlock Text="{Binding Category.Name}"
+                                                           FontSize="11"
+                                                           Foreground="{DynamicResource TextMuted}" />
+                                                <TextBlock Text="·"
+                                                           FontSize="11"
+                                                           Foreground="{DynamicResource TextDisabled}" />
+                                                <TextBlock Text="{Binding Date, Converter={StaticResource DateFormatConverter}}"
+                                                           FontSize="11"
+                                                           Foreground="{DynamicResource TextMuted}" />
+                                            </StackPanel>
+                                        </StackPanel>
+
+                                        <!-- Amount -->
+                                        <TextBlock Grid.Column="2"
+                                                   Text="{Binding Amount, StringFormat='$0.00'}"
+                                                   FontSize="14"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{Binding Type, Converter={StaticResource AmountColorConverter}}"
+                                                   VerticalAlignment="Center" />
+
+                                    </Grid>
+                                </Border>
+
+                            </Panel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <!-- Empty state -->
+                <StackPanel HorizontalAlignment="Center"
+                            Spacing="12"
+                            Margin="0,60"
+                            IsVisible="{Binding HasNoTransactions}">
+                    <Svg Path="../Assets/Icons/search.svg"
+                         Css="{DynamicResource SvgMuted}"
+                         Height="36" Width="36"
+                         HorizontalAlignment="Center" />
+                    <TextBlock Text="No transactions found"
+                               FontSize="15"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimary}"
+                               HorizontalAlignment="Center" />
+                    <TextBlock Text="Try adjusting your filters."
+                               FontSize="13"
+                               Foreground="{DynamicResource TextMuted}"
+                               HorizontalAlignment="Center" />
+                </StackPanel>
+
+            </StackPanel>
+        </ScrollViewer>
+
+    </Grid>
+
+</UserControl>

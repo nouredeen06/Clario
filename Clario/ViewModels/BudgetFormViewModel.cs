@@ -1,6 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-
-namespace Clario.ViewModels;
+﻿namespace Clario.ViewModels;
 
 public partial class BudgetFormViewModel : ViewModelBase
 {

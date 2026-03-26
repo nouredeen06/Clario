@@ -1,5 +1,4 @@
 ﻿using System;
-using ExCSS;
 using Supabase.Postgrest.Attributes;
 using Supabase.Postgrest.Models;
 
@@ -14,6 +13,7 @@ public class Profile : BaseModel
     [Column("currency")] public string Currency { get; set; }
     [Column("theme")] public string Theme { get; set; }
     [Column("language")] public string Language { get; set; }
+    [Column("savings_goal")] public decimal? SavingsGoal { get; set; }
     [Column("created_at")] public DateTime CreatedAt { get; set; }
     [Column("updated_at")] public DateTime UpdatedAt { get; set; }
 
