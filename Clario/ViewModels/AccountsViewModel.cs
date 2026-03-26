@@ -17,7 +17,7 @@ public partial class AccountsViewModel : ViewModelBase
     public required List<Transaction> Transactions = new();
     [ObservableProperty] private ObservableCollection<Account> _visibleAccounts = new();
     [ObservableProperty] private decimal _totalBalance = 0;
-    [ObservableProperty] private Account _selectedAccount;
+    [ObservableProperty] private Account? _selectedAccount;
 
     public AccountsViewModel()
     {
@@ -28,7 +28,7 @@ public partial class AccountsViewModel : ViewModelBase
     {
         FetchAndProcessAccountInfo();
         GroupAccounts();
-        SelectedAccount = VisibleAccounts.First(x => !x.GroupHeader);
+        SelectedAccount = VisibleAccounts.FirstOrDefault(x => !x.GroupHeader);
     }
 
     private void FetchAndProcessAccountInfo()

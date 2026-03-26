@@ -68,8 +68,16 @@ public partial class BudgetViewModel : ViewModelBase
 
     public async Task Initialize()
     {
-        await ProcessBudgets();
-        ProcessChartData();
+        try
+        {
+            await ProcessBudgets();
+            ProcessChartData();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 
     private void ProcessChartData()
