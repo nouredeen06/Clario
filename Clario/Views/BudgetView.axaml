@@ -225,8 +225,8 @@
                                             <Grid ColumnDefinitions="*,Auto">
                                                 <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6">
                                                     <Border Classes.badge-green="{Binding IsOnTrack}"
-                                                            Classes.badge-warning="{Binding IsWarning}"
-                                                            Classes.badge-over="{Binding IsOverBudget}"
+                                                            Classes.badge-yellow="{Binding IsWarning}"
+                                                            Classes.badge-red="{Binding IsOverBudget}"
                                                             CornerRadius="20"
                                                             Padding="6,2">
                                                         <StackPanel Orientation="Horizontal" Spacing="4">

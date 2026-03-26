@@ -306,18 +306,21 @@
         <Setter Property="Background" Value="{DynamicResource BadgeBgGreen}" />
         <Setter Property="CornerRadius" Value="{DynamicResource RadiusPill}" />
         <Setter Property="Padding" Value="{DynamicResource BadgePadding}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentGreen}"/>
     </Style>
 
     <Style Selector="Border.badge-red">
         <Setter Property="Background" Value="{DynamicResource BadgeBgRed}" />
         <Setter Property="CornerRadius" Value="{DynamicResource RadiusPill}" />
         <Setter Property="Padding" Value="{DynamicResource BadgePadding}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentRed}"/>
     </Style>
 
     <Style Selector="Border.badge-yellow">
         <Setter Property="Background" Value="{DynamicResource BadgeBgYellow}" />
         <Setter Property="CornerRadius" Value="{DynamicResource RadiusPill}" />
         <Setter Property="Padding" Value="{DynamicResource BadgePadding}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentYellow}"/>
     </Style>
 
     <Style Selector="Border.badge-blue">

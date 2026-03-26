@@ -95,8 +95,8 @@ public partial class DashboardViewModel : ViewModelBase
             .Sum(x => x.Amount);
         try
         {
-            _monthlyIncomeChange = Math.Round((MonthlyIncome / lastMonthIncome) - 1, 2);
-            _monthlyExpensesChange = Math.Round((MonthlyExpenses / lastMonthExpenses) - 1, 2);
+            _monthlyIncomeChange = Math.Round((MonthlyIncome / ((lastMonthIncome == 0) ? 1 : lastMonthIncome)) - 1, 2);
+            _monthlyExpensesChange = Math.Round((MonthlyExpenses / ((lastMonthExpenses == 0) ? 1 : lastMonthExpenses)) - 1, 2);
         }
         catch (Exception e)
         {
