@@ -28,9 +28,12 @@ jobs:
             -p:PublishSingleFile=true \
             -o ./publish/linux-x64
 
+      
+      - name: Package as tar.gz
+        run: tar -czf Clario-linux-x64.tar.gz -C ./publish/linux-x64 .
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Clario-linux-x64
-          path: ./publish/linux
-          retention-days: 7
+          name: clario-linux-x64
+          path: Clario-linux-x64.tar.gz
