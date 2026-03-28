@@ -5,6 +5,8 @@ using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Input;
+using Avalonia.Interactivity;
 using Calendar = Avalonia.Controls.Calendar;
 
 namespace Clario.CustomControls;
@@ -66,7 +68,11 @@ public class DateRangePicker : TemplatedControl
 
 
         if (_button != null) _button.Click -= OnButtonClick;
-        if (_calendar != null) _calendar.SelectedDatesChanged -= OnCalendarDatesChanged;
+        if (_calendar != null)
+        {
+            _calendar.SelectedDatesChanged -= OnCalendarDatesChanged;
+            _calendar.RemoveHandler(PointerReleasedEvent, OnCalendarPointerReleased);
+        }
 
         _button = e.NameScope.Find<Button>("PART_Button");
         _popup = e.NameScope.Find<Popup>("PART_Popup");
@@ -81,7 +87,7 @@ public class DateRangePicker : TemplatedControl
 
 
             _calendar.SelectedDatesChanged += OnCalendarDatesChanged;
-            // _calendar.PointerPressed 
+            _calendar.AddHandler(PointerReleasedEvent, OnCalendarPointerReleased, RoutingStrategies.Tunnel);
 
 
             SyncToCalendar();
@@ -90,8 +96,45 @@ public class DateRangePicker : TemplatedControl
         UpdateDisplayText();
     }
 
+    private void OnCalendarPointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        if (_calendar!.SelectionMode != CalendarSelectionMode.SingleDate) return;
 
-    private void OnButtonClick(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        if (_isSyncing) return;
+
+        if (_popup is null || !_popup.IsOpen) return;
+
+        var newDates = _calendar!.SelectedDates.OrderBy(d => d).ToList();
+
+        _isSyncing = true;
+        try
+        {
+            SelectedDates = newDates;
+
+
+            SelectedDate = newDates.Count > 0 ? newDates[0] : null;
+
+            UpdateDisplayText();
+
+
+            bool shouldClose = SelectionMode switch
+            {
+                CalendarSelectionMode.SingleDate => newDates.Count >= 1,
+                CalendarSelectionMode.SingleRange => newDates.Count >= 2,
+                _ => false
+            };
+
+            if (shouldClose)
+                _popup.IsOpen = false;
+        }
+        finally
+        {
+            _isSyncing = false;
+        }
+    }
+
+
+    private void OnButtonClick(object? sender, RoutedEventArgs e)
     {
         if (_popup is null) return;
 
@@ -102,10 +145,12 @@ public class DateRangePicker : TemplatedControl
 
     private void OnCalendarDatesChanged(object? sender, SelectionChangedEventArgs e)
     {
+        if (_calendar!.SelectionMode == CalendarSelectionMode.SingleDate) return;
+
         if (_isSyncing) return;
-        
+
         if (_popup is null || !_popup.IsOpen) return;
-        Console.WriteLine("test");
+
         var newDates = _calendar!.SelectedDates.OrderBy(d => d).ToList();
 
         _isSyncing = true;

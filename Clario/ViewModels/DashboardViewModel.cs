@@ -31,6 +31,8 @@ public partial class DashboardViewModel : ViewModelBase
     [ObservableProperty] private decimal _totalNetworth;
     [ObservableProperty] private decimal _monthlyIncome;
     private decimal _monthlyIncomeChange;
+    
+    public int MaxChartWidth => SpendingByCategoryChartData.Count * 150;
 
     public string MonthlyIncomeChangeFormatted => _monthlyIncomeChange >= 0
         ? "↑" + _monthlyIncomeChange.ToString("0.0%")
@@ -45,6 +47,10 @@ public partial class DashboardViewModel : ViewModelBase
 
     public string AccountsSubtitle =>
         AccountsSummaryData.Count == 1 ? $" {AccountsSummaryData.Count} linked Account" : $"{AccountsSummaryData.Count} linked Accounts";
+
+    public bool HasSpendingData => SpendingByCategoryChartData.Any();
+    public bool HasBudgetData => BudgetsTrackerData.Any();
+    public bool HasTransactionData => RecentTransactions.Any();
 
     [ObservableProperty] private List<string> _chartTimePeriods = new()
     {
@@ -175,19 +181,23 @@ public partial class DashboardViewModel : ViewModelBase
             Values = x.Values,
             Fill = x.Fill,
             Padding = 4,
-            MaxBarWidth = double.MaxValue
+            MaxBarWidth = 150
         }).ToArray();
+        OnPropertyChanged(nameof(HasSpendingData));
+        OnPropertyChanged(nameof(MaxChartWidth));
     }
 
     private async Task UpdateBudgetTracker()
     {
         var budgets = await DataRepo.General.FetchProcessedBudgets(new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1));
         BudgetsTrackerData = new ObservableCollection<Budget>(budgets.Where(x => !x.GroupHeader).OrderByDescending(x => x.PercentageUsed));
+        OnPropertyChanged(nameof(HasBudgetData));
     }
 
     private void UpdateRecentTransactions()
     {
         RecentTransactions = new ObservableCollection<Transaction>(Transactions.OrderByDescending(x => x.Date).Take(5));
+        OnPropertyChanged(nameof(HasTransactionData));
     }
 
     private void UpdateAccountsSummary()

@@ -121,42 +121,58 @@
                                           CornerRadius="{StaticResource RadiusIcon}" Padding="10,6">
                                 </ComboBox>
                             </Grid>
-                            <lvc:CartesianChart Series="{Binding SpendingByCategoryChartSeries}" Height="250" Background="{DynamicResource BgSurface}"
-                                                LegendPosition="Hidden" TooltipPosition="Hidden" ZoomMode="None" Name="chart">
-                                <lvc:CartesianChart.XAxes>
-                                    <lvc:XamlAxis IsVisible="False" />
-                                </lvc:CartesianChart.XAxes>
-                                <lvc:CartesianChart.YAxes>
-                                    <lvc:XamlLogarithmicAxis LogBase="10" IsVisible="False" MinLimit="1" />
-                                </lvc:CartesianChart.YAxes>
-                            </lvc:CartesianChart>
-                            <ItemsControl ItemsSource="{Binding SpendingByCategoryChartData}" Margin="0 -10 ">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <UniformGrid Rows="1" />
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate x:DataType="model:ColumnChartData">
-                                        <TextBlock Text="{Binding Name}" HorizontalAlignment="Center" Foreground="{DynamicResource TextDisabled}" />
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                            <Border HorizontalAlignment="Stretch" Height="1" Background="{DynamicResource BorderSubtle}" Margin="5 0" />
-                            <ItemsControl ItemsSource="{Binding SpendingByCategoryChartData}" Margin="0 -10 0 0 ">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <UniformGrid Rows="1" />
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate x:DataType="model:ColumnChartData">
-                                        <TextBlock Text="{Binding Values, Converter={StaticResource FirstValueConverter},StringFormat='$0,00'}"
-                                                   HorizontalAlignment="Center" Foreground="{Binding Fill, Converter={StaticResource SkPaintToBrushConverter}}"
-                                                   FontWeight="SemiBold" />
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
+                            <Panel>
+                                <StackPanel Spacing="20" IsVisible="{Binding HasSpendingData}">
+                                    <lvc:CartesianChart Series="{Binding SpendingByCategoryChartSeries}" Height="250" Background="{DynamicResource BgSurface}"
+                                                        LegendPosition="Hidden" TooltipPosition="Hidden" ZoomMode="None" Name="chart">
+                                        <lvc:CartesianChart.XAxes>
+                                            <lvc:XamlAxis IsVisible="False" />
+                                        </lvc:CartesianChart.XAxes>
+                                        <lvc:CartesianChart.YAxes>
+                                            <lvc:XamlLogarithmicAxis LogBase="10" IsVisible="False" MinLimit="1" />
+                                        </lvc:CartesianChart.YAxes>
+                                    </lvc:CartesianChart>
+                                    <ItemsControl ItemsSource="{Binding SpendingByCategoryChartData}" Margin="0 -10 ">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <UniformGrid Rows="1" HorizontalAlignment="Stretch" MaxWidth="{Binding MaxChartWidth}" />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate x:DataType="model:ColumnChartData">
+                                                <TextBlock Text="{Binding Name}" HorizontalAlignment="Center" Foreground="{DynamicResource TextDisabled}"
+                                                           Margin="4 0" TextTrimming="CharacterEllipsis" />
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                    <Border HorizontalAlignment="Stretch" Height="1" Background="{DynamicResource BorderSubtle}" Margin="5 0" />
+                                    <ItemsControl ItemsSource="{Binding SpendingByCategoryChartData}" Margin="0 -10 0 0 ">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <UniformGrid Rows="1" HorizontalAlignment="Stretch" MaxWidth="{Binding MaxChartWidth}" />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate x:DataType="model:ColumnChartData">
+                                                <TextBlock Text="{Binding Values, Converter={StaticResource FirstValueConverter},StringFormat='$0'}"
+                                                           HorizontalAlignment="Center" Margin="4 0" TextTrimming="CharacterEllipsis"
+                                                           Foreground="{Binding Fill, Converter={StaticResource SkPaintToBrushConverter}}"
+                                                           FontWeight="SemiBold" />
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12" Margin="0,60"
+                                            IsVisible="{Binding !HasSpendingData}">
+                                    <Svg Path="../Assets/Icons/chart-column.svg" Css="{DynamicResource SvgDisabled}" Height="40" Width="40" />
+                                    <TextBlock Text="No spending data" FontSize="15" FontWeight="SemiBold"
+                                               Foreground="{DynamicResource TextDisabled}" HorizontalAlignment="Center" />
+                                    <TextBlock Text="Add expense transactions to see your spending breakdown." FontSize="13"
+                                               Foreground="{DynamicResource TextDisabled}" HorizontalAlignment="Center" TextWrapping="Wrap"
+                                               TextAlignment="Center"
+                                               MaxWidth="250" />
+                                </StackPanel>
+                            </Panel>
                         </StackPanel>
                     </Border>
                     <!-- Budget Tracker -->
@@ -168,49 +184,63 @@
                                                Foreground="{DynamicResource TextPrimary}" />
                                     <TextBlock Classes="muted" Text="Monthly limits" />
                                 </StackPanel>
-                                <ItemsControl ItemsSource="{Binding BudgetsTrackerData}">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <StackPanel Spacing="20" />
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate DataType="model:Budget">
-                                            <StackPanel Spacing="8">
-                                                <Grid ColumnDefinitions="*,Auto">
-                                                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="4">
-                                                        <Svg Path="{Binding Category.Icon, Converter={StaticResource SvgPathFromName}}" Height="13" Width="13"
-                                                             VerticalAlignment="Center" />
-                                                        <TextBlock Text="{Binding Category.Name}" FontSize="{StaticResource FontSizeBody}"
-                                                                   VerticalAlignment="Center" Foreground="{DynamicResource TextSecondary}" />
-                                                    </StackPanel>
-                                                    <Panel Grid.Column="1">
-                                                        <StackPanel Orientation="Horizontal" IsVisible="{Binding !IsOverBudget}">
-                                                            <TextBlock Text="{Binding Spent, StringFormat='$0'}" FontSize="{StaticResource FontSizeMeta}"
-                                                                       Foreground="{DynamicResource TextMuted}" />
-                                                            <TextBlock Text=" / " FontSize="{StaticResource FontSizeMeta}"
-                                                                       Foreground="{DynamicResource TextMuted}" />
-                                                            <TextBlock Text="{Binding LimitAmount, StringFormat='$0'}" FontSize="{StaticResource FontSizeMeta}"
-                                                                       Foreground="{DynamicResource TextMuted}" />
+                                <Panel>
+                                    <ItemsControl ItemsSource="{Binding BudgetsTrackerData}" IsVisible="{Binding HasBudgetData}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel Spacing="20" />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate DataType="model:Budget">
+                                                <StackPanel Spacing="8">
+                                                    <Grid ColumnDefinitions="*,Auto">
+                                                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="4">
+                                                            <Svg Path="{Binding Category.Icon, Converter={StaticResource SvgPathFromName}}" Height="13"
+                                                                 Width="13"
+                                                                 VerticalAlignment="Center" />
+                                                            <TextBlock Text="{Binding Category.Name}" FontSize="{StaticResource FontSizeBody}"
+                                                                       VerticalAlignment="Center" Foreground="{DynamicResource TextSecondary}" />
                                                         </StackPanel>
-                                                        <StackPanel Orientation="Horizontal" IsVisible="{Binding IsOverBudget}">
-                                                            <TextBlock Text="{Binding Spent, StringFormat='$0'}" FontSize="{StaticResource FontSizeMeta}"
-                                                                       Foreground="{DynamicResource AccentRed}" />
-                                                            <TextBlock Text=" / " FontSize="{StaticResource FontSizeMeta}"
-                                                                       Foreground="{DynamicResource AccentRed}" />
-                                                            <TextBlock Text="{Binding LimitAmount, StringFormat='$0'}" FontSize="{StaticResource FontSizeMeta}"
-                                                                       Foreground="{DynamicResource AccentRed}" />
-                                                        </StackPanel>
-                                                    </Panel>
-                                                </Grid>
-                                                <ProgressBar Classes.green="{Binding IsOnTrack}" Classes.yellow="{Binding IsWarning}"
-                                                             Classes.red="{Binding IsOverBudget}" Minimum="0" Value="{Binding Spent}"
-                                                             Maximum="{Binding LimitAmount}" />
-                                                <Separator Margin="-8 4" />
-                                            </StackPanel>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
+                                                        <Panel Grid.Column="1">
+                                                            <StackPanel Orientation="Horizontal" IsVisible="{Binding !IsOverBudget}">
+                                                                <TextBlock Text="{Binding Spent, StringFormat='$0'}" FontSize="{StaticResource FontSizeMeta}"
+                                                                           Foreground="{DynamicResource TextMuted}" />
+                                                                <TextBlock Text=" / " FontSize="{StaticResource FontSizeMeta}"
+                                                                           Foreground="{DynamicResource TextMuted}" />
+                                                                <TextBlock Text="{Binding LimitAmount, StringFormat='$0'}"
+                                                                           FontSize="{StaticResource FontSizeMeta}"
+                                                                           Foreground="{DynamicResource TextMuted}" />
+                                                            </StackPanel>
+                                                            <StackPanel Orientation="Horizontal" IsVisible="{Binding IsOverBudget}">
+                                                                <TextBlock Text="{Binding Spent, StringFormat='$0'}" FontSize="{StaticResource FontSizeMeta}"
+                                                                           Foreground="{DynamicResource AccentRed}" />
+                                                                <TextBlock Text=" / " FontSize="{StaticResource FontSizeMeta}"
+                                                                           Foreground="{DynamicResource AccentRed}" />
+                                                                <TextBlock Text="{Binding LimitAmount, StringFormat='$0'}"
+                                                                           FontSize="{StaticResource FontSizeMeta}"
+                                                                           Foreground="{DynamicResource AccentRed}" />
+                                                            </StackPanel>
+                                                        </Panel>
+                                                    </Grid>
+                                                    <ProgressBar Classes.green="{Binding IsOnTrack}" Classes.yellow="{Binding IsWarning}"
+                                                                 Classes.red="{Binding IsOverBudget}" Minimum="0" Value="{Binding Spent}"
+                                                                 Maximum="{Binding LimitAmount}" />
+                                                    <Separator Margin="-8 4" />
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12" Margin="0,60"
+                                                IsVisible="{Binding !HasBudgetData}">
+                                        <Svg Path="../Assets/Icons/wallet.svg" Css="{DynamicResource SvgDisabled}" Height="40" Width="40" />
+                                        <TextBlock Text="No budgets set" FontSize="15" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource TextDisabled}" HorizontalAlignment="Center" />
+                                        <TextBlock Text="Create budgets to track your spending limits." FontSize="13"
+                                                   Foreground="{DynamicResource TextDisabled}" HorizontalAlignment="Center" TextWrapping="Wrap"
+                                                   TextAlignment="Center" MaxWidth="200" />
+                                    </StackPanel>
+                                </Panel>
                             </StackPanel>
                         </ScrollViewer>
                     </Border>
@@ -231,50 +261,64 @@
                                         FontSize="{StaticResource FontSizeBody}" Cursor="Hand" Content="View all →" VerticalAlignment="Center"
                                         Command="{Binding ViewAllTransactionsCommand}" />
                             </Grid>
-                            <ItemsControl ItemsSource="{Binding RecentTransactions}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <StackPanel Spacing="18" />
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate DataType="model:Transaction">
-                                        <StackPanel Spacing="4">
-                                            <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,4,0,0">
-                                                <Border Grid.Column="0" CornerRadius="{StaticResource RadiusControl}" Width="42" Height="42" Margin="0,0,14,0">
-                                                    <Border.Background>
-                                                        <SolidColorBrush
-                                                            Color="{Binding Category.Color, Converter={StaticResource HexToColorConverter},ConverterParameter=color}"
-                                                            Opacity="0.15" />
-                                                    </Border.Background>
-                                                    <Svg Path="{Binding Category.Icon,Converter={StaticResource SvgPathFromName}}" Height="18" Width="18"
-                                                         Css="{Binding Category.Color, Converter={StaticResource HexToColorConverter},ConverterParameter=css}" />
-                                                </Border>
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                                    <TextBlock Text="{Binding Description}" FontSize="{StaticResource FontSizeBody}" FontWeight="SemiBold"
-                                                               Foreground="{DynamicResource TextSecondary}" />
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="{Binding Category.Name}" Classes="muted" /> <TextBlock Text=" · " Classes="muted" />
-                                                        <TextBlock
-                                                            Text="{Binding Date,Converter={StaticResource DateFormatConverter},ConverterParameter='MMM d'}"
-                                                            Classes="muted" />
+                            <Panel>
+                                <ItemsControl ItemsSource="{Binding RecentTransactions}" IsVisible="{Binding HasTransactionData}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Spacing="18" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="model:Transaction">
+                                            <StackPanel Spacing="4">
+                                                <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,4,0,0">
+                                                    <Border Grid.Column="0" CornerRadius="{StaticResource RadiusControl}" Width="42" Height="42"
+                                                            Margin="0,0,14,0">
+                                                        <Border.Background>
+                                                            <SolidColorBrush
+                                                                Color="{Binding Category.Color, Converter={StaticResource HexToColorConverter},ConverterParameter=color}"
+                                                                Opacity="0.15" />
+                                                        </Border.Background>
+                                                        <Svg Path="{Binding Category.Icon,Converter={StaticResource SvgPathFromName}}" Height="18" Width="18"
+                                                             Css="{Binding Category.Color, Converter={StaticResource HexToColorConverter},ConverterParameter=css}" />
+                                                    </Border>
+                                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                        <TextBlock Text="{Binding Description}" FontSize="{StaticResource FontSizeBody}" FontWeight="SemiBold"
+                                                                   Foreground="{DynamicResource TextSecondary}" />
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBlock Text="{Binding Category.Name}" Classes="muted" />
+                                                            <TextBlock Text=" · " Classes="muted" />
+                                                            <TextBlock
+                                                                Text="{Binding Date,Converter={StaticResource DateFormatConverter},ConverterParameter='MMM d'}"
+                                                                Classes="muted" />
+                                                        </StackPanel>
                                                     </StackPanel>
-                                                </StackPanel>
-                                                <TextBlock Grid.Column="2" FontSize="{StaticResource FontSizeAmount}" FontWeight="SemiBold"
-                                                           Foreground="{Binding Type, Converter={StaticResource AmountColorConverter}}"
-                                                           VerticalAlignment="Center">
-                                                    <TextBlock.Text>
-                                                        <MultiBinding Converter="{StaticResource AmountSignConverter}">
-                                                            <Binding Path="Amount" /> <Binding Path="Type" />
-                                                        </MultiBinding>
-                                                    </TextBlock.Text>
-                                                </TextBlock>
-                                            </Grid>
-                                            <Separator />
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
+                                                    <TextBlock Grid.Column="2" FontSize="{StaticResource FontSizeAmount}" FontWeight="SemiBold"
+                                                               Foreground="{Binding Type, Converter={StaticResource AmountColorConverter}}"
+                                                               VerticalAlignment="Center">
+                                                        <TextBlock.Text>
+                                                            <MultiBinding Converter="{StaticResource AmountSignConverter}">
+                                                                <Binding Path="Amount" /> <Binding Path="Type" />
+                                                            </MultiBinding>
+                                                        </TextBlock.Text>
+                                                    </TextBlock>
+                                                </Grid>
+                                                <Separator />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12" Margin="0,60"
+                                            IsVisible="{Binding !HasTransactionData}">
+                                    <Svg Path="../Assets/Icons/receipt.svg" Css="{DynamicResource SvgDisabled}" Height="40" Width="40" />
+                                    <TextBlock Text="No transactions yet" FontSize="15" FontWeight="SemiBold"
+                                               Foreground="{DynamicResource TextDisabled}" HorizontalAlignment="Center" />
+                                    <TextBlock Text="Start tracking your finances by adding a transaction." FontSize="13"
+                                               Foreground="{DynamicResource TextDisabled}" HorizontalAlignment="Center" TextWrapping="Wrap"
+                                               TextAlignment="Center"
+                                               MaxWidth="250" />
+                                </StackPanel>
+                            </Panel>
                         </StackPanel>
                     </Border>
                     <!-- Accounts Summary -->

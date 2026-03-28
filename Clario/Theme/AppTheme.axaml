@@ -306,21 +306,21 @@
         <Setter Property="Background" Value="{DynamicResource BadgeBgGreen}" />
         <Setter Property="CornerRadius" Value="{DynamicResource RadiusPill}" />
         <Setter Property="Padding" Value="{DynamicResource BadgePadding}" />
-        <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentGreen}"/>
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentGreen}" />
     </Style>
 
     <Style Selector="Border.badge-red">
         <Setter Property="Background" Value="{DynamicResource BadgeBgRed}" />
         <Setter Property="CornerRadius" Value="{DynamicResource RadiusPill}" />
         <Setter Property="Padding" Value="{DynamicResource BadgePadding}" />
-        <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentRed}"/>
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentRed}" />
     </Style>
 
     <Style Selector="Border.badge-yellow">
         <Setter Property="Background" Value="{DynamicResource BadgeBgYellow}" />
         <Setter Property="CornerRadius" Value="{DynamicResource RadiusPill}" />
         <Setter Property="Padding" Value="{DynamicResource BadgePadding}" />
-        <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentYellow}"/>
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentYellow}" />
     </Style>
 
     <Style Selector="Border.badge-blue">
@@ -726,6 +726,12 @@
         <Setter Property="BorderThickness" Value="1.5" />
     </Style>
 
+
+    <Style Selector=".mobile TextBox.numeric">
+        <Setter Property="(TextInputOptions.ContentType)" Value="Number" />
+        <Setter Property="(TextInputOptions.ReturnKeyType)" Value="Next" />
+        <Setter Property="(TextInputOptions.Multiline)" Value="False" />
+    </Style>
 
     <Style Selector="TextBox.ghost">
         <Setter Property="Background" Value="Transparent" />

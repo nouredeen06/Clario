@@ -91,20 +91,12 @@
         <Grid Grid.Row="1" ColumnDefinitions="220,*">
             <!-- ───────────────────────────────────── SIDEBAR ───────────────────────────────────── -->
             <Border Grid.Column="0" Background="{DynamicResource BgSidebar}" BorderBrush="{DynamicResource BorderSubtle}"
-                    BorderThickness="0,0,1,0" Padding="16,28,16,24">
+                    BorderThickness="0,0,1,0" Padding="16,28,16,24" IsEnabled="{Binding !IsTransactionFormVisible}">
                 <DockPanel>
                     <!-- Logo / App Name -->
-                    <StackPanel DockPanel.Dock="Top" Margin="0,0,0,36">
-                        <StackPanel Orientation="Horizontal" Spacing="10">
-                            <Border Background="{DynamicResource AccentBlue}" CornerRadius="{StaticResource RadiusIcon}" Width="32" Height="32">
-                                <TextBlock Text="F" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource BgBase}"
-                                           HorizontalAlignment="Center" VerticalAlignment="Center" />
-                            </Border>
-                            <StackPanel VerticalAlignment="Center">
-                                <TextBlock Text="Clario" FontSize="17" FontWeight="Bold"
-                                           Foreground="{DynamicResource TextPrimary}" />
-                            </StackPanel>
-                        </StackPanel>
+                    <StackPanel DockPanel.Dock="Top" Margin="0,0,0,24">
+                        <!-- <Svg Path="../Assets/logo-textmark-no-color.svg" Css="{DynamicResource SvgSecondary}" HorizontalAlignment="Stretch" -->
+                        <!--      Margin="4,12,24,0"/> -->
                     </StackPanel>
                     <!-- User Profile (bottom) -->
                     <Border DockPanel.Dock="Bottom" Background="{DynamicResource BgSurface}" CornerRadius="{StaticResource RadiusInset}"
@@ -186,10 +178,11 @@
                     </StackPanel>
                 </DockPanel>
             </Border>
+            <Border Grid.Column="0" Background="#70000000" IsVisible="{Binding IsTransactionFormVisible}" />
             <Grid Grid.Column="1">
                 <ContentControl Content="{Binding CurrentView}" />
                 <views:TransactionFormView
-                    DataContext="{Binding TransactionFormViewModel}" 
+                    DataContext="{Binding TransactionFormViewModel}"
                     IsVisible="{Binding DataContext.IsTransactionFormVisible,ElementName=MainControl}">
                 </views:TransactionFormView>
             </Grid>

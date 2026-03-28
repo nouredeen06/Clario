@@ -125,35 +125,47 @@ public partial class MainViewModel : ViewModelBase
     public void OpenAddTransaction()
     {
         if (IsTransactionFormVisible) return;
-        TransactionFormViewModel.SetupForAdd(
-            new ObservableCollection<Category>(_categories),
-            new ObservableCollection<Account>(_accounts)
-        );
-        TransactionFormViewModel.OnSaved = () =>
+        try
         {
-            if (TransactionFormViewModel.ResultTransaction is not null)
+            TransactionFormViewModel.SetupForAdd(
+                new ObservableCollection<Category>(_categories),
+                new ObservableCollection<Account>(_accounts)
+            );
+            TransactionFormViewModel.OnSaved = () =>
             {
-                var previousItem = _transactionsViewModel.AllTransactions.First(x => x.Date < TransactionFormViewModel.ResultTransaction.Date);
-                var index = _transactionsViewModel.AllTransactions.IndexOf(previousItem);
-                if (index != -1)
+                if (TransactionFormViewModel.ResultTransaction is not null)
+                {
+                    var previousItem = _transactionsViewModel.AllTransactions.FirstOrDefault(x => x.Date < TransactionFormViewModel.ResultTransaction.Date);
+                    var index = 0;
+                    if (previousItem is not null)
+                        index = _transactionsViewModel.AllTransactions.IndexOf(previousItem);
+                    if (index == -1) index = 0;
                     _transactionsViewModel.AllTransactions.Insert(index, TransactionFormViewModel.ResultTransaction);
-                _transactionsViewModel.LoadPageCommand.Execute(1);
-            }
+                    _dashboardViewModel.Transactions.Insert(index, TransactionFormViewModel.ResultTransaction);
+                    _dashboardViewModel.UpdateUserOverviewCommand.Execute(null);
+                    _transactionsViewModel.LoadPageCommand.Execute(1);
+                }
 
-            CloseTransactionForm();
-        };
-        TransactionFormViewModel.OnCancelled = () => CloseTransactionForm();
-        TransactionFormViewModel.OnDeleted = () =>
-        {
-            if (TransactionFormViewModel.ResultTransaction is { } resultTransaction)
+                CloseTransactionForm();
+            };
+            TransactionFormViewModel.OnCancelled = () => CloseTransactionForm();
+            TransactionFormViewModel.OnDeleted = () =>
             {
-                _transactionsViewModel.AllTransactions.Remove(resultTransaction);
-                _transactionsViewModel.LoadPageCommand.Execute(1);
-            }
+                if (TransactionFormViewModel.ResultTransaction is { } resultTransaction)
+                {
+                    _transactionsViewModel.AllTransactions.Remove(resultTransaction);
+                    _transactionsViewModel.LoadPageCommand.Execute(1);
+                }
 
-            CloseTransactionForm();
-        };
-        IsTransactionFormVisible = true;
+                CloseTransactionForm();
+            };
+            IsTransactionFormVisible = true;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 
     [RelayCommand]
