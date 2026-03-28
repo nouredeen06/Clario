@@ -24,5 +24,7 @@
     <PackageVersion Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.0.1.15" />
     <PackageVersion Include="Xaml.Behaviors.Interactions" Version="11.3.6.6" />
     <PackageVersion Include="Xaml.Behaviors.Interactivity" Version="11.3.6.6" />
+    <PackageVersion Include="SkiaSharp" Version="3.116.1" />
+    <PackageVersion Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.116.1" />
   </ItemGroup>
 </Project>

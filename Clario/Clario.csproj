@@ -29,8 +29,8 @@
         <PackageReference Include="Supabase" />
         <PackageReference Include="Xaml.Behaviors.Interactions" />
         <PackageReference Include="Xaml.Behaviors.Interactivity" />
-        <PackageReference Include="SkiaSharp" Version="3.116.*" />
-        <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.116.*" />
+        <PackageReference Include="SkiaSharp" />
+        <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" />
     </ItemGroup>
 
     <ItemGroup>
