@@ -18,21 +18,15 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
-
-      - name: Restore dependencies
-        run: dotnet restore Clario/Clario.csproj
-
-      - name: Build
-        run: dotnet build Clario/Clario.csproj --configuration Release --no-restore
-
+          
       - name: Publish
-        run: dotnet publish Clario/Clario.csproj \
-          --configuration Release \
-          --runtime linux-x64 \
-          --self-contained true \
-          --output ./publish/linux \
-          -p:PublishSingleFile=true \
-          -p:IncludeNativeLibrariesForSelfExtract=true
+        run: |
+          dotnet publish Clario.Desktop/Clario.Desktop.csproj \
+            -r linux-x64 \
+            -c Release \
+            --self-contained true \
+            -p:PublishSingleFile=true \
+            -o ./publish/linux-x64
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
