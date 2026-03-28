@@ -36,6 +36,6 @@ jobs:
         uses: https://code.forgejo.org/forgejo/upload-artifact@v4
         with:
           name: Clario-linux-x64
-          path: ./publish/linux
+          path: ./Clario-linux-x64.tar.gz
         
           retention-days: 7
