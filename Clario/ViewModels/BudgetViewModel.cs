@@ -30,7 +30,7 @@ public partial class BudgetViewModel : ViewModelBase
     private DateTime _currentPeriod = DateTime.Now.Date;
 
     public bool CanGoToNextPeriod => CurrentPeriod.Month < DateTime.Now.Month;
-    public bool CanGoToPreviousPeriod => CurrentPeriod.Month > Transactions.Min(x => x.Date.Month);
+    public bool CanGoToPreviousPeriod => Transactions.Any() && CurrentPeriod.Month > Transactions.Min(x => x.Date.Month);
     public string CurrentPeriodFormatted => CurrentPeriod.ToString("MMMM yyyy");
 
     [ObservableProperty] private ISeries[] _spendingBreakdownChartSeries = [];

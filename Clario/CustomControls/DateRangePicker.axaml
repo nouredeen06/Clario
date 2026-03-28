@@ -9,7 +9,7 @@
         <Setter Property="Foreground" Value="{DynamicResource TextSecondary}" />
         <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtle}" />
         <Setter Property="CornerRadius" Value="{DynamicResource RadiusControl}" />
-        <Setter Property="Padding" Value="10,8" />
+        <Setter Property="Padding" Value="10,8 2 8" />
         <Setter Property="FontSize" Value="13" />
         <Setter Property="Template">
             <ControlTemplate>
@@ -37,7 +37,8 @@
                                        Text="{TemplateBinding DisplayText}"
                                        FontSize="{TemplateBinding FontSize}"
                                        Foreground="{TemplateBinding Foreground}"
-                                       VerticalAlignment="Center" />
+                                       VerticalAlignment="Center"
+                                       TextTrimming="CharacterEllipsis"/>
                             <Svg Grid.Column="2"
                                  Path="../Assets/Icons/chevron-down.svg"
                                  Width="12" Height="12"

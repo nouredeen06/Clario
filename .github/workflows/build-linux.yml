@@ -1,34 +1,42 @@
 name: Build Linux
 
 on:
+  workflow_dispatch:
   push:
-    branches: [main]
+    tags:
+      - 'v*'
 
 jobs:
-  build-linux:
+  build:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.0.x'
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore Clario/Clario.csproj
+
+      - name: Build
+        run: dotnet build Clario/Clario.csproj --configuration Release --no-restore
 
       - name: Publish
-        run: |
-          dotnet publish Clario.Desktop/Clario.Desktop.csproj \
-            -r linux-x64 \
-            -c Release \
-            --self-contained true \
-            -p:PublishSingleFile=true \
-            -o ./publish/linux-x64
-
-      - name: Package as tar.gz
-        run: tar -czf Clario-linux-x64.tar.gz -C ./publish/linux-x64 .
+        run: dotnet publish Clario/Clario.csproj \
+          --configuration Release \
+          --runtime linux-x64 \
+          --self-contained true \
+          --output ./publish/linux \
+          -p:PublishSingleFile=true \
+          -p:IncludeNativeLibrariesForSelfExtract=true
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: clario-linux-x64
-          path: Clario-linux-x64.tar.gz
+          name: Clario-linux-x64
+          path: ./publish/linux
+          retention-days: 7

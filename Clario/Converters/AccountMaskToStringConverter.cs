@@ -8,7 +8,7 @@ public class AccountMaskToStringConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (value is not string mask) return string.Empty;
+        if (value is not string mask ||  string.IsNullOrWhiteSpace(mask)) return string.Empty;
         return $"•••• {mask}";
     }
 

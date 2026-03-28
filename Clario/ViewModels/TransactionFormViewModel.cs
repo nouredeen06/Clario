@@ -65,6 +65,8 @@ public partial class TransactionFormViewModel : ViewModelBase
     public Action? OnCancelled;
     public Action? OnDeleted;
 
+    [ObservableProperty] private bool _showDeleteConfirm = false;
+
     // ── Edit mode: original transaction ─────────────────────
     private Transaction? _editingTransaction;
     private Guid? _editingId;
@@ -73,6 +75,18 @@ public partial class TransactionFormViewModel : ViewModelBase
     public Transaction? ResultTransaction { get; set; }
 
     // ── Commands ────────────────────────────────────────────
+
+    partial void OnSelectedCategoryChanged(Category? value)
+    {
+        if (value.Type == Type) return;
+        Type = value.Type;
+    }
+
+    partial void OnTypeChanged(string value)
+    {
+        if (value == SelectedCategory?.Type) return;
+        SelectedCategory = _categories.FirstOrDefault(c => c.Type == value);
+    }
 
     [RelayCommand]
     private void SetType(string type)
@@ -164,7 +178,7 @@ public partial class TransactionFormViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private async Task Delete()
+    private async Task ConfirmDelete()
     {
         if (!IsEditMode || !_editingId.HasValue) return;
 
@@ -181,6 +195,18 @@ public partial class TransactionFormViewModel : ViewModelBase
     }
 
     [RelayCommand]
+    private void RequestDelete()
+    {
+        ShowDeleteConfirm = true;
+    }
+
+    [RelayCommand]
+    private void CancelDelete()
+    {
+        ShowDeleteConfirm = false;
+    }
+
+    [RelayCommand]
     private void Cancel()
     {
         OnCancelled?.Invoke();
@@ -193,6 +219,7 @@ public partial class TransactionFormViewModel : ViewModelBase
         ObservableCollection<Category> categories,
         ObservableCollection<Account> accounts)
     {
+        ShowDeleteConfirm = false;
         IsEditMode = false;
         _editingId = null;
         Categories = categories;
@@ -214,6 +241,7 @@ public partial class TransactionFormViewModel : ViewModelBase
         ObservableCollection<Category> categories,
         ObservableCollection<Account> accounts)
     {
+        ShowDeleteConfirm = false;
         IsEditMode = true;
         _editingId = transaction.Id;
         Categories = categories;
