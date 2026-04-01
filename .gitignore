@@ -5,3 +5,5 @@ obj/
 *.user
 *.suo
 ./Clario/CLAUDE_CONTEXT.md
+publish/
+*.tar.gz
