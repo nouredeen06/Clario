@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
-using System.Threading.Tasks;
 using Clario.Data;
 using Clario.Messages;
 using Clario.Models;
@@ -11,20 +10,22 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 
+// ReSharper disable PossibleMultipleEnumeration
+
 namespace Clario.ViewModels;
 
 public partial class TransactionsViewModel : ViewModelBase
 {
     public required ViewModelBase parentViewModel;
+    public GeneralDataRepo AppData => DataRepo.General;
 
-    public List<Transaction> AllTransactions = new();
     [ObservableProperty] private ObservableCollection<Category> _categories = new();
     [ObservableProperty] private ObservableCollection<Account> _accounts = new();
 
     [ObservableProperty] private List<Transaction> _filteredTransactions = new();
 
     private int _pageSize = 25;
-    [ObservableProperty] private int _pageSizeIndex = 0;
+    [ObservableProperty] private int _pageSizeIndex;
 
     [ObservableProperty] [NotifyPropertyChangedFor(nameof(TotalPages))] [NotifyCanExecuteChangedFor(nameof(NextPageCommand), nameof(PreviousPageCommand))]
     private int _currentPage = 1;
@@ -56,8 +57,8 @@ public partial class TransactionsViewModel : ViewModelBase
 
     public List<int> PageNumbers { get; set; }
     [ObservableProperty] private ObservableCollection<int> _visiblePageNumbers = new();
-    public int TotalPages => (int)Math.Ceiling(_filteredTransactions.Count / (double)_pageSize);
-    public bool HasNoTransactions => _filteredTransactions.Count == 0;
+    public int TotalPages => (int)Math.Ceiling(FilteredTransactions.Count / (double)_pageSize);
+    public bool HasNoTransactions => FilteredTransactions.Count == 0;
     public bool HasNextPage => CurrentPage < TotalPages;
     public bool HasPreviousPage => CurrentPage > 1;
 
@@ -65,6 +66,7 @@ public partial class TransactionsViewModel : ViewModelBase
     [ObservableProperty] private double _totalIncome;
     [ObservableProperty] private int _expensesCount;
     [ObservableProperty] private int _incomeCount;
+    [ObservableProperty] private string _dateRangeLabel = "";
 
     [ObservableProperty] private string _searchText = "";
     [ObservableProperty] private Category _selectedCategory;
@@ -84,6 +86,13 @@ public partial class TransactionsViewModel : ViewModelBase
 
     public TransactionsViewModel()
     {
+        AppData.Transactions.CollectionChanged += (_, _) =>
+        {
+            InitializeCategories();
+            InitializeAccounts();
+            LoadPage(1);
+        };
+        Initialize();
     }
 
     partial void OnPageSizeIndexChanged(int value)
@@ -121,8 +130,7 @@ public partial class TransactionsViewModel : ViewModelBase
     {
         ApplyFilters();
         if (CurrentPage != page) CurrentPage = page;
-        var items = _filteredTransactions
-            .Skip((page - 1) * _pageSize)
+        var items = FilteredTransactions.Skip((page - 1) * _pageSize)
             .Take(_pageSize);
 
         OnPropertyChanged(nameof(HasNoTransactions));
@@ -130,9 +138,9 @@ public partial class TransactionsViewModel : ViewModelBase
         foreach (var item in items)
             PagedTransactions.Add(item);
         PaginationSummaryText =
-            $"Showing {((page - 1) * _pageSize) + 1}-{(Math.Min(page * _pageSize, _filteredTransactions.Count))} of {_filteredTransactions.Count} transactions";
+            $"Showing {((page - 1) * _pageSize) + 1}-{(Math.Min(page * _pageSize, FilteredTransactions.Count))} of {FilteredTransactions.Count} transactions";
         PageNumbers = Enumerable.Range(1, Math.Min(TotalPages, 5)).ToList();
-        var numbers = GetSurrounding(PageNumbers, page, 5);
+        var numbers = GetSurrounding(PageNumbers, page);
         VisiblePageNumbers.Clear();
         foreach (var number in numbers)
             VisiblePageNumbers.Add(number);
@@ -143,43 +151,45 @@ public partial class TransactionsViewModel : ViewModelBase
     [RelayCommand]
     private void ApplyFilters()
     {
-        // Console.WriteLine($"Search Text: {_searchText}");
-        // Console.WriteLine($"Category: {_selectedCategory.Name}");
-        // Console.WriteLine($"Account: {_selectedAccount.Name}");
-        // Console.WriteLine($"Transaction Type: {_transactionType}");
+        var filtered = AppData.Transactions.Where(x =>
+            x.Description.Contains(SearchText, StringComparison.OrdinalIgnoreCase)
+            || x.Note!.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
 
-
-        var filtered = AllTransactions.Where(x =>
-            x.Description.Contains(_searchText, StringComparison.OrdinalIgnoreCase)
-            || x.Note.Contains(_searchText, StringComparison.OrdinalIgnoreCase));
+        var culture = new CultureInfo("en-US");
 
         switch (SelectedDateRangeOption)
         {
             case "All Time":
-                // do nothing
+                DateRangeLabel = "ALL TIME";
                 break;
             case "Today":
                 filtered = filtered.Where(x => x.Date == DateTime.Now.Date);
+                DateRangeLabel = DateTime.Now.ToString("MMM d, yyyy", culture).ToUpper();
                 break;
             case "This Week":
                 var startOfWeek = DateTime.Now.Date.AddDays(-(int)DateTime.Now.DayOfWeek);
                 var endOfWeek = startOfWeek.AddDays(6);
                 filtered = filtered.Where(x => x.Date.Date >= startOfWeek && x.Date.Date <= endOfWeek);
+                DateRangeLabel = "THIS WEEK";
                 break;
             case "This Month":
                 filtered = filtered.Where(x => x.Date.Month == DateTime.Now.Month);
+                DateRangeLabel = DateTime.Now.ToString("MMMM yyyy", culture).ToUpper();
                 break;
             case "Last Month":
                 var lastMonth = DateTime.Now.AddMonths(-1);
                 filtered = filtered.Where(x => x.Date.Month == lastMonth.Month && x.Date.Year == lastMonth.Year);
+                DateRangeLabel = lastMonth.ToString("MMMM yyyy", culture).ToUpper();
                 break;
             case "This Quarter":
                 var startOfQuarter = DateTime.Now.AddMonths(-(DateTime.Now.Month - 1) % 3);
                 var endOfQuarter = startOfQuarter.AddMonths(3);
                 filtered = filtered.Where(x => x.Date >= startOfQuarter && x.Date <= endOfQuarter);
+                DateRangeLabel = $"Q{(DateTime.Now.Month - 1) / 3 + 1} {DateTime.Now.Year}";
                 break;
             case "This Year":
                 filtered = filtered.Where(x => x.Date.Year == DateTime.Now.Year);
+                DateRangeLabel = DateTime.Now.Year.ToString();
                 break;
             case "Custom Range":
                 if (SelectedDates is not null && SelectedDates.Count > 0)
@@ -192,25 +202,35 @@ public partial class TransactionsViewModel : ViewModelBase
 
                     var start = ordered.First();
                     var end = ordered.Last();
-
-                    Console.WriteLine($"first {SelectedDates.First():d} / last {SelectedDates.Last():d}");
+                    
                     if (SelectedDates.Count == 1)
+                    {
                         filtered = filtered.Where(x => x.Date.Date == start);
+                        DateRangeLabel = start.ToString("MMM dd, yyyy", culture).ToUpper();
+                    }
                     else
+                    {
                         filtered = filtered.Where(x => x.Date.Date >= start && x.Date.Date <= end);
+                        DateRangeLabel = $"{start.ToString("MMM dd", culture)} - {end.ToString("MMM dd, yyyy", culture)}".ToUpper();
+                    }
                 }
 
                 break;
         }
 
-        if (_selectedCategory.Name != "All Categories")
-            filtered = filtered.Where(x => x.CategoryId == _selectedCategory.Id);
 
-        if (_selectedAccount.Name != "All Accounts")
-            filtered = filtered.Where(x => x.AccountId == _selectedAccount.Id);
+        // Calculate totals based on date-filtered transactions
+        TotalExpenses = filtered.Where(x => x.Type == "expense").Sum(x => Convert.ToDouble(x.Amount));
+        TotalIncome = filtered.Where(x => x.Type == "income").Sum(x => Convert.ToDouble(x.Amount));
 
-        if (_transactionType != "all")
-            filtered = filtered.Where(x => x.Type == _transactionType);
+        if (SelectedCategory.Name != "All Categories")
+            filtered = filtered.Where(x => x.CategoryId == SelectedCategory.Id);
+
+        if (SelectedAccount.Name != "All Accounts")
+            filtered = filtered.Where(x => x.AccountId == SelectedAccount.Id);
+
+        if (TransactionType != "all")
+            filtered = filtered.Where(x => x.Type == TransactionType);
 
         switch (SelectedSortOption)
         {
@@ -297,7 +317,7 @@ public partial class TransactionsViewModel : ViewModelBase
         }
     }
 
-    public async Task Initialize()
+    public void Initialize()
     {
         try
         {
@@ -320,21 +340,31 @@ public partial class TransactionsViewModel : ViewModelBase
     private void InitializeCategories()
     {
         Categories.Insert(0, new Category() { Name = "All Categories" });
+        foreach (var appDataCategory in AppData.Categories)
+        {
+            Categories.Add(appDataCategory);
+        }
+
         SelectedCategory = Categories.First();
     }
 
     private void InitializeAccounts()
     {
         Accounts.Insert(0, new Account() { Name = "All Accounts" });
+        foreach (var appDataAccount in AppData.Accounts)
+        {
+            Accounts.Add(appDataAccount);
+        }
+
         SelectedAccount = Accounts.First();
     }
 
     private void CalculateMonthlyFinancials()
     {
-        TotalExpenses = AllTransactions.Where(x => x.Type == "expense" && x.Date.Month == DateTime.Now.Month).Sum(x => Convert.ToDouble(x.Amount));
-        TotalIncome = AllTransactions.Where(x => x.Type == "income" && x.Date.Month == DateTime.Now.Month).Sum(x => Convert.ToDouble(x.Amount));
-        ExpensesCount = AllTransactions.Count(x => x.Type == "expense" && x.Date.Month == DateTime.Now.Month);
-        IncomeCount = AllTransactions.Count(x => x.Type == "income" && x.Date.Month == DateTime.Now.Month);
+        TotalExpenses = AppData.Transactions.Where(x => x.Type == "expense" && x.Date.Month == DateTime.Now.Month).Sum(x => Convert.ToDouble(x.Amount));
+        TotalIncome = AppData.Transactions.Where(x => x.Type == "income" && x.Date.Month == DateTime.Now.Month).Sum(x => Convert.ToDouble(x.Amount));
+        ExpensesCount = AppData.Transactions.Count(x => x.Type == "expense" && x.Date.Month == DateTime.Now.Month);
+        IncomeCount = AppData.Transactions.Count(x => x.Type == "income" && x.Date.Month == DateTime.Now.Month);
     }
 
     public static List<T> GetSurrounding<T>(List<T> list, T item, int count = 5)
@@ -351,13 +381,13 @@ public partial class TransactionsViewModel : ViewModelBase
 
         return list.GetRange(start, end - start);
     }
-    
+
     [RelayCommand]
     private void CreateTransaction()
     {
         ((MainViewModel)parentViewModel).OpenAddTransaction();
     }
-    
+
     [RelayCommand]
     private void EditTransaction(Transaction transaction)
     {

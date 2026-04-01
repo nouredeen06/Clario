@@ -4,9 +4,9 @@ using Avalonia.Markup.Xaml;
 
 namespace Clario.Views;
 
-public partial class BudgetFormView : UserControl
+public partial class DeleteAccountDialogView : UserControl
 {
-    public BudgetFormView()
+    public DeleteAccountDialogView()
     {
         InitializeComponent();
     }

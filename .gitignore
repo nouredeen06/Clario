@@ -4,3 +4,4 @@ obj/
 .idea/
 *.user
 *.suo
+./Clario/CLAUDE_CONTEXT.md

@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:Clario.ViewModels"
+             xmlns:views="clr-namespace:Clario.Views"
              xmlns:model="clr-namespace:Clario.Models"
              x:DataType="vm:AccountsViewModel"
              mc:Ignorable="d" d:DesignWidth="1180" d:DesignHeight="800"
@@ -18,7 +19,7 @@
                 <TextBlock Text="4 accounts" FontSize="12" Foreground="{DynamicResource TextMuted}" />
                 <TextBlock Text="Accounts" FontSize="26" FontWeight="Bold" Foreground="{DynamicResource TextPrimary}" Margin="0,2,0,0" />
             </StackPanel>
-            <Button Grid.Column="1" Classes="accented" Padding="16,9" VerticalAlignment="Center">
+            <Button Grid.Column="1" Classes="accented" Padding="16,9" VerticalAlignment="Center" Command="{Binding CreateAccountCommand}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <Svg Path="../Assets/Icons/plus.svg" Width="14" Height="14"
                          Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #0D0F14; }" />
@@ -81,9 +82,11 @@
                                                     </StackPanel>
                                                 </StackPanel>
                                                 <StackPanel Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Spacing="4">
+
                                                     <TextBlock Text="{Binding CurrentBalance,StringFormat='$0.00'}" FontSize="15" FontWeight="Bold"
                                                                Foreground="{DynamicResource TextPrimary}" HorizontalAlignment="Right" />
-                                                    <StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Right">
+                                                    <StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Right"
+                                                                IsVisible="{Binding !isCredit}">
                                                         <Svg Width="12" Height="12">
                                                             <Svg.Path>
                                                                 <MultiBinding Converter="{StaticResource DecimalColorConverter}">
@@ -123,6 +126,18 @@
                                                             </TextBlock>
                                                         </StackPanel>
                                                     </StackPanel>
+                                                    <StackPanel Spacing="5" IsVisible="{Binding isCredit}">
+                                                        <Grid ColumnDefinitions="*,Auto">
+                                                            <TextBlock Grid.Column="0" Text="Credit Utilisation" FontSize="11"
+                                                                       Foreground="{DynamicResource TextMuted}" />
+                                                            <TextBlock Grid.Column="1" Text="{Binding CreditUtilizationPerc, StringFormat='0%'}" FontSize="11"
+                                                                       Foreground="{DynamicResource AccentYellow}"
+                                                                       Margin="8,0,0,0" />
+                                                        </Grid>
+                                                        <ProgressBar Classes="yellow"
+                                                                     Value="{Binding CurrentBalance, Converter={StaticResource CreditAmountConverter}}"
+                                                                     Minimum="0" Maximum="{Binding CreditLimit}" Width="160" Height="4" />
+                                                    </StackPanel>
                                                 </StackPanel>
                                             </Grid>
                                         </Button>
@@ -155,7 +170,9 @@
                                     <TextBlock Text="{Binding SelectedAccount.Name}" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextPrimary}" />
                                     <TextBlock Text="{Binding SelectedAccount.Institution}" FontSize="12" Foreground="{DynamicResource TextMuted}" />
                                 </StackPanel>
-                                <Button Grid.Column="2" Background="Transparent" BorderThickness="0" Padding="6" VerticalAlignment="Top" Cursor="Hand">
+                                <Button Grid.Column="2" Background="Transparent" BorderThickness="0" Padding="6" VerticalAlignment="Top" Cursor="Hand"
+                                        Command="{Binding EditAccountCommand
+                                }" CommandParameter="{Binding SelectedAccount}">
                                     <Svg Path="../Assets/Icons/pencil.svg" Width="14" Height="14" Css="{DynamicResource SvgMuted}" />
                                 </Button>
                             </Grid>
@@ -354,7 +371,9 @@
                             </Button>
                             <!-- Delete -->
                             <Button Background="#2A0D0D" BorderBrush="#3A1515" BorderThickness="1" CornerRadius="10" Padding="14,10"
-                                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Cursor="Hand">
+                                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Cursor="Hand"
+                                    Command="{Binding RequestDeleteAccountCommand}" CommandParameter="{Binding SelectedAccount}"
+                                    IsEnabled="{Binding CanDeleteAccount}">
                                 <StackPanel Orientation="Horizontal" Spacing="10">
                                     <Svg Path="../Assets/Icons/trash-2.svg" Width="14" Height="14"
                                          Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #FF5E5E; }" />
@@ -368,6 +387,10 @@
                     </Border>
                 </StackPanel>
             </ScrollViewer>
+        </Grid>
+        <Grid Grid.Row="0" Grid.RowSpan="2">
+            <views:DeleteAccountDialogView IsVisible="{Binding DataContext.IsDeleteDialogVisible ,ElementName=AccountsPage }"
+                                           DataContext="{Binding Path=DeleteDialog}" />
         </Grid>
     </Grid>
 </UserControl>

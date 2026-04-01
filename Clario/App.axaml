@@ -28,10 +28,13 @@
         <converters:DecimalColorConverter x:Key="DecimalColorConverter" />
         <converters:BoolToColorConverter x:Key="BoolToColorConverter" />
         <converters:BoolToCssConverter x:Key="BoolToCssConverter" />
+        <converters:CreditAmountConverter x:Key="CreditAmountConverter"/>
+        <converters:BoolToStringConverter x:Key="BoolToStringConverter"/>
     </Application.Resources>
     <Application.Styles>
         <FluentTheme />
         <StyleInclude Source="../Theme/AppTheme.axaml" />
         <StyleInclude Source="avares://AvaloniaProgressRing/Styles/ProgressRing.xaml"/>
+        <StyleInclude Source="avares://Avalonia.Controls.ColorPicker/Themes/Fluent/Fluent.xaml" />
     </Application.Styles>
 </Application>

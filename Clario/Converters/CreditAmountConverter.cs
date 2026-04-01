@@ -1,0 +1,19 @@
+﻿using System;
+using System.Globalization;
+using Avalonia.Data.Converters;
+
+namespace Clario.Converters;
+
+public class CreditAmountConverter : IValueConverter
+{
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (value is not decimal amount) return 0;
+        return amount < 0 ? amount * -1 : 0;
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}

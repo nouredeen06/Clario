@@ -1,49 +1,71 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
+using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Media.Imaging;
 using Clario.Models;
 using Clario.Models.GeneralModels;
 using Clario.Services;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Messaging;
+using Supabase.Postgrest;
+using FileOptions = Supabase.Storage.FileOptions;
 
 namespace Clario.Data;
 
-public class GeneralDataRepo
+public record ProfileUpdated();
+
+public partial class GeneralDataRepo : ObservableObject
 {
-    public Profile? Profile { get; set; }
-    public List<Category>? Categories { get; set; }
-    public List<Account>? Accounts { get; set; }
-    public List<Budget>? Budgets { get; set; }
-    public List<Transaction>? Transactions { get; set; }
+    [ObservableProperty] private Profile? _profile;
+    [ObservableProperty] private ObservableCollection<Category> _categories = new();
+    [ObservableProperty] private ObservableCollection<Account> _accounts = new();
+    [ObservableProperty] private ObservableCollection<Budget> _budgets = new();
+    [ObservableProperty] private ObservableCollection<Transaction> _transactions = new();
 
-    public async Task<Profile?> FetchProfileInfo()
+    private static readonly HttpClient _HttpClient = new();
+    private const string Bucket = "avatars";
+    private const string ProjectRef = "xzxstbllaivumhtpctmo";
+    private const string PublicBaseUrl = $"https://{ProjectRef}.supabase.co/storage/v1/object/public/{Bucket}";
+
+    partial void OnProfileChanged(Profile? value)
     {
-        if (Profile is not null) return Profile;
+        _ = GetAvatarFromUrl(value?.AvatarUrl);
+    }
+
+    public async Task<Profile?> FetchProfileInfo(bool forceRefresh = false)
+    {
+        if (Profile is not null && !forceRefresh) return Profile;
         var profile = await SupabaseService.Client.From<Profile>().Get();
+        if (profile.Models.Count == 0) return null;
         Profile = profile.Model;
-        return profile.Model;
+
+        return Profile;
     }
 
-    public async Task InsertProfileInfo(Profile profile)
+    private async Task GetAvatarFromUrl(string? url)
     {
-        try
+        if (!string.IsNullOrEmpty(url))
         {
-            await SupabaseService.Client.From<Profile>().Insert(profile);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            return;
+            var bytes = await _HttpClient.GetByteArrayAsync(url);
+            var stream = new MemoryStream(bytes);
+            Profile.Avatar = new Bitmap(stream);
         }
 
-        Profile = profile;
+        WeakReferenceMessenger.Default.Send(new ProfileUpdated());
     }
 
-    public async Task<List<Transaction>> FetchTransactions()
+
+    public async Task<List<Transaction>> FetchTransactions(bool forceRefresh = false)
     {
-        if (Transactions is not null) return Transactions;
+        if (Transactions.Count != 0 && !forceRefresh) return Transactions.ToList();
         var transactions = await SupabaseService.Client.From<Transaction>().Get();
-        Transactions = transactions.Models;
+        Transactions = new ObservableCollection<Transaction>(transactions.Models);
         return transactions.Models;
     }
 
@@ -51,11 +73,18 @@ public class GeneralDataRepo
     {
         try
         {
-            await SupabaseService.Client.From<Transaction>().Insert(transaction);
+            var result = await SupabaseService.Client.From<Transaction>().Insert(transaction);
+
+            if (result.Models.Count >= 1)
+            {
+                var resultItem = LinkTransactionCategories(result.Models[0]);
+                Transactions.Add(resultItem);
+            }
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
+            return;
         }
     }
 
@@ -63,7 +92,13 @@ public class GeneralDataRepo
     {
         try
         {
-            await SupabaseService.Client.From<Transaction>().Update(transaction);
+            var result = await SupabaseService.Client.From<Transaction>().Update(transaction);
+            if (result.Model is null) return;
+            var item = Transactions.FirstOrDefault(x => x.Id == result.Model.Id);
+            if (item is null) return;
+            var index = Transactions.IndexOf(item);
+
+            if (index != -1) Transactions[index] = LinkTransactionCategories(result.Model);
         }
         catch (Exception e)
         {
@@ -76,6 +111,9 @@ public class GeneralDataRepo
         try
         {
             await SupabaseService.Client.From<Transaction>().Where(x => x.Id == id).Delete();
+            var item = Transactions.FirstOrDefault(x => x.Id == id);
+            if (item is null) return;
+            Transactions.Remove(item);
         }
         catch (Exception e)
         {
@@ -84,60 +122,62 @@ public class GeneralDataRepo
         }
     }
 
-    public async Task<List<Category>> FetchCategories()
+    public async Task<List<Category>> FetchCategories(bool forceRefresh = false)
     {
-        if (Categories is not null) return Categories;
+        if (Categories.Count != 0 && !forceRefresh) return Categories.ToList();
         var categories = await SupabaseService.Client.From<Category>().Get();
-        Categories = categories.Models;
+        Categories = new ObservableCollection<Category>(categories.Models);
         return categories.Models;
     }
 
-    public async Task<List<Account>> FetchAccounts()
+    public async Task<List<Account>> FetchAccounts(bool forceRefresh = false)
     {
-        if (Accounts is not null) return Accounts;
+        if (Accounts.Count != 0 && !forceRefresh) return Accounts.ToList();
         var accounts = await SupabaseService.Client.From<Account>().Get();
-        Accounts = accounts.Models;
+        Accounts = new ObservableCollection<Account>(accounts.Models);
         return accounts.Models;
     }
 
-    public async Task<List<Budget>> FetchBudgets()
+    public async Task<List<Budget>> FetchBudgets(bool forceRefresh = false)
     {
-        if (Budgets is not null) return Budgets;
+        if (Budgets.Count != 0 && !forceRefresh) return Budgets.ToList();
         var budgets = await SupabaseService.Client.From<Budget>().Get();
-        Budgets = budgets.Models;
+        Budgets = new ObservableCollection<Budget>(budgets.Models);
         return budgets.Models;
     }
 
     public async Task<List<Budget>> FetchProcessedBudgets(DateTime CurrentPeriod)
     {
-        var categories = await FetchCategories();
-        var transactions = await FetchTransactions();
-        var budgets = await FetchBudgets();
+        var budgets = Budgets;
         var outputList = new List<Budget>();
         foreach (var budget in budgets)
         {
-            budget.Category = categories.FirstOrDefault(x => x.Id == budget.CategoryId);
+            budget.Category = Categories.FirstOrDefault(x => x.Id == budget.CategoryId);
 
             switch (budget.Period.ToLower())
             {
                 case "monthly":
-                    var budgetTransactions = transactions.Where(x =>
+                    var budgetTransactions = Transactions.Where(x =>
                         x.Date.Month == CurrentPeriod.Month && x.Date.Year == CurrentPeriod.Year && x.CategoryId == budget.CategoryId).ToList();
                     budget.Spent = budgetTransactions.Sum(x => x.Amount);
                     budget.TransactionsCount = budgetTransactions.Count;
                     break;
                 case "quarterly":
-                    var quarterTransactions = transactions.Where(x =>
+                    var quarterTransactions = Transactions.Where(x =>
                         x.Date.Month >= CurrentPeriod.Month - 3 && x.Date.Month <= CurrentPeriod.Month && x.CategoryId == budget.CategoryId).ToList();
                     budget.Spent = quarterTransactions.Sum(x => x.Amount);
                     budget.TransactionsCount = quarterTransactions.Count;
                     break;
                 case "yearly":
-                    var yearTransactions = transactions.Where(x => x.Date.Year == CurrentPeriod.Year && x.CategoryId == budget.CategoryId).ToList();
+                    var yearTransactions = Transactions.Where(x => x.Date.Year == CurrentPeriod.Year && x.CategoryId == budget.CategoryId).ToList();
                     budget.Spent = yearTransactions.Sum(x => x.Amount);
                     budget.TransactionsCount = yearTransactions.Count;
                     break;
             }
+
+            OnPropertyChanged(nameof(budget.IsOnTrack));
+            OnPropertyChanged(nameof(budget.IsWarning));
+            OnPropertyChanged(nameof(budget.IsOverBudget));
         }
 
 
@@ -172,5 +212,240 @@ public class GeneralDataRepo
         }
 
         return outputList;
+    }
+
+    public async Task<Account?> InsertAccount(Account account)
+    {
+        try
+        {
+            var result = await SupabaseService.Client.From<Account>()
+                .Insert(account, new QueryOptions() { Returning = QueryOptions.ReturnType.Representation });
+            if (result.Model is null) return null;
+            Accounts.Add(result.Model);
+            return result.Model;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return null;
+        }
+    }
+
+    public async Task UpdateAccount(Account account)
+    {
+        try
+        {
+            var result = await SupabaseService.Client.From<Account>().Update(account);
+            if (result.Model is null) return;
+            var item = Accounts.FirstOrDefault(x => x.Id == result.Model.Id);
+            if (item is null) return;
+            var index = Accounts.IndexOf(item);
+            if (index != -1) Accounts[index] = result.Model;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+    }
+
+
+    public async Task MigrateTransactions(Guid accountId, Guid targetAccountId)
+    {
+        try
+        {
+            var update = await SupabaseService.Client
+                .From<Transaction>()
+                .Where(x => x.AccountId == accountId)
+                .Set(x => x.AccountId, targetAccountId)
+                .Update();
+            foreach (var updateModel in update.Models)
+            {
+                var item = Transactions.SingleOrDefault(x => x.Id == updateModel.Id);
+                if (item is null) return;
+                var index = Transactions.IndexOf(item);
+                if (index != -1) Transactions[index] = updateModel;
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    public async Task RecalculateAccountBalance(Guid targetAccountId)
+    {
+        var accountResult = Accounts
+            .SingleOrDefault(a => a.Id == targetAccountId);
+
+        if (accountResult is null) return;
+
+        var transactionsResult = Transactions
+            .Where(t => t.AccountId == targetAccountId);
+
+        var balance = accountResult.OpeningBalance +
+                      transactionsResult.Sum(t =>
+                          t.Type == "income" ? t.Amount : -t.Amount);
+
+        accountResult.CurrentBalance = balance;
+        await SupabaseService.Client
+            .From<Account>()
+            .Update(accountResult);
+        var index = Accounts.IndexOf(accountResult);
+        if (index != -1) Accounts[index] = accountResult;
+    }
+
+    public async Task DeleteAccount(Guid accountId)
+    {
+        await SupabaseService.Client
+            .From<Account>()
+            .Where(a => a.Id == accountId)
+            .Delete();
+
+        var item = Accounts.FirstOrDefault(x => x.Id == accountId);
+        if (item is null) return;
+        Accounts.Remove(item);
+    }
+
+    public async Task InsertBudget(Budget budget)
+    {
+        try
+        {
+            var result = await SupabaseService.Client.From<Budget>().Insert(budget);
+            if (result.Models.Count >= 1)
+            {
+                Budgets.Add(result.Models[0]);
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    public async Task UpdateBudget(Budget budget)
+    {
+        try
+        {
+            var result = await SupabaseService.Client.From<Budget>().Update(budget);
+            if (result.Model is null) return;
+            var item = Budgets.FirstOrDefault(x => x.Id == result.Model.Id);
+            if (item is null) return;
+            var index = Budgets.IndexOf(item);
+            if (index != -1) Budgets[index] = result.Model;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    public async Task DeleteBudget(Guid BudgetId)
+    {
+        try
+        {
+            await SupabaseService.Client.From<Budget>().Where(x => x.Id == BudgetId).Delete();
+            var item = Budgets.FirstOrDefault(x => x.Id == BudgetId);
+            if (item is null) return;
+            Budgets.Remove(item);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    public void LinkTransactionCategories()
+    {
+        foreach (var transaction in Transactions)
+        {
+            transaction.Category = Categories.FirstOrDefault(x => x.Id == transaction.CategoryId);
+        }
+    }
+
+    public Transaction LinkTransactionCategories(Transaction transaction)
+    {
+        transaction.Category = Categories.FirstOrDefault(x => x.Id == transaction.CategoryId);
+        return transaction;
+    }
+
+    public async Task UpdateProfile(Profile profile)
+    {
+        var result = await SupabaseService.Client.From<Profile>().Update(profile);
+        if (result.Models.Count > 0) Profile = result.Models[0];
+    }
+
+    public async Task UpdateProfileAvatar(string? avatarUrl)
+    {
+        var profile = Profile;
+        profile.AvatarUrl = avatarUrl;
+
+        var result = await SupabaseService.Client
+            .From<Profile>()
+            .Update(profile);
+        Profile = result.Models[0];
+    }
+
+
+    /// <summary>Upload a local file as the current user's avatar. Returns the public URL.</summary>
+    public async Task<string> UploadAvatarAsync(string localFilePath)
+    {
+        var userId = SupabaseService.Client.Auth.CurrentUser!.Id;
+        var ext = Path.GetExtension(localFilePath).ToLowerInvariant();
+        var storagePath = $"{userId}/avatar{ext}";
+
+        var bytes = await File.ReadAllBytesAsync(localFilePath);
+        var mimeType = ext switch
+        {
+            ".jpg" or ".jpeg" => "image/jpeg",
+            ".png" => "image/png",
+            ".webp" => "image/webp",
+            _ => "application/octet-stream"
+        };
+
+        var bucket = SupabaseService.Client.Storage.From(Bucket);
+
+        // Upsert: upload if not exists, replace if it does
+        await bucket.Upload(bytes, storagePath, new FileOptions
+        {
+            ContentType = mimeType,
+            Upsert = true
+        });
+
+        var stream = new MemoryStream(bytes);
+        // Append cache-buster so Avalonia Image re-fetches the new file
+        return $"{PublicBaseUrl}/{storagePath}?t={DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
+    }
+
+    /// <summary>Delete the current user's avatar from storage.</summary>
+    public async Task DeleteAvatarAsync()
+    {
+        var userId = SupabaseService.Client.Auth.CurrentUser!.Id;
+
+        // Try both extensions since we don't track which was uploaded
+        var bucket = SupabaseService.Client.Storage.From(Bucket);
+        foreach (var ext in new[] { "jpg", "jpeg", "png", "webp" })
+        {
+            try
+            {
+                await bucket.Remove([$"{userId}/avatar.{ext}"]);
+            }
+            catch
+            {
+                /* file with that ext may not exist, ignore */
+            }
+        }
+    }
+
+    /// <summary>Build the public URL for a given avatar_url stored in the profile.</summary>
+    public string? BuildPublicUrl(string? avatarUrl)
+    {
+        if (string.IsNullOrWhiteSpace(avatarUrl)) return null;
+        // If already a full URL (from storage or external), return as-is
+        if (avatarUrl.StartsWith("http")) return avatarUrl;
+        return $"{PublicBaseUrl}/{avatarUrl}";
     }
 }

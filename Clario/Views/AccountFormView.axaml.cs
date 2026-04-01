@@ -1,12 +1,12 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
 namespace Clario.Views;
 
-public partial class BudgetFormView : UserControl
+public partial class AccountFormView : UserControl
 {
-    public BudgetFormView()
+    public AccountFormView()
     {
         InitializeComponent();
     }

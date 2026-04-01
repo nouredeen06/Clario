@@ -18,10 +18,8 @@ namespace Clario.ViewModels;
 public partial class DashboardViewModel : ViewModelBase
 {
     public required ViewModelBase parentViewModel;
-    public required List<Transaction> Transactions = new();
-    public required List<Category> Categories = new();
-    public required List<Budget> Budgets = new();
-    public required List<Account> Accounts = new();
+    public GeneralDataRepo AppData => DataRepo.General;
+    // public required List<Account> Accounts = new();
 
     [ObservableProperty] private ObservableCollection<ColumnChartData> _spendingByCategoryChartData = new();
     [ObservableProperty] private ISeries[] _spendingByCategoryChartSeries = new ISeries[] { };
@@ -31,19 +29,37 @@ public partial class DashboardViewModel : ViewModelBase
     [ObservableProperty] private decimal _totalNetworth;
     [ObservableProperty] private decimal _monthlyIncome;
     private decimal _monthlyIncomeChange;
-    
+    private bool _hasLastMonthIncome;
+
     public int MaxChartWidth => SpendingByCategoryChartData.Count * 150;
 
-    public string MonthlyIncomeChangeFormatted => _monthlyIncomeChange >= 0
-        ? "↑" + _monthlyIncomeChange.ToString("0.0%")
-        : "↓" + _monthlyIncomeChange.ToString("0.0%");
+    public string MonthlyIncomeChangeFormatted
+    {
+        get
+        {
+            if (!_hasLastMonthIncome)
+                return MonthlyIncome > 0 ? "NEW" : "—";
+            return _monthlyIncomeChange >= 0
+                ? "↑ " + _monthlyIncomeChange.ToString("0.0%")
+                : "↓ " + _monthlyIncomeChange.ToString("0.0%");
+        }
+    }
 
     [ObservableProperty] private decimal _monthlyExpenses;
     private decimal _monthlyExpensesChange;
+    private bool _hasLastMonthExpenses;
 
-    public string MonthlyExpenseChangeFormatted => _monthlyExpensesChange >= 0
-        ? "↑" + _monthlyExpensesChange.ToString("0.0%")
-        : "↓" + _monthlyExpensesChange.ToString("0.0%");
+    public string MonthlyExpenseChangeFormatted
+    {
+        get
+        {
+            if (!_hasLastMonthExpenses)
+                return MonthlyExpenses > 0 ? "NEW" : "—";
+            return _monthlyExpensesChange >= 0
+                ? "↑ " + _monthlyExpensesChange.ToString("0.0%")
+                : "↓ " + _monthlyExpensesChange.ToString("0.0%");
+        }
+    }
 
     public string AccountsSubtitle =>
         AccountsSummaryData.Count == 1 ? $" {AccountsSummaryData.Count} linked Account" : $"{AccountsSummaryData.Count} linked Accounts";
@@ -61,6 +77,8 @@ public partial class DashboardViewModel : ViewModelBase
     };
 
     [ObservableProperty] private string _selectedChartTimePeriod = "This Month";
+    [ObservableProperty] private string _selectedChartTimPeriodSubTitle = DateTime.Now.ToString("MMMM yyyy");
+    [ObservableProperty] private string _dateToday = DateTime.Now.ToString("dddd, MMMM d, yyyy");
 
     partial void OnSelectedChartTimePeriodChanged(string value)
     {
@@ -73,11 +91,25 @@ public partial class DashboardViewModel : ViewModelBase
             _ => ChartTimePeriod.ThisMonth
         };
 
+        SelectedChartTimPeriodSubTitle = value switch
+        {
+            "This Month" => DateTime.Now.ToString("MMMM yyyy"),
+            "Last Month" => DateTime.Now.AddMonths(-1).ToString("MMMM yyyy"),
+            "This Quarter" => $"Q{(DateTime.Now.Month - 1) / 3 + 1} {DateTime.Now.Year}",
+            "This Year" => DateTime.Now.Year.ToString(),
+            _ => DateTime.Now.ToString("MMMM yyyy")
+        };
+
         UpdateSpendingByCategoryChart(period);
     }
 
     public DashboardViewModel()
     {
+        AppData.Transactions.CollectionChanged += (s, e) => UpdateUserOverview();
+        AppData.Accounts.CollectionChanged += (s, e) => UpdateUserOverview();
+        AppData.Categories.CollectionChanged += (s, e) => UpdateUserOverview();
+        AppData.Budgets.CollectionChanged += (s, e) => UpdateUserOverview();
+        initialize();
     }
 
     public void initialize()
@@ -88,34 +120,42 @@ public partial class DashboardViewModel : ViewModelBase
     [RelayCommand]
     private void UpdateUserOverview()
     {
-        var thisMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-        var lastMonth = thisMonth.AddMonths(-1);
-
-        MonthlyIncome = Transactions.Where(x => x.Type == "income" && x.Date.Month == thisMonth.Month && x.Date.Year == thisMonth.Year)
-            .Sum(x => x.Amount);
-        MonthlyExpenses = Transactions.Where(x => x.Type == "expense" && x.Date.Month == DateTime.Now.Month && x.Date.Year == DateTime.Now.Year)
-            .Sum(x => x.Amount);
-        var lastMonthIncome = Transactions.Where(x => x.Type == "income" && x.Date.Month == lastMonth.Month && x.Date.Year == lastMonth.Year)
-            .Sum(x => x.Amount);
-        var lastMonthExpenses = Transactions.Where(x => x.Type == "expense" && x.Date.Month == lastMonth.Month && x.Date.Year == lastMonth.Year)
-            .Sum(x => x.Amount);
-        try
-        {
-            _monthlyIncomeChange = Math.Round((MonthlyIncome / ((lastMonthIncome == 0) ? 1 : lastMonthIncome)) - 1, 2);
-            _monthlyExpensesChange = Math.Round((MonthlyExpenses / ((lastMonthExpenses == 0) ? 1 : lastMonthExpenses)) - 1, 2);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-        }
-
-        OnPropertyChanged(nameof(MonthlyIncomeChangeFormatted));
-        OnPropertyChanged(nameof(MonthlyExpenseChangeFormatted));
-
+        CalculateMonthlyValues();
         UpdateSpendingByCategoryChart();
         _ = UpdateBudgetTracker();
         UpdateRecentTransactions();
         UpdateAccountsSummary();
+    }
+
+    private void CalculateMonthlyValues()
+    {
+        var thisMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+        var lastMonth = thisMonth.AddMonths(-1);
+
+        MonthlyIncome = AppData.Transactions.Where(x => x.Type == "income" && x.Date.Month == thisMonth.Month && x.Date.Year == thisMonth.Year)
+            .Sum(x => x.Amount);
+        MonthlyExpenses = AppData.Transactions.Where(x => x.Type == "expense" && x.Date.Month == DateTime.Now.Month && x.Date.Year == DateTime.Now.Year)
+            .Sum(x => x.Amount);
+        var lastMonthIncome = AppData.Transactions.Where(x => x.Type == "income" && x.Date.Month == lastMonth.Month && x.Date.Year == lastMonth.Year)
+            .Sum(x => x.Amount);
+        var lastMonthExpenses = AppData.Transactions.Where(x => x.Type == "expense" && x.Date.Month == lastMonth.Month && x.Date.Year == lastMonth.Year)
+            .Sum(x => x.Amount);
+
+        _hasLastMonthIncome = lastMonthIncome > 0;
+        _hasLastMonthExpenses = lastMonthExpenses > 0;
+
+        if (_hasLastMonthIncome)
+        {
+            _monthlyIncomeChange = Math.Round((MonthlyIncome / lastMonthIncome) - 1, 2);
+        }
+
+        if (_hasLastMonthExpenses)
+        {
+            _monthlyExpensesChange = Math.Round((MonthlyExpenses / lastMonthExpenses) - 1, 2);
+        }
+
+        OnPropertyChanged(nameof(MonthlyIncomeChangeFormatted));
+        OnPropertyChanged(nameof(MonthlyExpenseChangeFormatted));
     }
 
     [RelayCommand]
@@ -137,10 +177,10 @@ public partial class DashboardViewModel : ViewModelBase
     {
         var tempList = new List<ColumnChartData>();
 
-        foreach (var category in Categories)
+        foreach (var category in AppData.Categories)
         {
             var categoryTransactions =
-                Transactions.Where(x => x.CategoryId == category.Id && x.Type.Equals("expense", StringComparison.OrdinalIgnoreCase));
+                AppData.Transactions.Where(x => x.CategoryId == category.Id && x.Type.Equals("expense", StringComparison.OrdinalIgnoreCase));
 
             switch (period)
             {
@@ -196,20 +236,20 @@ public partial class DashboardViewModel : ViewModelBase
 
     private void UpdateRecentTransactions()
     {
-        RecentTransactions = new ObservableCollection<Transaction>(Transactions.OrderByDescending(x => x.Date).Take(5));
+        RecentTransactions = new ObservableCollection<Transaction>(AppData.Transactions.OrderByDescending(x => x.Date).Take(5));
         OnPropertyChanged(nameof(HasTransactionData));
     }
 
     private void UpdateAccountsSummary()
     {
-        foreach (var account in Accounts)
+        foreach (var account in AppData.Accounts)
         {
-            var accountTransactions = Transactions.Where(t => t.AccountId == account.Id).ToList();
+            var accountTransactions = AppData.Transactions.Where(t => t.AccountId == account.Id).ToList();
             account.CurrentBalance = account.OpeningBalance + accountTransactions.Sum(t => t.Type == "income" ? t.Amount : -t.Amount);
             TotalNetworth += account.CurrentBalance;
         }
 
-        AccountsSummaryData = new ObservableCollection<Account>(Accounts.OrderBy(x => x.CreatedAt));
+        AccountsSummaryData = new ObservableCollection<Account>(AppData.Accounts.OrderBy(x => x.CreatedAt));
         OnPropertyChanged(nameof(AccountsSubtitle));
     }
 

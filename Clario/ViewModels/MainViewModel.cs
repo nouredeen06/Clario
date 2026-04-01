@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,26 +11,33 @@ using Clario.Models.GeneralModels;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Clario.Services;
+using CommunityToolkit.Mvvm.Messaging;
 
 namespace Clario.ViewModels;
 
 public partial class MainViewModel : ViewModelBase
 {
-    private DashboardViewModel _dashboardViewModel;
-    public TransactionsViewModel _transactionsViewModel;
-    private AccountsViewModel _accountsViewModel;
-    private BudgetViewModel _budgetViewModel;
-    [ObservableProperty] private TransactionFormViewModel _transactionFormViewModel;
-    [ObservableProperty] public Profile? _profile;
-    private List<Transaction> _transactions = new();
-    private List<Category> _categories = new();
-    private List<Budget> _budgets = new();
-    private List<Account> _accounts = new();
+    private DashboardViewModel _dashboardViewModel = null!;
+    public TransactionsViewModel _transactionsViewModel = null!;
+    private AccountsViewModel _accountsViewModel = null!;
+    private BudgetViewModel _budgetViewModel = null!;
 
+    GeneralDataRepo AppData => DataRepo.General;
+    [ObservableProperty] private Profile? _profile;
+
+    [ObservableProperty] private TransactionFormViewModel _transactionFormViewModel = null!;
+    [ObservableProperty] private AccountFormViewModel _accountFormViewModel = null!;
+    [ObservableProperty] private BudgetFormViewModel _budgetFormViewModel = null!;
+    [ObservableProperty] private SettingsViewModel _settingsViewModel = null!;
+
+    [ObservableProperty] private bool _isDimmed;
     [ObservableProperty] private bool _isTransactionFormVisible;
+    [ObservableProperty] private bool _isAccountFormVisible;
+    [ObservableProperty] private bool _isBudgetFormVisible;
 
 
-    [ObservableProperty] [NotifyPropertyChangedFor(nameof(isOnDashboard), nameof(isOnTransactions), nameof(isOnAccounts), nameof(isOnBudget))]
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(isOnDashboard), nameof(isOnTransactions), nameof(isOnAccounts), nameof(isOnBudget), nameof(isOnSettings))]
     private ViewModelBase? _currentView;
 
     [ObservableProperty] private bool _isDarkTheme;
@@ -39,6 +45,7 @@ public partial class MainViewModel : ViewModelBase
     public MainViewModel()
     {
         Console.WriteLine("main vm loaded");
+        WeakReferenceMessenger.Default.Register<ProfileUpdated>(this, (_, m) => { Profile = AppData.Profile; });
         CurrentView = new LoadingViewModel();
         _ = InitializeApp();
     }
@@ -48,72 +55,71 @@ public partial class MainViewModel : ViewModelBase
     {
         try
         {
-            var profilesTask = DataRepo.General.FetchProfileInfo();
-            var categoriesTask = DataRepo.General.FetchCategories();
-            var accountsTask = DataRepo.General.FetchAccounts();
-            var transactionsTask = DataRepo.General.FetchTransactions();
-            var budgetsTask = DataRepo.General.FetchBudgets();
+            await Task.Run(async () =>
+            {
+                var profilesTask = DataRepo.General.FetchProfileInfo(forceRefresh: true);
+                var categoriesTask = DataRepo.General.FetchCategories();
+                var transactionsTask = DataRepo.General.FetchTransactions();
+                var accountsTask = DataRepo.General.FetchAccounts();
+                var budgetsTask = DataRepo.General.FetchBudgets();
 
-            await Task.WhenAll(profilesTask, categoriesTask, accountsTask, transactionsTask, budgetsTask);
+                await Task.WhenAll(profilesTask, categoriesTask, accountsTask, transactionsTask, budgetsTask);
 
-            Profile = profilesTask.Result;
-            _categories = categoriesTask.Result;
-            _accounts = accountsTask.Result;
-            _transactions = transactionsTask.Result;
-            _budgets = budgetsTask.Result;
+                Profile = profilesTask.Result;
 
-            Console.WriteLine("fetched all data");
+                DataRepo.General.LinkTransactionCategories();
+
+                Console.WriteLine("fetched all data");
+            });
 
             _dashboardViewModel = new DashboardViewModel()
             {
-                parentViewModel = this,
-                Transactions = _transactions,
-                Categories = _categories,
-                Accounts = _accounts,
-                Budgets = _budgets
+                parentViewModel = this
             };
-            _dashboardViewModel.initialize();
             CurrentView = _dashboardViewModel;
 
             Console.WriteLine("initialized DashboardViewModel");
             _transactionsViewModel = new TransactionsViewModel()
             {
-                parentViewModel = this,
-                AllTransactions = _transactions.OrderByDescending(x => x.Date).ToList(),
-                Categories = new ObservableCollection<Category>(_categories.OrderBy(x => x.CreatedAt)),
-                Accounts = new ObservableCollection<Account>(_accounts.OrderBy(x => x.CreatedAt))
+                parentViewModel = this
             };
-            await _transactionsViewModel.Initialize();
 
             Console.WriteLine("initialized TransactionsViewModel");
             _accountsViewModel = new AccountsViewModel()
             {
-                parentViewModel = this,
-                Accounts = _accounts,
-                Transactions = _transactions
+                parentViewModel = this
             };
-            await _accountsViewModel.Initialize();
 
             Console.WriteLine("initialized AccountsViewModel");
             _budgetViewModel = new BudgetViewModel()
             {
-                parentViewModel = this,
-                Profile = Profile,
-                Budgets = _budgets,
-                Categories = _categories,
-                Transactions = _transactions
+                parentViewModel = this
             };
-            await _budgetViewModel.Initialize();
             Console.WriteLine("initialized BudgetViewModel");
+            SettingsViewModel = new SettingsViewModel()
+            {
+                parentViewModel = this
+            };
+            Console.WriteLine("initialized SettingsViewModel");
             TransactionFormViewModel = new TransactionFormViewModel()
             {
                 parentViewModel = this
             };
             Console.WriteLine("initialized TransactionFormViewModel");
+            AccountFormViewModel = new AccountFormViewModel()
+            {
+                parentViewModel = this
+            };
+            Console.WriteLine("initialized AccountFormViewModel");
+            BudgetFormViewModel = new BudgetFormViewModel()
+            {
+                parentViewModel = this
+            };
+            Console.WriteLine("initialized BudgetFormViewModel");
 
             IsDarkTheme = ThemeService.IsDarkTheme;
 
-            ThemeService.SwitchToTheme(Profile?.Theme ?? "system");
+            ThemeService.SwitchToTheme(AppData.Profile?.Theme ?? "system");
         }
         catch (Exception e)
         {
@@ -124,42 +130,15 @@ public partial class MainViewModel : ViewModelBase
     [RelayCommand]
     public void OpenAddTransaction()
     {
-        if (IsTransactionFormVisible) return;
+        if (IsDimmed) return;
         try
         {
-            TransactionFormViewModel.SetupForAdd(
-                new ObservableCollection<Category>(_categories),
-                new ObservableCollection<Account>(_accounts)
-            );
-            TransactionFormViewModel.OnSaved = () =>
-            {
-                if (TransactionFormViewModel.ResultTransaction is not null)
-                {
-                    var previousItem = _transactionsViewModel.AllTransactions.FirstOrDefault(x => x.Date < TransactionFormViewModel.ResultTransaction.Date);
-                    var index = 0;
-                    if (previousItem is not null)
-                        index = _transactionsViewModel.AllTransactions.IndexOf(previousItem);
-                    if (index == -1) index = 0;
-                    _transactionsViewModel.AllTransactions.Insert(index, TransactionFormViewModel.ResultTransaction);
-                    _dashboardViewModel.Transactions.Insert(index, TransactionFormViewModel.ResultTransaction);
-                    _dashboardViewModel.UpdateUserOverviewCommand.Execute(null);
-                    _transactionsViewModel.LoadPageCommand.Execute(1);
-                }
-
-                CloseTransactionForm();
-            };
-            TransactionFormViewModel.OnCancelled = () => CloseTransactionForm();
-            TransactionFormViewModel.OnDeleted = () =>
-            {
-                if (TransactionFormViewModel.ResultTransaction is { } resultTransaction)
-                {
-                    _transactionsViewModel.AllTransactions.Remove(resultTransaction);
-                    _transactionsViewModel.LoadPageCommand.Execute(1);
-                }
-
-                CloseTransactionForm();
-            };
+            TransactionFormViewModel.SetupForAdd();
+            TransactionFormViewModel.OnSaved = CloseTransactionForm;
+            TransactionFormViewModel.OnCancelled = CloseTransactionForm;
+            TransactionFormViewModel.OnDeleted = CloseTransactionForm;
             IsTransactionFormVisible = true;
+            IsDimmed = true;
         }
         catch (Exception e)
         {
@@ -171,41 +150,111 @@ public partial class MainViewModel : ViewModelBase
     [RelayCommand]
     public void OpenEditTransaction(Transaction transaction)
     {
-        TransactionFormViewModel.SetupForEdit(
-            transaction,
-            new ObservableCollection<Category>(_categories),
-            new ObservableCollection<Account>(_accounts)
-        );
-        TransactionFormViewModel.OnSaved = () =>
-        {
-            if (TransactionFormViewModel.ResultTransaction is { } resultTransaction)
-            {
-                var index = _transactionsViewModel.AllTransactions.FindIndex(x => x.Id == transaction.Id);
-                if (index != -1)
-                    _transactionsViewModel.AllTransactions[index] = resultTransaction;
-                _transactionsViewModel.LoadPageCommand.Execute(1);
-            }
-
-            CloseTransactionForm();
-        };
+        if (IsDimmed) return;
+        TransactionFormViewModel.SetupForEdit(transaction);
+        TransactionFormViewModel.OnSaved = CloseTransactionForm;
         TransactionFormViewModel.OnCancelled = CloseTransactionForm;
-        TransactionFormViewModel.OnDeleted = () =>
-        {
-            if (TransactionFormViewModel.ResultTransaction is { } resultTransaction)
-            {
-                _transactionsViewModel.AllTransactions.Remove(resultTransaction);
-                _transactionsViewModel.LoadPageCommand.Execute(1);
-            }
-
-            CloseTransactionForm();
-        };
+        TransactionFormViewModel.OnDeleted = CloseTransactionForm;
         IsTransactionFormVisible = true;
+        IsDimmed = true;
     }
-
 
     private void CloseTransactionForm()
     {
         IsTransactionFormVisible = false;
+        IsDimmed = false;
+    }
+
+    [RelayCommand]
+    public void OpenAddAccount()
+    {
+        if (IsDimmed) return;
+        try
+        {
+            AccountFormViewModel.SetupForAdd();
+            AccountFormViewModel.OnSaved = CloseAccountForm;
+            AccountFormViewModel.OnCancelled = CloseAccountForm;
+            IsAccountFormVisible = true;
+            IsDimmed = true;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    [RelayCommand]
+    public void OpenEditAccount(Account account)
+    {
+        if (IsDimmed) return;
+        try
+        {
+            AccountFormViewModel.SetupForEdit(account);
+            AccountFormViewModel.OnSaved = CloseAccountForm;
+            AccountFormViewModel.OnCancelled = CloseAccountForm;
+            IsAccountFormVisible = true;
+            IsDimmed = true;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    private void CloseAccountForm()
+    {
+        IsAccountFormVisible = false;
+        IsDimmed = false;
+    }
+
+    [RelayCommand]
+    private void OpenAddBudget()
+    {
+        if (IsDimmed) return;
+        try
+        {
+            var unusedCategories = AppData.Categories.Where(x => AppData.Budgets.All(y => y.Category?.Id != x.Id)).ToList();
+            BudgetFormViewModel.SetupForAdd(new ObservableCollection<Category>(unusedCategories));
+            BudgetFormViewModel.OnSaved = CloseBudgetForm;
+            BudgetFormViewModel.OnCancelled = CloseBudgetForm;
+            BudgetFormViewModel.OnDeleted = CloseBudgetForm;
+            IsBudgetFormVisible = true;
+            IsDimmed = true;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    [RelayCommand]
+    private void OpenEditBudget(Budget budget)
+    {
+        if (IsDimmed) return;
+        try
+        {
+            var unusedCategories = AppData.Categories.Where(x => AppData.Budgets.All(y => y.Category?.Id != x.Id) || x.Id == budget.CategoryId).ToList();
+            BudgetFormViewModel.SetupForEdit(budget, new ObservableCollection<Category>(unusedCategories));
+            BudgetFormViewModel.OnSaved = CloseBudgetForm;
+            BudgetFormViewModel.OnCancelled = CloseBudgetForm;
+            BudgetFormViewModel.OnDeleted = CloseBudgetForm;
+            IsBudgetFormVisible = true;
+            IsDimmed = true;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    private void CloseBudgetForm()
+    {
+        IsDimmed = false;
+        IsBudgetFormVisible = false;
     }
 
     [RelayCommand]
@@ -240,12 +289,18 @@ public partial class MainViewModel : ViewModelBase
     }
 
     [RelayCommand]
+    private void GoToSettings()
+    {
+        CurrentView = _settingsViewModel;
+    }
+
+    [RelayCommand]
     private async Task SignOut()
     {
         await SupabaseService.Client.Auth.SignOut();
         var user = SupabaseService.Client.Auth.CurrentUser;
 
-        switch (Application.Current.ApplicationLifetime)
+        switch (Application.Current?.ApplicationLifetime)
         {
             case IClassicDesktopStyleApplicationLifetime desktop:
                 desktop.MainWindow!.DataContext = user is not null ? new MainViewModel() : new AuthViewModel();
@@ -260,4 +315,5 @@ public partial class MainViewModel : ViewModelBase
     public bool isOnTransactions => CurrentView is TransactionsViewModel;
     public bool isOnAccounts => CurrentView is AccountsViewModel;
     public bool isOnBudget => CurrentView is BudgetViewModel;
+    public bool isOnSettings => CurrentView is SettingsViewModel;
 }

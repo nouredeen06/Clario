@@ -30,7 +30,7 @@ public class Account : BaseModel
 
     [Column("is_archived")] public bool IsArchived { get; set; }
 
-    [Column("opened_at")] public DateOnly? OpenedAt { get; set; }
+    [Column("opened_at")] public DateTime? OpenedAt { get; set; }
 
     [Column("created_at")] public DateTime CreatedAt { get; set; }
 
@@ -45,5 +45,7 @@ public class Account : BaseModel
     [JsonIgnore] public decimal TotalExpenseThisMonth { get; set; }
     [JsonIgnore] public decimal MonthlyIncrease { get; set; }
     [JsonIgnore] public List<Transaction>? RecentTransactions { get; set; }
+    [JsonIgnore] public bool isCredit => Type == "Credit";
+    [JsonIgnore] public decimal CreditUtilizationPerc => (CurrentBalance < 0 ? CurrentBalance * -1 : 0) / (CreditLimit == 0 ? 1 : CreditLimit) ?? 1;
     [JsonIgnore] public bool GroupHeader { get; set; } = false;
 }

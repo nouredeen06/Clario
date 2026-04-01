@@ -4,9 +4,9 @@ using Avalonia.Markup.Xaml;
 
 namespace Clario.Views;
 
-public partial class BudgetFormView : UserControl
+public partial class SettingsView : UserControl
 {
-    public BudgetFormView()
+    public SettingsView()
     {
         InitializeComponent();
     }

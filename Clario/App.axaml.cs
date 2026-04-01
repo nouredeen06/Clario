@@ -50,7 +50,7 @@ public partial class App : Application
         }
 
         IsMobile = ApplicationLifetime is ISingleViewApplicationLifetime;
-        
+
         var culture = new CultureInfo("en-US");
 
         CultureInfo.DefaultThreadCurrentCulture = culture;
@@ -60,8 +60,9 @@ public partial class App : Application
         {
             await SupabaseService.Client.Auth.RetrieveSessionAsync();
         }
-        catch
+        catch (Exception e)
         {
+            Console.WriteLine($"[Auth] RetrieveSession failed: {e.Message}");
         }
 
         var user = SupabaseService.Client.Auth.CurrentUser;

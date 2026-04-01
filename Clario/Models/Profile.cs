@@ -1,4 +1,6 @@
 ﻿using System;
+using Avalonia.Media.Imaging;
+using Newtonsoft.Json;
 using Supabase.Postgrest.Attributes;
 using Supabase.Postgrest.Models;
 
@@ -10,6 +12,8 @@ public class Profile : BaseModel
     [PrimaryKey("id", false)] public Guid Id { get; set; }
     [Column("display_name")] public string DisplayName { get; set; }
     [Column("avatar_url")] public string? AvatarUrl { get; set; }
+    [JsonIgnore] public Bitmap? Avatar { get; set; }
+    [JsonIgnore] public bool HasAvatar => !string.IsNullOrWhiteSpace(AvatarUrl);
     [Column("currency")] public string Currency { get; set; }
     [Column("theme")] public string Theme { get; set; }
     [Column("language")] public string Language { get; set; }

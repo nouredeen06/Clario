@@ -13,6 +13,7 @@ namespace Clario.ViewModels;
 public partial class TransactionFormViewModel : ViewModelBase
 {
     public required ViewModelBase parentViewModel;
+    public GeneralDataRepo AppData => DataRepo.General;
 
     // ── Mode ────────────────────────────────────────────────
     [ObservableProperty] [NotifyPropertyChangedFor(nameof(FormTitle), nameof(FormSubtitle), nameof(SaveButtonLabel))]
@@ -34,6 +35,7 @@ public partial class TransactionFormViewModel : ViewModelBase
 
     [ObservableProperty] private string? _note;
     [ObservableProperty] private List<DateTime> _dates = [DateTime.Now];
+    [ObservableProperty] private DateTime? _selectedDate;
     [ObservableProperty] private string _currency = "USD";
 
     [ObservableProperty] [NotifyPropertyChangedFor(nameof(IsValid))]
@@ -75,7 +77,7 @@ public partial class TransactionFormViewModel : ViewModelBase
     public Transaction? ResultTransaction { get; set; }
 
     // ── Commands ────────────────────────────────────────────
-
+    
     partial void OnSelectedCategoryChanged(Category? value)
     {
         if (value.Type == Type) return;
@@ -215,47 +217,43 @@ public partial class TransactionFormViewModel : ViewModelBase
     // ── Public setup methods ─────────────────────────────────
 
     /// <summary>Call this to open the form for adding a new transaction.</summary>
-    public void SetupForAdd(
-        ObservableCollection<Category> categories,
-        ObservableCollection<Account> accounts)
+    public void SetupForAdd()
     {
         ShowDeleteConfirm = false;
         IsEditMode = false;
         _editingId = null;
-        Categories = categories;
-        Accounts = accounts;
+        Categories = AppData.Categories;
+        Accounts = AppData.Accounts;
         Type = "expense";
         Amount = "";
         Description = "";
         Note = null;
         Dates = [DateTime.Now];
         ErrorMessage = null;
-        SelectedCategory = categories.Count > 0 ? categories[0] : null;
-        SelectedAccount = accounts.Count > 0 ? accounts[0] : null;
+        SelectedCategory = AppData.Categories.Count > 0 ? AppData.Categories[0] : null;
+        SelectedAccount = AppData.Accounts.Count > 0 ? AppData.Accounts[0] : null;
         ResultTransaction = null;
     }
 
     /// <summary>Call this to open the form for editing an existing transaction.</summary>
     public void SetupForEdit(
-        Transaction transaction,
-        ObservableCollection<Category> categories,
-        ObservableCollection<Account> accounts)
+        Transaction transaction)
     {
         ShowDeleteConfirm = false;
         IsEditMode = true;
         _editingId = transaction.Id;
-        Categories = categories;
-        Accounts = accounts;
+        Categories = AppData.Categories;
+        Accounts = AppData.Accounts;
         Type = transaction.Type;
         Amount = transaction.Amount.ToString("0.00");
         Description = transaction.Description;
         Note = transaction.Note;
         Dates = [transaction.Date];
         ErrorMessage = null;
-        SelectedCategory = categories.FirstOrDefault(c => c.Id == transaction.CategoryId)
-                           ?? (categories.Count > 0 ? categories[0] : null);
-        SelectedAccount = accounts.FirstOrDefault(a => a.Id == transaction.AccountId)
-                          ?? (accounts.Count > 0 ? accounts[0] : null);
+        SelectedCategory = AppData.Categories.FirstOrDefault(c => c.Id == transaction.CategoryId)
+                           ?? (AppData.Categories.Count > 0 ? AppData.Categories[0] : null);
+        SelectedAccount = AppData.Accounts.FirstOrDefault(a => a.Id == transaction.AccountId)
+                          ?? (AppData.Accounts.Count > 0 ? AppData.Accounts[0] : null);
         ResultTransaction = transaction;
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using Avalonia.Controls.Converters;
 using Avalonia.Data.Converters;
 using Avalonia.Media;
 
@@ -21,6 +22,18 @@ public class HexToColorConverter : IValueConverter
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        throw new NotImplementedException();
+        if (parameter is not string type) return null;
+        var color = Color.Parse("#ffffff");
+        if (value is Color c)
+        {
+            color = c;
+        }
+
+        if (value is SolidColorBrush b)
+        {
+            color = b.Color;
+        }
+
+        return $"#{color.R:X2}{color.G:X2}{color.B:X2}";
     }
 }

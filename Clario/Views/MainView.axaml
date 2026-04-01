@@ -103,12 +103,23 @@
                             Padding="12,10">
                         <Grid ColumnDefinitions="*,Auto">
                             <Grid Grid.Column="0" ColumnDefinitions="Auto,*" ColumnSpacing="10">
-                                <Border Grid.Column="0" Background="{DynamicResource BorderAccent}" CornerRadius="{StaticResource RadiusPill}" Width="34"
-                                        Height="34">
-                                    <TextBlock Text="N" FontSize="{StaticResource FontSizeAmount}" FontWeight="Bold"
-                                               Foreground="{DynamicResource AccentBlue}" HorizontalAlignment="Center"
-                                               VerticalAlignment="Center" />
-                                </Border>
+                                <Panel Grid.Column="0">
+
+                                    <Border CornerRadius="40"
+                                            ClipToBounds="True"
+                                            Width="34"
+                                            Height="34"
+                                            IsVisible="{Binding Profile.HasAvatar}">
+                                        <Image Source="{Binding Profile.Avatar}"
+                                               Stretch="UniformToFill" />
+                                    </Border>
+                                    <Border Background="{DynamicResource BorderAccent}" CornerRadius="{StaticResource RadiusPill}" Width="34"
+                                            Height="34" IsVisible="{Binding !Profile.HasAvatar}">
+                                        <TextBlock Text="N" FontSize="{StaticResource FontSizeAmount}" FontWeight="Bold"
+                                                   Foreground="{DynamicResource AccentBlue}" HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center" />
+                                    </Border>
+                                </Panel>
                                 <TextBlock Grid.Column="1" Text="{Binding Profile.DisplayName}" TextTrimming="CharacterEllipsis"
                                            FontSize="{StaticResource FontSizeBody}"
                                            FontWeight="SemiBold"
@@ -158,7 +169,7 @@
                         <Button Classes="nav" HorizontalAlignment="Stretch" Classes.active="{Binding isOnBudget}" Command="{Binding GoToBudgetCommand}">
                             <StackPanel Orientation="Horizontal" Spacing="12">
                                 <Svg Path="../Assets/Icons/wallet.svg" Height="14" Width="14" />
-                                <TextBlock Text="Budget" FontSize="{StaticResource FontSizeBody}" VerticalAlignment="Center" />
+                                <TextBlock Text="Budgets" FontSize="{StaticResource FontSizeBody}" VerticalAlignment="Center" />
                             </StackPanel>
                         </Button>
                         <TextBlock Classes="label" Text="REPORTS" Margin="12,20,0,10" />
@@ -169,7 +180,7 @@
                             </StackPanel>
                         </Button>
                         <TextBlock Classes="label" Text="SYSTEM" Margin="12,20,0,10" />
-                        <Button Classes="nav" HorizontalAlignment="Stretch">
+                        <Button Classes="nav" HorizontalAlignment="Stretch" Classes.active="{Binding isOnSettings}" Command="{Binding GoToSettingsCommand}">
                             <StackPanel Orientation="Horizontal" Spacing="12">
                                 <Svg Path="../Assets/Icons/settings.svg" Height="14" Width="14" />
                                 <TextBlock Text="Settings" FontSize="{StaticResource FontSizeBody}" VerticalAlignment="Center" />
@@ -178,13 +189,20 @@
                     </StackPanel>
                 </DockPanel>
             </Border>
-            <Border Grid.Column="0" Background="#70000000" IsVisible="{Binding IsTransactionFormVisible}" />
+            <Border Grid.Column="0" Grid.ColumnSpan="2" Background="#70000000" IsVisible="{Binding IsDimmed}" />
             <Grid Grid.Column="1">
                 <ContentControl Content="{Binding CurrentView}" />
                 <views:TransactionFormView
                     DataContext="{Binding TransactionFormViewModel}"
-                    IsVisible="{Binding DataContext.IsTransactionFormVisible,ElementName=MainControl}">
-                </views:TransactionFormView>
+                    IsVisible="{Binding DataContext.IsTransactionFormVisible,ElementName=MainControl}" />
+                <views:AccountFormView
+                    DataContext="{Binding AccountFormViewModel}"
+                    IsVisible="{Binding DataContext.IsAccountFormVisible,ElementName=MainControl}" />
+                <views:BudgetFormView
+                    DataContext="{Binding BudgetFormViewModel}"
+                    IsVisible="{Binding DataContext.IsBudgetFormVisible, ElementName=MainControl}" />
+
+
             </Grid>
         </Grid>
     </Grid>

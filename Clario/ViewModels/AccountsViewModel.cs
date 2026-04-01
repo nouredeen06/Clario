@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
 using Clario.Data;
 using Clario.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -13,18 +12,25 @@ namespace Clario.ViewModels;
 public partial class AccountsViewModel : ViewModelBase
 {
     public required ViewModelBase parentViewModel;
-    public required List<Account> Accounts = new();
-    public required List<Transaction> Transactions = new();
+
+    public GeneralDataRepo AppData => DataRepo.General;
+
     [ObservableProperty] private ObservableCollection<Account> _visibleAccounts = new();
-    [ObservableProperty] private decimal _totalBalance = 0;
+    [ObservableProperty] private decimal _totalBalance;
     [ObservableProperty] private Account? _selectedAccount;
+    [ObservableProperty] private bool _isAccountDeletionConfirmationVisible;
+    public bool CanDeleteAccount => VisibleAccounts.Count > 1;
+
+    [ObservableProperty] private bool _isDeleteDialogVisible;
+    [ObservableProperty] private DeleteAccountDialogViewModel _deleteDialog = new();
 
     public AccountsViewModel()
     {
-    
+        AppData.Accounts.CollectionChanged += (_, _) => { Initialize(); };
+        Initialize();
     }
 
-    public async Task Initialize()
+    public void Initialize()
     {
         FetchAndProcessAccountInfo();
         GroupAccounts();
@@ -33,9 +39,9 @@ public partial class AccountsViewModel : ViewModelBase
 
     private void FetchAndProcessAccountInfo()
     {
-        foreach (var account in Accounts)
+        foreach (var account in AppData.Accounts)
         {
-            var accountTransactions = Transactions.Where(t => t.AccountId == account.Id).ToList();
+            var accountTransactions = AppData.Transactions.Where(t => t.AccountId == account.Id).ToList();
             account.TransactionsCount = accountTransactions.Count;
             account.CurrentBalance = account.OpeningBalance + accountTransactions.Sum(t => t.Type == "income" ? t.Amount : -t.Amount);
             account.TotalIncomeThisMonth = accountTransactions.Where(t => t.Date.Month == DateTime.Now.Month && t.Type == "income").Sum(t => t.Amount);
@@ -50,22 +56,37 @@ public partial class AccountsViewModel : ViewModelBase
         }
     }
 
+    [RelayCommand]
+    private void CreateAccount()
+    {
+        ((MainViewModel)parentViewModel).OpenAddAccount();
+    }
+
+    [RelayCommand]
+    private void EditAccount(Account account)
+    {
+        ((MainViewModel)parentViewModel).OpenEditAccount(account);
+    }
+
+
     private void GroupAccounts()
     {
-        var accountTypes = new Dictionary<string, string>()
+        var accountTypes = new List<string>()
         {
-            { "checking", "Cash & Checking" },
-            { "savings", "Savings" },
-            { "credit", "Credit" },
-            { "investment", "Investments" }
+            "Cash",
+            "Checking",
+            "Savings",
+            "Credit",
+            "Investment",
+            "Other"
         };
-
+        VisibleAccounts.Clear();
         foreach (var type in accountTypes)
         {
-            var accountsOfType = Accounts.Where(a => a.Type == type.Key).ToList();
+            var accountsOfType = AppData.Accounts.Where(a => a.Type.Equals(type, StringComparison.OrdinalIgnoreCase)).ToList();
             if (accountsOfType.Any())
             {
-                var header = new Account { Name = type.Value.ToUpper(), GroupHeader = true };
+                var header = new Account { Name = type.ToUpper(), GroupHeader = true };
                 VisibleAccounts.Add(header);
                 foreach (var account in accountsOfType)
                 {
@@ -73,6 +94,21 @@ public partial class AccountsViewModel : ViewModelBase
                 }
             }
         }
+
+        OnPropertyChanged(nameof(CanDeleteAccount));
+    }
+
+    [RelayCommand]
+    private void RequestDeleteAccount(Account account)
+    {
+        DeleteDialog.Setup(account, new ObservableCollection<Account>(AppData.Accounts));
+        DeleteDialog.OnDeleted = () =>
+        {
+            IsDeleteDialogVisible = false;
+            Initialize();
+        };
+        DeleteDialog.OnCancelled = () => IsDeleteDialogVisible = false;
+        IsDeleteDialogVisible = true;
     }
 
     [RelayCommand]
@@ -86,6 +122,7 @@ public partial class AccountsViewModel : ViewModelBase
     {
         if (parentViewModel is MainViewModel mainViewModel)
         {
+            if (SelectedAccount is null) return;
             var vm = mainViewModel._transactionsViewModel;
             vm.SelectedAccount = vm.Accounts.First(x => x.Id == SelectedAccount.Id);
             vm.LoadPageCommand.Execute(1);

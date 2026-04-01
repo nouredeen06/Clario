@@ -1,0 +1,116 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Design.PreviewWith>
+        <Border Padding="24" Background="#0D0F14" Width="320">
+            <StackPanel Spacing="24">
+                <Slider Minimum="0" Maximum="100" Value="30" />
+                <Slider Minimum="0" Maximum="100" Value="65" />
+                <Slider Minimum="0" Maximum="100" Value="80" IsEnabled="False" />
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Add to SliderStyles.axaml inside <Styles.Resources> -->
+    <Styles.Resources>
+        <ControlTheme x:Key="SliderRepeatButton" TargetType="RepeatButton">
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border Background="{TemplateBinding Background}"
+                            CornerRadius="2"
+                            Height="4"
+                            VerticalAlignment="Center" />
+                </ControlTemplate>
+            </Setter>
+        </ControlTheme>
+
+        <ControlTheme x:Key="{x:Type Slider}" TargetType="Slider">
+            <Setter Property="Background" Value="{DynamicResource BorderSubtle}" />
+            <Setter Property="Foreground" Value="{DynamicResource AccentBlue}" />
+
+            <Style Selector="^:horizontal">
+                <Setter Property="MinHeight" Value="20" />
+                <Setter Property="Template">
+                    <ControlTemplate>
+                        <Grid x:Name="grid">
+                            <Border x:Name="TrackBackground"
+                                    Height="4"
+                                    Margin="8,0"
+                                    Background="{DynamicResource BorderSubtle}"
+                                    CornerRadius="2"
+                                    VerticalAlignment="Center" />
+                            <Track x:Name="PART_Track"
+                                   Minimum="{TemplateBinding Minimum}"
+                                   Maximum="{TemplateBinding Maximum}"
+                                   Value="{TemplateBinding Value, Mode=TwoWay}"
+                                   IsDirectionReversed="{TemplateBinding IsDirectionReversed}"
+                                   Orientation="Horizontal">
+                                <Track.DecreaseButton>
+                                    <RepeatButton x:Name="PART_DecreaseButton"
+                                                  Background="{DynamicResource AccentBlue}"
+                                                  Theme="{StaticResource SliderRepeatButton}" />
+                                </Track.DecreaseButton>
+                                <Track.IncreaseButton>
+                                    <RepeatButton x:Name="PART_IncreaseButton"
+                                                  Background="{DynamicResource BorderSubtle}"
+                                                  Theme="{StaticResource SliderRepeatButton}" />
+                                </Track.IncreaseButton>
+                                <Thumb x:Name="thumb" Width="16" Height="16">
+                                    <Thumb.Template>
+                                        <ControlTemplate>
+                                            <Border Width="16" Height="16"
+                                                    CornerRadius="8"
+                                                    Background="{DynamicResource AccentBlue}"
+                                                    BorderBrush="{DynamicResource BgSurface}"
+                                                    BorderThickness="2"
+                                                    BoxShadow="0 2 8 0 #40000000" />
+                                        </ControlTemplate>
+                                    </Thumb.Template>
+                                </Thumb>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter>
+            </Style>
+
+            <!-- Pointer over -->
+            <Style Selector="^:pointerover /template/ RepeatButton#PART_DecreaseButton">
+                <Setter Property="Background" Value="#8FAEFF" />
+            </Style>
+            <Style Selector="^:pointerover /template/ Thumb#thumb">
+                <Setter Property="Template">
+                    <ControlTemplate>
+                        <Border Width="16" Height="16" CornerRadius="8"
+                                Background="#8FAEFF"
+                                BorderBrush="{DynamicResource BgSurface}"
+                                BorderThickness="2"
+                                BoxShadow="0 2 12 0 #507B9CFF" />
+                    </ControlTemplate>
+                </Setter>
+            </Style>
+
+            <!-- Pressed -->
+            <Style Selector="^:pressed /template/ RepeatButton#PART_DecreaseButton">
+                <Setter Property="Background" Value="#6B8AEF" />
+            </Style>
+            <Style Selector="^:pressed /template/ Thumb#thumb">
+                <Setter Property="Template">
+                    <ControlTemplate>
+                        <Border Width="14" Height="14" CornerRadius="7"
+                                Background="#6B8AEF"
+                                BorderBrush="{DynamicResource BgSurface}"
+                                BorderThickness="2" />
+                    </ControlTemplate>
+                </Setter>
+            </Style>
+
+            <!-- Disabled -->
+            <Style Selector="^:disabled /template/ Grid#grid">
+                <Setter Property="Opacity" Value="0.5" />
+            </Style>
+
+        </ControlTheme>
+    </Styles.Resources>
+
+</Styles>

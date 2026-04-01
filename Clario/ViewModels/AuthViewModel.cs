@@ -40,11 +40,11 @@ public partial class AuthViewModel : ViewModelBase
 
     private void setDefaults()
     {
-        FirstName = "nouredeen";
-        LastName = "ghazal";
-        Email = "nouredeen.ghazal42@gmail.com";
-        Password = "Nour1Clario";
-        ConfirmPassword = "Nour1Clario";
+        FirstName = "clario";
+        LastName = "testing";
+        Email = "Clario@testing.com";
+        Password = "1234ABCD6767";
+        ConfirmPassword = "1234ABCD6767";
         ThemeService.SwitchToTheme("system");
     }
 
@@ -62,7 +62,7 @@ public partial class AuthViewModel : ViewModelBase
             await SupabaseService.Client.Auth.SignIn(_email, _password);
 
             var user = SupabaseService.Client.Auth.CurrentUser;
-
+            
             if (Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
                 desktop.MainWindow!.DataContext = user is not null ? new MainViewModel() : new AuthViewModel();
@@ -98,7 +98,6 @@ public partial class AuthViewModel : ViewModelBase
             if (session is null) return;
             await SupabaseService.Client.Auth.SetSession(session.AccessToken, session.RefreshToken);
             var user = session.User;
-
 
             if (Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {

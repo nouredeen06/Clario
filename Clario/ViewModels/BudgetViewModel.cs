@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Clario.Data;
 using Clario.Models;
-using Clario.Models.GeneralModels;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LiveChartsCore;
@@ -20,17 +18,15 @@ namespace Clario.ViewModels;
 public partial class BudgetViewModel : ViewModelBase
 {
     public required ViewModelBase parentViewModel;
-    [ObservableProperty] private Profile? _profile;
-    public required List<Budget> Budgets = new();
+    public GeneralDataRepo AppData => DataRepo.General;
+
     [ObservableProperty] private ObservableCollection<Budget> _visibleBudgets = new();
-    public required List<Category> Categories = new();
-    public required List<Transaction> Transactions = new();
 
     [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(NextPeriodCommand), nameof(PreviousPeriodCommand))]
     private DateTime _currentPeriod = DateTime.Now.Date;
 
     public bool CanGoToNextPeriod => CurrentPeriod.Month < DateTime.Now.Month;
-    public bool CanGoToPreviousPeriod => Transactions.Any() && CurrentPeriod.Month > Transactions.Min(x => x.Date.Month);
+    public bool CanGoToPreviousPeriod => AppData.Transactions.Any() && CurrentPeriod.Month > AppData.Transactions.Min(x => x.Date.Month);
     public string CurrentPeriodFormatted => CurrentPeriod.ToString("MMMM yyyy");
 
     [ObservableProperty] private ISeries[] _spendingBreakdownChartSeries = [];
@@ -43,9 +39,9 @@ public partial class BudgetViewModel : ViewModelBase
     public decimal TotalLeft => Math.Clamp(Math.Round(TotalBudgeted - TotalSpent), 0, decimal.MaxValue);
     public string TotalLeftFormatted => TotalLeft.ToString("C0") + " left";
 
-    public string SavingsHint => TotalLeft >= (Profile != null ? Profile.SavingsGoal : 0)
+    public string SavingsHint => TotalLeft >= (AppData.Profile != null ? AppData.Profile.SavingsGoal : 0)
         ? "You're on track!"
-        : $"Reduce your spending by ${Math.Round((Profile != null ? Profile.SavingsGoal ?? 0 : 0) - TotalLeft)} to hit your goal.";
+        : $"Reduce your spending by ${Math.Round((AppData.Profile != null ? AppData.Profile.SavingsGoal ?? 0 : 0) - TotalLeft)} to hit your goal.";
 
     private int _onTrackCount;
     private int _approachingCount;
@@ -60,13 +56,17 @@ public partial class BudgetViewModel : ViewModelBase
     private int PeriodDaysLeft => PeriodLength - PeriodDaysPassed;
     public string PeriodDaysLeftFormatted => PeriodDaysLeft == 1 ? PeriodDaysLeft + " day left" : PeriodDaysLeft + " days left";
 
-    public string DailyBudgetLeftFormatted => ((TotalBudgeted - TotalSpent) / PeriodDaysLeft).ToString("C", new CultureInfo("en-US"));
+    public string DailyBudgetLeftFormatted =>
+        ((TotalBudgeted - TotalSpent) / ((PeriodDaysLeft == 0) ? 1 : PeriodDaysLeft)).ToString("C", new CultureInfo("en-US"));
 
     public BudgetViewModel()
     {
+        AppData.Budgets.CollectionChanged += async (_, _) => { await Initialize(); };
+        AppData.Transactions.CollectionChanged += async (_, _) => { await Initialize(); };
+        _ = Initialize();
     }
 
-    public async Task Initialize()
+    private async Task Initialize()
     {
         try
         {
@@ -80,15 +80,25 @@ public partial class BudgetViewModel : ViewModelBase
         }
     }
 
+    [RelayCommand]
+    private void CreateBudget()
+    {
+        ((MainViewModel)parentViewModel).OpenAddBudgetCommand.Execute(null);
+    }
+
+    [RelayCommand]
+    private void EditBudget(Budget budget)
+    {
+        ((MainViewModel)parentViewModel).OpenEditBudgetCommand.Execute(budget);
+    }
+
     private void ProcessChartData()
     {
-        var categories = Categories;
-        var transactions = Transactions;
         var tempCategorySpendingBreakdown = new List<(Category category, double[] spent)>();
         var tempSpendingBreakdownLegends = new List<Budget>();
-        foreach (var category in categories)
+        foreach (var category in AppData.Categories)
         {
-            var spent = transactions
+            var spent = AppData.Transactions
                 .Where(x => x.CategoryId == category.Id && x.Type.Equals("expense", StringComparison.OrdinalIgnoreCase) &&
                             x.Date.Month == CurrentPeriod.Month && x.Date.Year == CurrentPeriod.Year)
                 .Sum(x => x.Amount);
@@ -115,11 +125,31 @@ public partial class BudgetViewModel : ViewModelBase
     {
         VisibleBudgets.Clear();
         VisibleBudgets = new ObservableCollection<Budget>(await DataRepo.General.FetchProcessedBudgets(CurrentPeriod));
-        _onTrackCount = VisibleBudgets.Count(x => x.IsOnTrack);
-        _approachingCount = VisibleBudgets.Count(x => x.IsWarning);
-        _overBudgetCount = VisibleBudgets.Count(x => x.IsOverBudget);
+        _onTrackCount = VisibleBudgets.Count(x => x is { IsOnTrack: true, GroupHeader: false });
+        _approachingCount = VisibleBudgets.Count(x => x is { IsWarning: true, GroupHeader: false });
+        _overBudgetCount = VisibleBudgets.Count(x => x is { IsOverBudget: true, GroupHeader: false });
         TotalBudgeted = VisibleBudgets.Sum(x => x.LimitAmount);
         TotalSpent = VisibleBudgets.Sum(x => x.Spent);
+
+        NotifyComputedPropertiesOnChanged();
+    }
+
+    private void NotifyComputedPropertiesOnChanged()
+    {
+        OnPropertyChanged(nameof(CanGoToNextPeriod));
+        OnPropertyChanged(nameof(CanGoToPreviousPeriod));
+        OnPropertyChanged(nameof(CurrentPeriodFormatted));
+        OnPropertyChanged(nameof(SpentPercentageFormatted));
+        OnPropertyChanged(nameof(TotalLeft));
+        OnPropertyChanged(nameof(TotalLeftFormatted));
+        OnPropertyChanged(nameof(SavingsHint));
+        OnPropertyChanged(nameof(OnTrackCountFormatted));
+        OnPropertyChanged(nameof(ApproachingCountFormatted));
+        OnPropertyChanged(nameof(OverBudgetCountFormatted));
+        OnPropertyChanged(nameof(PeriodLength));
+        OnPropertyChanged(nameof(PeriodDaysPassed));
+        OnPropertyChanged(nameof(PeriodDaysLeftFormatted));
+        OnPropertyChanged(nameof(DailyBudgetLeftFormatted));
     }
 
     [RelayCommand(CanExecute = nameof(CanGoToNextPeriod))]

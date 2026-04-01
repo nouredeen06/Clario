@@ -2,6 +2,76 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:Clario.CustomControls">
 
+    <Styles.Resources>
+        <!--
+            Full ControlTheme replacement for CalendarButton.
+            This is necessary because in Avalonia 11 the Fluent theme owns
+            the internal template parts at ControlTheme priority, making
+            external /template/ style selectors unreliable for CalendarButton.
+            Replacing the entire ControlTheme is the only reliable approach.
+        -->
+        <ControlTheme x:Key="{x:Type CalendarButton}" TargetType="CalendarButton">
+            <Setter Property="MinWidth" Value="40" />
+            <Setter Property="MinHeight" Value="40" />
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondary}" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border x:Name="Root"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="6"
+                            Padding="4">
+                        <ContentControl x:Name="Content"
+                                        Content="{TemplateBinding Content}"
+                                        ContentTemplate="{TemplateBinding ContentTemplate}"
+                                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                        Foreground="{TemplateBinding Foreground}"
+                                        FontSize="{TemplateBinding FontSize}"
+                                        FontWeight="{TemplateBinding FontWeight}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+
+            <!-- Hover -->
+            <Style Selector="^:pointerover /template/ Border#Root">
+                <Setter Property="Background" Value="{DynamicResource BgHover}" />
+            </Style>
+            <Style Selector="^:pointerover /template/ ContentControl#Content">
+                <Setter Property="Foreground" Value="{DynamicResource TextPrimary}" />
+            </Style>
+
+            <!-- Pressed -->
+            <Style Selector="^:pressed /template/ Border#Root">
+                <Setter Property="Background" Value="{DynamicResource BorderSubtle}" />
+            </Style>
+
+            <!-- Selected (current month/year) -->
+            <Style Selector="^:selected /template/ Border#Root">
+                <Setter Property="Background" Value="{DynamicResource BorderAccent}" />
+            </Style>
+            <Style Selector="^:selected /template/ ContentControl#Content">
+                <Setter Property="Foreground" Value="{DynamicResource TextPrimary}" />
+            </Style>
+
+            <!-- Selected + hover -->
+            <Style Selector="^:selected:pointerover /template/ Border#Root">
+                <Setter Property="Background" Value="{DynamicResource BorderAccent}" />
+            </Style>
+
+            <!-- Inactive (out-of-range months/years) -->
+            <Style Selector="^:inactive /template/ ContentControl#Content">
+                <Setter Property="Foreground" Value="{DynamicResource TextMuted}" />
+            </Style>
+        </ControlTheme>
+    </Styles.Resources>
+
+    <!-- ============================================================ -->
+    <!-- DateRangePicker control template                             -->
+    <!-- ============================================================ -->
+
     <Style Selector="local|DateRangePicker">
         <Setter Property="MinHeight" Value="15" />
         <Setter Property="MinWidth" Value="50" />
@@ -14,8 +84,6 @@
         <Setter Property="Template">
             <ControlTemplate>
                 <Grid>
-
-                    <!-- Trigger button -->
                     <Button x:Name="PART_Button"
                             HorizontalAlignment="Stretch"
                             Background="{TemplateBinding Background}"
@@ -48,7 +116,6 @@
                         </Grid>
                     </Button>
 
-                    <!-- Popup -->
                     <Popup x:Name="PART_Popup"
                            PlacementTarget="{Binding #PART_Button}"
                            Placement="Bottom"
@@ -65,21 +132,50 @@
                                       BorderThickness="0" />
                         </Border>
                     </Popup>
-
                 </Grid>
             </ControlTemplate>
         </Setter>
     </Style>
 
-    <!-- pointerover -->
     <Style Selector="local|DateRangePicker:pointerover /template/ Button#PART_Button">
         <Setter Property="Background" Value="{DynamicResource BgHover}" />
         <Setter Property="BorderBrush" Value="{DynamicResource BorderAccent}" />
     </Style>
 
-    <!-- pressed -->
     <Style Selector="local|DateRangePicker:pressed /template/ Button#PART_Button">
         <Setter Property="Background" Value="{DynamicResource BorderSubtle}" />
+    </Style>
+
+    <!-- ============================================================ -->
+    <!-- CalendarItem: nav header buttons (prev / title / next)       -->
+    <!-- ============================================================ -->
+
+    <Style Selector="CalendarItem /template/ Button#PART_HeaderButton">
+        <Setter Property="Background" Value="{DynamicResource BgSurface}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimary}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="FontSize" Value="13" />
+    </Style>
+    <Style Selector="CalendarItem /template/ Button#PART_HeaderButton:pointerover">
+        <Setter Property="Background" Value="{DynamicResource BgHover}" />
+    </Style>
+
+    <Style Selector="CalendarItem /template/ Button#PART_PreviousButton">
+        <Setter Property="Background" Value="{DynamicResource BgSurface}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextSecondary}" />
+    </Style>
+    <Style Selector="CalendarItem /template/ Button#PART_PreviousButton:pointerover">
+        <Setter Property="Background" Value="{DynamicResource BgHover}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimary}" />
+    </Style>
+
+    <Style Selector="CalendarItem /template/ Button#PART_NextButton">
+        <Setter Property="Background" Value="{DynamicResource BgSurface}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextSecondary}" />
+    </Style>
+    <Style Selector="CalendarItem /template/ Button#PART_NextButton:pointerover">
+        <Setter Property="Background" Value="{DynamicResource BgHover}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimary}" />
     </Style>
 
 </Styles>

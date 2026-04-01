@@ -13,6 +13,7 @@
 
     <ItemGroup>
         <PackageReference Include="Avalonia"/>
+        <PackageReference Include="Avalonia.Controls.ColorPicker" />
         <PackageReference Include="Avalonia.Svg.Skia" />
         <PackageReference Include="Avalonia.Themes.Fluent"/>
         <PackageReference Include="Avalonia.Fonts.Inter"/>
@@ -30,6 +31,7 @@
         <PackageReference Include="Xaml.Behaviors.Interactions" />
         <PackageReference Include="Xaml.Behaviors.Interactivity" />
         <PackageReference Include="SkiaSharp" />
+        <PackageReference Include="SkiaSharp.NativeAssets.Linux" />
         <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" />
     </ItemGroup>
 
@@ -37,6 +39,9 @@
       <Compile Update="MobileViews\MainAppMobile.axaml.cs">
         <DependentUpon>MobileMainView.axaml</DependentUpon>
         <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Views\AccountFormView.axaml.cs">
+        <DependentUpon>AccountFormView.axaml</DependentUpon>
       </Compile>
     </ItemGroup>
 </Project>

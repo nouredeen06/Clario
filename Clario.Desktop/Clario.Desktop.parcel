@@ -1,0 +1,36 @@
+{
+    "GeneralSettings": {
+        "NetProjectPath": "Clario.Desktop.csproj",
+        "ApplicationName": "Clario",
+        "Version": "0.3.0",
+        "PackageName": {
+            "$type": "msbuild",
+            "property": "AssemblyName"
+        },
+        "AssemblyName": {
+            "$type": "msbuild",
+            "property": "AssemblyName"
+        }
+    },
+    "LinuxSettings": {
+        "AppIcon": "../Clario/Assets/Logo.png",
+        "CreateBinSymlink": "True"
+    },
+    "Win32Settings": {
+        "InstallerIcon": "../Clario/Assets/Clario-Logo.svg",
+        "Company": "Clario",
+        "IncludeUninstaller": "True"
+    },
+    "MacOsSettings": {
+        "CreateBundle": true,
+        "BundleIdentifier": "com.CompanyName.Clario-Desktop",
+        "SigningCredentialsType": "AdHoc"
+    },
+    "PublishSettings": {
+        "PublishSingleFile": "True",
+        "PublishReadyToRun": "True",
+        "ExtraBuildProperties": {
+            "RuntimeFrameworkVersion": "8.0.11"
+        }
+    }
+}

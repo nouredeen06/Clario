@@ -7,11 +7,14 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Avalonia.Controls.ColorPicker" />
         <PackageReference Include="Avalonia.iOS"/>
         <PackageReference Include="Avalonia.Svg.Skia" />
         <PackageReference Include="Deadpikle.AvaloniaProgressRing" />
         <PackageReference Include="FluentAvalonia.ProgressRing" />
         <PackageReference Include="LiveChartsCore.SkiaSharpView.Avalonia" />
+        <PackageReference Include="SkiaSharp" />
+        <PackageReference Include="SkiaSharp.NativeAssets.Linux" />
         <PackageReference Include="SkiaSharp.NativeAssets.WebAssembly" />
         <PackageReference Include="Supabase" />
     </ItemGroup>

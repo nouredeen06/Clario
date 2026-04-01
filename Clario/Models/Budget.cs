@@ -29,13 +29,13 @@ public class Budget : BaseModel
 
     [JsonIgnore] public Category? Category { get; set; }
     [JsonIgnore] public int TransactionsCount { get; set; }
-    [JsonIgnore] public decimal Spent { get; set; } // populated after joining with transactions
+    [JsonIgnore] public decimal Spent { get; set; }
 
     [JsonIgnore] public decimal Remaining => LimitAmount - Spent;
     [JsonIgnore] public double PercentageUsed => LimitAmount > 0 ? Math.Round((double)(Spent / LimitAmount), 2) : 0;
     [JsonIgnore] public bool IsOverBudget => Spent > LimitAmount;
     [JsonIgnore] public bool IsWarning => !IsOverBudget && PercentageUsed * 100 >= AlertThreshold;
-    [JsonIgnore] public bool IsOnTrack => !IsOverBudget && PercentageUsed * 100 < AlertThreshold;
+    [JsonIgnore] public bool IsOnTrack => PercentageUsed * 100 < AlertThreshold;
 
     [JsonIgnore] public string SpentFormatted => $"${Spent:N0}";
     [JsonIgnore] public string AmountFormatted => $"of ${LimitAmount:N0}";

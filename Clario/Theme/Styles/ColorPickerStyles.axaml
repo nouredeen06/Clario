@@ -1,0 +1,210 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:primitives="using:Avalonia.Controls.Primitives">
+
+  <Design.PreviewWith>
+    <Border Padding="20" Background="#0D0F14">
+      <ColorPicker Width="200" Height="36"/>
+    </Border>
+  </Design.PreviewWith>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       RESOURCE OVERRIDES
+       These override the Fluent resource keys used internally
+       by the ColorPicker flyout template.
+  ═══════════════════════════════════════════════════════════════ -->
+  <Styles.Resources>
+    <!-- Tab strip background (top 48px bar) -->
+    <SolidColorBrush x:Key="SystemControlBackgroundBaseLowBrush" Color="#13161E"/>
+    <!-- Tab strip border -->
+    <SolidColorBrush x:Key="ColorViewTabBorderBrush"             Color="#1E2330"/>
+    <!-- Content area background (below tab strip) -->
+    <SolidColorBrush x:Key="ColorViewContentBackgroundBrush"     Color="#13161E"/>
+    <!-- Content area border (the top-border line between tabs and content) -->
+    <SolidColorBrush x:Key="ColorViewContentBorderBrush"         Color="#1E2330"/>
+
+    <!-- Fluent text control resources used by component label borders + hex # border -->
+    <SolidColorBrush x:Key="TextControlBackgroundDisabled"        Color="#1A1E2A"/>
+    <SolidColorBrush x:Key="TextControlBorderBrush"               Color="#1E2330"/>
+    <SolidColorBrush x:Key="TextControlForegroundDisabled"        Color="#7A8090"/>
+
+    <!-- TextBox (hex input + component spinners) -->
+    <SolidColorBrush x:Key="TextControlBackground"                Color="#13161E"/>
+    <SolidColorBrush x:Key="TextControlBackgroundPointerOver"     Color="#1A1E2A"/>
+    <SolidColorBrush x:Key="TextControlBackgroundFocused"         Color="#13161E"/>
+    <SolidColorBrush x:Key="TextControlForeground"                Color="#F0F2F8"/>
+    <SolidColorBrush x:Key="TextControlForegroundPointerOver"     Color="#F0F2F8"/>
+    <SolidColorBrush x:Key="TextControlForegroundFocused"         Color="#F0F2F8"/>
+    <SolidColorBrush x:Key="TextControlBorderBrushPointerOver"    Color="#2A3050"/>
+    <SolidColorBrush x:Key="TextControlBorderBrushFocused"        Color="#7B9CFF"/>
+    <SolidColorBrush x:Key="TextControlPlaceholderForeground"     Color="#5A6070"/>
+
+    <!-- RadioButton (RGB/HSV toggle) -->
+    <SolidColorBrush x:Key="RadioButtonBackground"                Color="#13161E"/>
+    <SolidColorBrush x:Key="RadioButtonBackgroundPointerOver"     Color="#1A1E2A"/>
+    <SolidColorBrush x:Key="RadioButtonBackgroundPressed"         Color="#1E2330"/>
+    <SolidColorBrush x:Key="RadioButtonBorderBrush"               Color="#1E2330"/>
+    <SolidColorBrush x:Key="RadioButtonBorderBrushPointerOver"    Color="#2A3050"/>
+    <SolidColorBrush x:Key="RadioButtonForeground"                Color="#C8D0E8"/>
+    <SolidColorBrush x:Key="RadioButtonForegroundPointerOver"     Color="#F0F2F8"/>
+    <SolidColorBrush x:Key="RadioButtonOuterEllipseStroke"        Color="#7B9CFF"/>
+    <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedStroke" Color="#7B9CFF"/>
+    <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedFill"   Color="#7B9CFF"/>
+    <SolidColorBrush x:Key="RadioButtonCheckGlyphFill"            Color="#0D0F14"/>
+
+    <!-- ColorPreviewer -->
+    <SolidColorBrush x:Key="ColorViewPreviewBorderBrush"          Color="#1E2330"/>
+  </Styles.Resources>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       ColorPicker — the drop-down button itself
+  ═══════════════════════════════════════════════════════════════ -->
+  <Style Selector="ColorPicker">
+    <Setter Property="CornerRadius"    Value="{DynamicResource RadiusControl}"/>
+    <Setter Property="BorderBrush"     Value="{DynamicResource BorderSubtle}"/>
+    <Setter Property="Background"      Value="{DynamicResource BgBase}"/>
+  </Style>
+
+  <!-- The DropDownButton inside ColorPicker -->
+  <Style Selector="ColorPicker /template/ DropDownButton">
+    <Setter Property="Background"      Value="{DynamicResource BgBase}"/>
+    <Setter Property="BorderBrush"     Value="{DynamicResource BorderSubtle}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="CornerRadius"    Value="{DynamicResource RadiusControl}"/>
+    <Setter Property="Foreground"      Value="{DynamicResource TextSecondary}"/>
+  </Style>
+  <Style Selector="ColorPicker /template/ DropDownButton:pointerover /template/ Border#Background">
+    <Setter Property="Background"  Value="{DynamicResource BgHover}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource BorderAccent}"/>
+  </Style>
+  <Style Selector="ColorPicker /template/ DropDownButton:pressed /template/ Border#Background">
+    <Setter Property="Background" Value="{DynamicResource BorderSubtle}"/>
+  </Style>
+
+  <!-- The chevron arrow inside DropDownButton -->
+  <Style Selector="ColorPicker /template/ DropDownButton /template/ PathIcon">
+    <Setter Property="Foreground" Value="{DynamicResource TextMuted}"/>
+  </Style>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       Flyout popup wrapper
+  ═══════════════════════════════════════════════════════════════ -->
+  <Style Selector="FlyoutPresenter.nopadding">
+    <Setter Property="Padding"         Value="0"/>
+    <Setter Property="Background"      Value="{DynamicResource BgSurface}"/>
+    <Setter Property="BorderBrush"     Value="{DynamicResource BorderSubtle}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="CornerRadius"    Value="{DynamicResource RadiusControl}"/>
+    <!-- <Setter Property="BoxShadow"       Value="0 8 32 0 #3C000000"/> -->
+  </Style>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       Tab strip inside the flyout
+  ═══════════════════════════════════════════════════════════════ -->
+  <Style Selector="ColorPicker /template/ DropDownButton /template/ Popup TabControl">
+    <Setter Property="Background" Value="{DynamicResource BgSurface}"/>
+  </Style>
+
+  <!-- TabItem (spectrum / palette / components icons) -->
+  <Style Selector="ColorPicker /template/ DropDownButton /template/ Popup TabItem">
+    <Setter Property="Background"         Value="Transparent"/>
+    <Setter Property="Foreground"         Value="{DynamicResource TextMuted}"/>
+    <Setter Property="Padding"            Value="0"/>
+    <Setter Property="MinHeight"          Value="48"/>
+    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    <Setter Property="VerticalContentAlignment"   Value="Center"/>
+  </Style>
+  <Style Selector="ColorPicker /template/ DropDownButton /template/ Popup TabItem:selected">
+    <Setter Property="Foreground" Value="{DynamicResource AccentBlue}"/>
+  </Style>
+  <Style Selector="ColorPicker /template/ DropDownButton /template/ Popup TabItem:pointerover">
+    <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
+  </Style>
+
+  <!-- PathIcon inside tab headers -->
+  <Style Selector="ColorPicker /template/ DropDownButton /template/ Popup TabItem PathIcon">
+    <Setter Property="Foreground" Value="{DynamicResource TextMuted}"/>
+  </Style>
+  <Style Selector="ColorPicker /template/ DropDownButton /template/ Popup TabItem:selected PathIcon">
+    <Setter Property="Foreground" Value="{DynamicResource AccentBlue}"/>
+  </Style>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       Hex input TextBox
+  ═══════════════════════════════════════════════════════════════ -->
+  <Style Selector="ColorPicker /template/ DropDownButton /template/ Popup TextBox">
+    <Setter Property="Background"      Value="{DynamicResource BgBase}"/>
+    <Setter Property="Foreground"      Value="{DynamicResource TextPrimary}"/>
+    <Setter Property="BorderBrush"     Value="{DynamicResource BorderSubtle}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="CornerRadius"    Value="0,4,4,0"/>
+    <Setter Property="FontSize"        Value="12"/>
+  </Style>
+  <Style Selector="ColorPicker /template/ DropDownButton /template/ Popup TextBox:focus /template/ Border#PART_BorderElement">
+    <Setter Property="BorderBrush" Value="{DynamicResource AccentBlue}"/>
+  </Style>
+  <Style Selector="ColorPicker /template/ DropDownButton /template/ Popup TextBox:pointerover /template/ Border#PART_BorderElement">
+    <Setter Property="BorderBrush" Value="{DynamicResource BorderAccent}"/>
+  </Style>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       NumericUpDown (RGB/HSV component value inputs)
+  ═══════════════════════════════════════════════════════════════ -->
+  <Style Selector="ColorPicker /template/ DropDownButton /template/ Popup NumericUpDown">
+    <Setter Property="Background"      Value="{DynamicResource BgBase}"/>
+    <Setter Property="Foreground"      Value="{DynamicResource TextPrimary}"/>
+    <Setter Property="BorderBrush"     Value="{DynamicResource BorderSubtle}"/>
+    <Setter Property="FontSize"        Value="12"/>
+  </Style>
+  <Style Selector="ColorPicker /template/ DropDownButton /template/ Popup NumericUpDown /template/ Border">
+    <Setter Property="Background"  Value="{DynamicResource BgBase}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtle}"/>
+  </Style>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       ColorSlider (hue, saturation, value sliders)
+  ═══════════════════════════════════════════════════════════════ -->
+  <Style Selector="primitives|ColorSlider">
+    <Setter Property="CornerRadius"    Value="4"/>
+    <Setter Property="Height"          Value="16"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="BorderBrush"     Value="{DynamicResource BorderSubtle}"/>
+  </Style>
+
+  <!-- Slider thumb -->
+  <Style Selector="primitives|ColorSlider /template/ Thumb">
+    <Setter Property="Width"              Value="16"/>
+    <Setter Property="Height"             Value="16"/>
+    <Setter Property="Background"         Value="{DynamicResource TextPrimary}"/>
+    <Setter Property="CornerRadius"       Value="8"/>
+    <Setter Property="BorderBrush"        Value="{DynamicResource BgBase}"/>
+    <Setter Property="BorderThickness"    Value="2"/>
+  </Style>
+  <Style Selector="primitives|ColorSlider /template/ Thumb:pointerover">
+    <Setter Property="Background" Value="{DynamicResource AccentBlue}"/>
+  </Style>
+  <Style Selector="primitives|ColorSlider /template/ Thumb:pressed">
+    <Setter Property="Background" Value="{DynamicResource AccentBlue}"/>
+  </Style>
+
+  <!-- Vertical slider (the third component slider beside the spectrum) -->
+  <Style Selector="primitives|ColorSlider[Orientation=Vertical]">
+    <Setter Property="Width"  Value="16"/>
+    <Setter Property="Height" Value="NaN"/>
+  </Style>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       ColorPreviewer (accent color swatches at the bottom)
+  ═══════════════════════════════════════════════════════════════ -->
+  <Style Selector="primitives|ColorPreviewer">
+    <Setter Property="Background" Value="{DynamicResource BgSurface}"/>
+  </Style>
+
+  <!-- Individual preview color swatch borders -->
+  <Style Selector="primitives|ColorPreviewer Border">
+    <Setter Property="BorderBrush"     Value="{DynamicResource BorderSubtle}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="CornerRadius"    Value="4"/>
+  </Style>
+
+</Styles>

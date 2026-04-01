@@ -16,19 +16,7 @@ public class Transaction : BaseModel
 
     [Column("account_id")] public Guid AccountId { get; set; }
 
-    private Guid? _categoryId;
-
-    [Column("category_id")]
-    public Guid? CategoryId
-    {
-        get => _categoryId;
-        set
-        {
-            _categoryId = value;
-
-            Category = DataRepo.General.FetchCategories().Result.FirstOrDefault(x => x.Id == value);
-        }
-    }
+    [Column("category_id")] public Guid? CategoryId { get; set; }
 
     [JsonIgnore] public Category? Category { get; set; }
 

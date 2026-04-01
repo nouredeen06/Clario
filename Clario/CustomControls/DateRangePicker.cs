@@ -5,8 +5,10 @@ using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.VisualTree;
 using Calendar = Avalonia.Controls.Calendar;
 
 namespace Clario.CustomControls;
@@ -23,19 +25,28 @@ public class DateRangePicker : TemplatedControl
         set => SetValue(SelectionModeProperty, value);
     }
 
-    public static readonly StyledProperty<IList<DateTime>> SelectedDatesProperty =
-        AvaloniaProperty.Register<DateRangePicker, IList<DateTime>>(
-            nameof(SelectedDates), new List<DateTime>());
+    // FIX: Use DirectProperty to avoid shared-instance default and get proper TwoWay support
+    private IList<DateTime> _selectedDates = new List<DateTime>();
+
+    public static readonly DirectProperty<DateRangePicker, IList<DateTime>> SelectedDatesProperty =
+        AvaloniaProperty.RegisterDirect<DateRangePicker, IList<DateTime>>(
+            nameof(SelectedDates),
+            o => o.SelectedDates,
+            (o, v) => o.SelectedDates = v,
+            defaultBindingMode: BindingMode.TwoWay);
 
     public IList<DateTime> SelectedDates
     {
-        get => GetValue(SelectedDatesProperty);
-        set => SetValue(SelectedDatesProperty, value);
+        get => _selectedDates;
+        set => SetAndRaise(SelectedDatesProperty, ref _selectedDates, value);
     }
 
+    // FIX: Add defaultBindingMode: TwoWay so changes propagate back to the ViewModel
     public static readonly StyledProperty<DateTime?> SelectedDateProperty =
         AvaloniaProperty.Register<DateRangePicker, DateTime?>(
-            nameof(SelectedDate), null);
+            nameof(SelectedDate),
+            defaultValue: null,
+            defaultBindingMode: BindingMode.TwoWay);
 
     public DateTime? SelectedDate
     {
@@ -58,7 +69,6 @@ public class DateRangePicker : TemplatedControl
     private Popup? _popup;
     private Calendar? _calendar;
 
-
     private bool _isSyncing = false;
 
 
@@ -66,12 +76,12 @@ public class DateRangePicker : TemplatedControl
     {
         base.OnApplyTemplate(e);
 
-
         if (_button != null) _button.Click -= OnButtonClick;
         if (_calendar != null)
         {
             _calendar.SelectedDatesChanged -= OnCalendarDatesChanged;
             _calendar.RemoveHandler(PointerReleasedEvent, OnCalendarPointerReleased);
+            // _calendar.RemoveHandler(Button.ClickEvent, OnCalendarInternalClick); // add this
         }
 
         _button = e.NameScope.Find<Button>("PART_Button");
@@ -85,10 +95,9 @@ public class DateRangePicker : TemplatedControl
         {
             _calendar.AllowTapRangeSelection = true;
 
-
             _calendar.SelectedDatesChanged += OnCalendarDatesChanged;
             _calendar.AddHandler(PointerReleasedEvent, OnCalendarPointerReleased, RoutingStrategies.Tunnel);
-
+            // _calendar.AddHandler(Button.ClickEvent, OnCalendarInternalClick, RoutingStrategies.Tunnel);
 
             SyncToCalendar();
         }
@@ -96,13 +105,22 @@ public class DateRangePicker : TemplatedControl
         UpdateDisplayText();
     }
 
+    private void OnCalendarInternalClick(object? sender, RoutedEventArgs e)
+    {
+        e.Handled = true;
+    }
+
     private void OnCalendarPointerReleased(object? sender, PointerReleasedEventArgs e)
     {
         if (_calendar!.SelectionMode != CalendarSelectionMode.SingleDate) return;
-
         if (_isSyncing) return;
-
         if (_popup is null || !_popup.IsOpen) return;
+
+        // FIX: Ignore clicks on the nav buttons/header — only react to day cell clicks
+        if (e.Source is not Control source) return;
+        if (source.TemplatedParent is CalendarDayButton == false &&
+            source.FindAncestorOfType<CalendarDayButton>() is null)
+            return;
 
         var newDates = _calendar!.SelectedDates.OrderBy(d => d).ToList();
 
@@ -110,12 +128,8 @@ public class DateRangePicker : TemplatedControl
         try
         {
             SelectedDates = newDates;
-
-
             SelectedDate = newDates.Count > 0 ? newDates[0] : null;
-
             UpdateDisplayText();
-
 
             bool shouldClose = SelectionMode switch
             {
@@ -133,11 +147,9 @@ public class DateRangePicker : TemplatedControl
         }
     }
 
-
     private void OnButtonClick(object? sender, RoutedEventArgs e)
     {
         if (_popup is null) return;
-
 
         SyncToCalendar();
         _popup.IsOpen = true;
@@ -157,12 +169,9 @@ public class DateRangePicker : TemplatedControl
         try
         {
             SelectedDates = newDates;
-
-
             SelectedDate = newDates.Count > 0 ? newDates[0] : null;
 
             UpdateDisplayText();
-
 
             bool shouldClose = SelectionMode switch
             {
@@ -179,7 +188,6 @@ public class DateRangePicker : TemplatedControl
             _isSyncing = false;
         }
     }
-
 
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
@@ -219,7 +227,6 @@ public class DateRangePicker : TemplatedControl
             }
         }
     }
-
 
     private void SyncToCalendar()
     {

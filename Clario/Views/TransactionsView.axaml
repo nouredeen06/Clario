@@ -30,7 +30,7 @@
                     <!-- Period header ─
                REPLACE: bind TextBlock texts to SelectedPeriodLabel
           -->
-                    <TextBlock Text="MARCH 2026"
+                    <TextBlock Text="{Binding DateRangeLabel}"
                                Classes="label"
                                Margin="0,0,0,4" />
                     <TextBlock Text="Summary"

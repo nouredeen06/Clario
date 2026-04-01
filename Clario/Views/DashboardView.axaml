@@ -18,7 +18,8 @@
                 <!--  Top Bar  -->
                 <Grid ColumnDefinitions="*,Auto">
                     <StackPanel Grid.Column="0">
-                        <TextBlock Classes="muted" Text="Friday, March 6, 2026" />
+                        <!-- <TextBlock Classes="muted" Text="Friday, March 6, 2026" /> -->
+                        <TextBlock Classes="muted" Text="{Binding DateToday}" />
                         <TextBlock Text="Financial Overview" FontSize="{StaticResource FontSizePageTitle}" FontWeight="Bold"
                                    Foreground="{DynamicResource TextPrimary}" Margin="0,2,0,0" />
                     </StackPanel>
@@ -113,7 +114,7 @@
                                 <StackPanel Grid.Column="0">
                                     <TextBlock Text="Spending by Category" FontSize="{StaticResource FontSizeSectionHeading}" FontWeight="SemiBold"
                                                Foreground="{DynamicResource TextPrimary}" />
-                                    <TextBlock Classes="muted" Text="March 2026" />
+                                    <TextBlock Classes="muted" Text="{Binding SelectedChartTimPeriodSubTitle}" />
                                 </StackPanel>
                                 <ComboBox Grid.Column="1" SelectedIndex="0" ItemsSource="{Binding ChartTimePeriods}"
                                           SelectedItem="{Binding SelectedChartTimePeriod}" Background="{DynamicResource BgHover}"
@@ -124,7 +125,8 @@
                             <Panel>
                                 <StackPanel Spacing="20" IsVisible="{Binding HasSpendingData}">
                                     <lvc:CartesianChart Series="{Binding SpendingByCategoryChartSeries}" Height="250" Background="{DynamicResource BgSurface}"
-                                                        LegendPosition="Hidden" TooltipPosition="Hidden" ZoomMode="None" Name="chart">
+                                                        LegendPosition="Hidden" TooltipPosition="Hidden" ZoomMode="None" Name="chart"
+                                                        AnimationsSpeed="00:00:00.1">
                                         <lvc:CartesianChart.XAxes>
                                             <lvc:XamlAxis IsVisible="False" />
                                         </lvc:CartesianChart.XAxes>

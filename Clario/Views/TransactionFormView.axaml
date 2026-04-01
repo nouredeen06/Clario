@@ -257,6 +257,7 @@
                                             Classes="ghost"
                                             SelectionMode="SingleDate"
                                             SelectedDates="{Binding Dates}"
+                                            SelectedDate="{Binding}"
                                             HorizontalAlignment="Stretch"
                                             Padding="12,10" />
                         <Button Grid.Column="1"
