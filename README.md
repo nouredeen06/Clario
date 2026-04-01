@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="./Clario/Assets/logo-textmark-no-bg.png" alt="Clario Logo" width="80" />
+<img src="./Clario/Assets/logo-no-bg.png" alt="Clario Logo" width="80" />
 
 # Clario
 
