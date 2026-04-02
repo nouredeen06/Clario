@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Clario.Data;
+using Clario.Services;
 using Newtonsoft.Json;
 using Supabase.Postgrest.Attributes;
 using Supabase.Postgrest.Models;
@@ -31,6 +32,21 @@ public class Transaction : BaseModel
     [Column("date")] public DateTime Date { get; set; }
 
     [Column("created_at")] public DateTime CreatedAt { get; set; }
+
+    [Column("exchange_rate")] public decimal? ExchangeRate { get; set; }
+
+    // Set during enrichment by GeneralDataRepo.LinkTransactionAccounts
+    [JsonIgnore] public string AccountCurrency { get; set; } = "";
+    [JsonIgnore] public string PrimaryAmountFormatted { get; set; } = "";
+    [JsonIgnore] public string OriginalAmountFormatted { get; set; } = "";
+
+    [JsonIgnore] public decimal ConvertedAmount =>
+        !string.IsNullOrEmpty(AccountCurrency) && CurrencyService.LiveRates.TryGetValue(AccountCurrency, out var liveRate)
+            ? Amount * liveRate
+            : (ExchangeRate.HasValue ? Amount * ExchangeRate.Value : Amount);
+    [JsonIgnore] public bool IsMultiCurrency { get; set; }
+    [JsonIgnore] public string PrimaryAmountSignFormatted =>
+        Type == "expense" ? $"-{PrimaryAmountFormatted}" : $"+{PrimaryAmountFormatted}";
 
     [JsonIgnore] public bool GroupHeader { get; set; } = false;
 }

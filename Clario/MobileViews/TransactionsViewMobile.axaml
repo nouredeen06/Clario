@@ -193,10 +193,16 @@
                     <TextBlock Text="Income"
                                FontSize="11"
                                Foreground="{DynamicResource TextMuted}" />
-                    <TextBlock Text="{Binding TotalIncome, StringFormat='$0.00'}"
-                               FontSize="13"
+                    <TextBlock FontSize="13"
                                FontWeight="Bold"
-                               Foreground="{DynamicResource AccentGreen}" />
+                               Foreground="{DynamicResource AccentGreen}">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0}{1:N2}">
+                                <Binding Path="PrimaryCurrencySymbol" />
+                                <Binding Path="TotalIncome" />
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
                 </StackPanel>
             </Border>
 
@@ -212,10 +218,16 @@
                     <TextBlock Text="Expenses"
                                FontSize="11"
                                Foreground="{DynamicResource TextMuted}" />
-                    <TextBlock Text="{Binding TotalExpenses, StringFormat='$0.00'}"
-                               FontSize="13"
+                    <TextBlock FontSize="13"
                                FontWeight="Bold"
-                               Foreground="{DynamicResource AccentRed}" />
+                               Foreground="{DynamicResource AccentRed}">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0}{1:N2}">
+                                <Binding Path="PrimaryCurrencySymbol" />
+                                <Binding Path="TotalExpenses" />
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
                 </StackPanel>
             </Border>
 
@@ -238,6 +250,7 @@
                             <MultiBinding Converter="{StaticResource NetworthSumConverter}">
                                 <Binding Path="TotalIncome" />
                                 <Binding Path="TotalExpenses" />
+                                <Binding Path="PrimaryCurrencySymbol" />
                             </MultiBinding>
                         </TextBlock.Text>
                     </TextBlock>
@@ -313,13 +326,22 @@
                                             </StackPanel>
                                         </StackPanel>
 
-                                        <!-- Amount -->
-                                        <TextBlock Grid.Column="2"
-                                                   Text="{Binding Amount, StringFormat='$0.00'}"
-                                                   FontSize="14"
-                                                   FontWeight="SemiBold"
-                                                   Foreground="{Binding Type, Converter={StaticResource AmountColorConverter}}"
-                                                   VerticalAlignment="Center" />
+                                        <!-- Dual-currency amount display -->
+                                        <StackPanel Grid.Column="2"
+                                                    HorizontalAlignment="Right"
+                                                    VerticalAlignment="Center"
+                                                    Spacing="1">
+                                            <TextBlock Text="{Binding PrimaryAmountFormatted}"
+                                                       FontSize="14"
+                                                       FontWeight="SemiBold"
+                                                       HorizontalAlignment="Right"
+                                                       Foreground="{Binding Type, Converter={StaticResource AmountColorConverter}}" />
+                                            <TextBlock Text="{Binding OriginalAmountFormatted}"
+                                                       FontSize="11"
+                                                       HorizontalAlignment="Right"
+                                                       IsVisible="{Binding IsMultiCurrency}"
+                                                       Foreground="{DynamicResource TextMuted}" />
+                                        </StackPanel>
 
                                     </Grid>
                                 </Border>

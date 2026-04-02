@@ -5,7 +5,10 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Clario.Data;
+using Clario.Messages;
 using Clario.Models;
+using Clario.Services;
+using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LiveChartsCore;
@@ -37,11 +40,16 @@ public partial class BudgetViewModel : ViewModelBase
     public string SpentPercentageFormatted => (TotalSpent / TotalBudgeted).ToString("P0") + " of total budget.";
 
     public decimal TotalLeft => Math.Clamp(Math.Round(TotalBudgeted - TotalSpent), 0, decimal.MaxValue);
-    public string TotalLeftFormatted => TotalLeft.ToString("C0") + " left";
+    private string PrimarySymbol => CurrencyService.GetSymbol(AppData.PrimaryAccount?.Currency ?? AppData.Profile?.Currency ?? "USD");
+    public string TotalLeftFormatted => $"{PrimarySymbol}{TotalLeft:N0} left";
 
-    public string SavingsHint => TotalLeft >= (AppData.Profile != null ? AppData.Profile.SavingsGoal : 0)
-        ? "You're on track!"
-        : $"Reduce your spending by ${Math.Round((AppData.Profile != null ? AppData.Profile.SavingsGoal ?? 0 : 0) - TotalLeft)} to hit your goal.";
+    public bool HasSavingsGoal => AppData.Profile?.SavingsGoal is > 0;
+
+    public bool IsSavingsGoalMet => HasSavingsGoal && TotalLeft >= (AppData.Profile!.SavingsGoal ?? 0);
+
+    public string SavingsHint => IsSavingsGoalMet
+        ? "You're on track to meet your savings goal this month!"
+        : $"Reduce your spending by {PrimarySymbol}{((AppData.Profile?.SavingsGoal ?? 0) - TotalLeft):N0} to hit your goal.";
 
     private int _onTrackCount;
     private int _approachingCount;
@@ -57,12 +65,18 @@ public partial class BudgetViewModel : ViewModelBase
     public string PeriodDaysLeftFormatted => PeriodDaysLeft == 1 ? PeriodDaysLeft + " day left" : PeriodDaysLeft + " days left";
 
     public string DailyBudgetLeftFormatted =>
-        ((TotalBudgeted - TotalSpent) / ((PeriodDaysLeft == 0) ? 1 : PeriodDaysLeft)).ToString("C", new CultureInfo("en-US"));
+        $"{PrimarySymbol}{((TotalBudgeted - TotalSpent) / ((PeriodDaysLeft == 0) ? 1 : PeriodDaysLeft)):N2}";
 
     public BudgetViewModel()
     {
         AppData.Budgets.CollectionChanged += async (_, _) => { await Initialize(); };
         AppData.Transactions.CollectionChanged += async (_, _) => { await Initialize(); };
+        AppData.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(AppData.Profile))
+                NotifyComputedPropertiesOnChanged();
+        };
+        WeakReferenceMessenger.Default.Register<RatesRefreshed>(this, async (_, _) => await Initialize());
         _ = Initialize();
     }
 
@@ -72,10 +86,11 @@ public partial class BudgetViewModel : ViewModelBase
         {
             await ProcessBudgets();
             ProcessChartData();
+            
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            DebugLogger.Log(e);
             throw;
         }
     }
@@ -92,6 +107,12 @@ public partial class BudgetViewModel : ViewModelBase
         ((MainViewModel)parentViewModel).OpenEditBudgetCommand.Execute(budget);
     }
 
+    [RelayCommand]
+    private void EditSavingsGoal()
+    {
+        ((MainViewModel)parentViewModel).OpenEditSavingsGoalCommand.Execute(null);
+    }
+
     private void ProcessChartData()
     {
         var tempCategorySpendingBreakdown = new List<(Category category, double[] spent)>();
@@ -101,7 +122,7 @@ public partial class BudgetViewModel : ViewModelBase
             var spent = AppData.Transactions
                 .Where(x => x.CategoryId == category.Id && x.Type.Equals("expense", StringComparison.OrdinalIgnoreCase) &&
                             x.Date.Month == CurrentPeriod.Month && x.Date.Year == CurrentPeriod.Year)
-                .Sum(x => x.Amount);
+                .Sum(x => x.ConvertedAmount);
             if (spent == 0) continue;
             double[] values = [(double)spent];
             tempCategorySpendingBreakdown.Add((category, values));
@@ -115,7 +136,7 @@ public partial class BudgetViewModel : ViewModelBase
             Values = x.spent,
             Fill = new SolidColorPaint(SKColor.Parse(x.category.Color)),
             InnerRadius = 60,
-            ToolTipLabelFormatter = point => $"${point.Coordinate.PrimaryValue:N0}"
+            ToolTipLabelFormatter = point => $"{PrimarySymbol}{point.Coordinate.PrimaryValue:N0}"
         }).ToArray();
 
         SpendingBreakdownLegends = tempSpendingBreakdownLegends.OrderByDescending(x => x.Spent).ToList();
@@ -142,6 +163,8 @@ public partial class BudgetViewModel : ViewModelBase
         OnPropertyChanged(nameof(SpentPercentageFormatted));
         OnPropertyChanged(nameof(TotalLeft));
         OnPropertyChanged(nameof(TotalLeftFormatted));
+        OnPropertyChanged(nameof(HasSavingsGoal));
+        OnPropertyChanged(nameof(IsSavingsGoalMet));
         OnPropertyChanged(nameof(SavingsHint));
         OnPropertyChanged(nameof(OnTrackCountFormatted));
         OnPropertyChanged(nameof(ApproachingCountFormatted));

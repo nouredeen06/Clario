@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(chmod +x \"/c/Users/Nouredeen/.claude/scripts/context-bar.sh\")",
+      "Bash(dotnet build:*)"
+    ]
+  },
+  "spinnerTipsEnabled": true
+}

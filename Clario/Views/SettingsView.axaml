@@ -5,7 +5,8 @@
              xmlns:vm="clr-namespace:Clario.ViewModels"
              mc:Ignorable="d" d:DesignWidth="1180" d:DesignHeight="800"
              x:Class="Clario.Views.SettingsView"
-             x:DataType="vm:SettingsViewModel">
+             x:DataType="vm:SettingsViewModel"
+             x:Name="SettingsRoot">
     <Design.DataContext>
         <vm:SettingsViewModel />
     </Design.DataContext>
@@ -173,25 +174,15 @@
                                          VerticalContentAlignment="Center" />
                             </StackPanel>
 
-                            <!-- Currency + Theme -->
-                            <Grid ColumnDefinitions="*,16,*">
-                                <StackPanel Grid.Column="0" Spacing="6">
-                                    <TextBlock Text="CURRENCY" Classes="label" />
-                                    <ComboBox ItemsSource="{Binding Currencies}"
-                                              SelectedItem="{Binding SelectedCurrency, Mode=TwoWay}"
-                                              HorizontalAlignment="Stretch"
-                                              Padding="10,8"
-                                              FontSize="13" />
-                                </StackPanel>
-                                <StackPanel Grid.Column="2" Spacing="6">
-                                    <TextBlock Text="THEME" Classes="label" />
-                                    <ComboBox ItemsSource="{Binding ThemeLabels}"
-                                              SelectedIndex="{Binding SelectedThemeIndex, Mode=TwoWay}"
-                                              HorizontalAlignment="Stretch"
-                                              Padding="10,8"
-                                              FontSize="13" />
-                                </StackPanel>
-                            </Grid>
+                            <!-- Theme -->
+                            <StackPanel Spacing="6">
+                                <TextBlock Text="THEME" Classes="label" />
+                                <ComboBox ItemsSource="{Binding ThemeLabels}"
+                                          SelectedIndex="{Binding SelectedThemeIndex, Mode=TwoWay}"
+                                          HorizontalAlignment="Stretch"
+                                          Padding="10,8"
+                                          FontSize="13" />
+                            </StackPanel>
 
                             <!-- Language -->
                             <StackPanel Spacing="6">
@@ -219,11 +210,12 @@
                                  Width="13" Height="13"
                                  Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #0D0F14; }" />
                             <Panel>
-                                <TextBlock Text="{Binding IsSaving, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Saving...|Save Changes'}"
-                                           FontSize="13"
-                                           FontWeight="SemiBold"
-                                           Foreground="{DynamicResource BgBase}"
-                                           VerticalAlignment="Center" />
+                                <TextBlock
+                                    Text="{Binding IsSaving, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Saving...|Save Changes'}"
+                                    FontSize="13"
+                                    FontWeight="SemiBold"
+                                    Foreground="{DynamicResource BgBase}"
+                                    VerticalAlignment="Center" />
                             </Panel>
                         </StackPanel>
                     </Button>
@@ -506,21 +498,12 @@
                                    Foreground="{DynamicResource TextMuted}" />
                     </StackPanel>
                     <Button Grid.Column="1"
-                            Background="#2A0D0D"
-                            BorderBrush="#3A1515"
-                            BorderThickness="1"
-                            CornerRadius="{DynamicResource RadiusControl}"
+                            Classes="danger"
                             Padding="16,9"
                             Command="{Binding SignOutCommand}">
                         <StackPanel Orientation="Horizontal" Spacing="8">
-                            <Svg Path="../Assets/Icons/log-out.svg"
-                                 Width="13" Height="13"
-                                 Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #FF5E5E; }" />
-                            <TextBlock Text="Sign Out"
-                                       FontSize="13"
-                                       FontWeight="SemiBold"
-                                       Foreground="#FF5E5E"
-                                       VerticalAlignment="Center" />
+                            <Svg Path="../Assets/Icons/log-out.svg" Width="13" Height="13" Css="{DynamicResource SvgRed}" />
+                            <TextBlock Text="Sign Out" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center" />
                         </StackPanel>
                     </Button>
                 </Grid>

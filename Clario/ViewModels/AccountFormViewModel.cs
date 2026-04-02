@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Clario.Data;
 using Clario.Models;
+using Clario.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -36,6 +37,39 @@ public partial class AccountFormViewModel : ViewModelBase
 
     [ObservableProperty] private string _currency = "USD";
 
+    [ObservableProperty] private bool _isPrimary = false;
+
+    [ObservableProperty] private string _currencySearch = "";
+    [ObservableProperty] private int _currencyPage = 1;
+
+    private const int CurrencyPageSize = 30;
+
+    public List<string> FilteredCurrencies =>
+        string.IsNullOrWhiteSpace(CurrencySearch)
+            ? CurrencyService.AvailableCurrencies.ToList()
+            : CurrencyService.AvailableCurrencies
+                .Where(c => c.Contains(CurrencySearch, StringComparison.OrdinalIgnoreCase)
+                         || (CurrencyService.CurrencyNames.TryGetValue(c, out var name)
+                             && name.Contains(CurrencySearch, StringComparison.OrdinalIgnoreCase)))
+                .ToList();
+
+    public List<string> VisibleCurrencies => FilteredCurrencies.Take(CurrencyPage * CurrencyPageSize).ToList();
+    public bool HasMoreCurrencies => FilteredCurrencies.Count > CurrencyPage * CurrencyPageSize;
+
+    partial void OnCurrencySearchChanged(string value)
+    {
+        _currencyPage = 1;
+        OnPropertyChanged(nameof(FilteredCurrencies));
+        OnPropertyChanged(nameof(VisibleCurrencies));
+        OnPropertyChanged(nameof(HasMoreCurrencies));
+    }
+
+    partial void OnCurrencyPageChanged(int value)
+    {
+        OnPropertyChanged(nameof(VisibleCurrencies));
+        OnPropertyChanged(nameof(HasMoreCurrencies));
+    }
+
     [ObservableProperty] private string? _creditLimit;
 
     [ObservableProperty] private List<DateTime>? _openedAtDates;
@@ -46,8 +80,6 @@ public partial class AccountFormViewModel : ViewModelBase
 
     // ── Options ─────────────────────────────────────────────
     [ObservableProperty] private List<string> _accountTypes = new() { "Cash", "Checking", "Savings", "Credit", "Investment", "Other" };
-
-    [ObservableProperty] private List<string> _currencies = new() { "USD", "EUR", "GBP", "CAD", "AUD" };
 
     [ObservableProperty] private List<string> _icons = new() { "wallet", "credit-card", "banknote", "landmark", "piggy-bank", "dollar-sign" };
 
@@ -78,6 +110,21 @@ public partial class AccountFormViewModel : ViewModelBase
     partial void OnSelectedTypeChanged(string value)
     {
         OnPropertyChanged(nameof(IsCredit));
+    }
+
+    [RelayCommand]
+    private void SetCurrency(string currency) => Currency = currency;
+
+    [RelayCommand]
+    private void LoadMoreCurrencies() => CurrencyPage++;
+
+    private void ResetCurrencyFilter()
+    {
+        _currencySearch = "";
+        _currencyPage = 1;
+        OnPropertyChanged(nameof(CurrencySearch));
+        OnPropertyChanged(nameof(VisibleCurrencies));
+        OnPropertyChanged(nameof(HasMoreCurrencies));
     }
 
     [RelayCommand]
@@ -114,10 +161,11 @@ public partial class AccountFormViewModel : ViewModelBase
         {
             if (IsEditMode && _editingId.HasValue)
             {
+                if (IsPrimary) await DataRepo.General.SetPrimaryAccountAsync(_editingId.Value);
                 var updated = new Account
                 {
                     Id = _editingId.Value,
-                    UserId = Guid.Parse(Services.SupabaseService.Client.Auth.CurrentUser!.Id),
+                    UserId = Guid.Parse(SupabaseService.Client.Auth.CurrentUser!.Id),
                     Name = Name.Trim(),
                     Type = SelectedType,
                     Institution = Institution?.Trim(),
@@ -128,16 +176,19 @@ public partial class AccountFormViewModel : ViewModelBase
                     OpenedAt = OpenedAtDates?[0],
                     Icon = SelectedIcon,
                     Color = SelectedColor,
+                    IsPrimary = IsPrimary,
                 };
                 await DataRepo.General.UpdateAccount(updated);
                 ResultAccount = updated;
             }
             else
             {
+                var newId = Guid.NewGuid();
+                if (IsPrimary) await DataRepo.General.SetPrimaryAccountAsync(newId);
                 var account = new Account
                 {
-                    Id = Guid.NewGuid(),
-                    UserId = Guid.Parse(Services.SupabaseService.Client.Auth.CurrentUser!.Id!),
+                    Id = newId,
+                    UserId = Guid.Parse(SupabaseService.Client.Auth.CurrentUser!.Id!),
                     Name = Name.Trim(),
                     Type = SelectedType,
                     Institution = Institution?.Trim(),
@@ -148,6 +199,7 @@ public partial class AccountFormViewModel : ViewModelBase
                     OpenedAt = OpenedAtDates?[0],
                     Icon = SelectedIcon,
                     Color = SelectedColor,
+                    IsPrimary = IsPrimary,
                 };
                 var result = await DataRepo.General.InsertAccount(account);
                 ResultAccount = result;
@@ -158,7 +210,7 @@ public partial class AccountFormViewModel : ViewModelBase
         catch (Exception ex)
         {
             ErrorMessage = "Something went wrong. Please try again.";
-            Console.WriteLine(ex);
+            DebugLogger.Log(ex);
         }
     }
 
@@ -180,7 +232,9 @@ public partial class AccountFormViewModel : ViewModelBase
         Institution = null;
         Mask = null;
         OpeningBalance = "0.00";
+        ResetCurrencyFilter();
         Currency = DataRepo.General.Profile?.Currency ?? "USD";
+        IsPrimary = false;
         CreditLimit = null;
         OpenedAtDates = null;
         SelectedIcon = "wallet";
@@ -194,12 +248,14 @@ public partial class AccountFormViewModel : ViewModelBase
     {
         IsEditMode = true;
         _editingId = account.Id;
+        CurrencySearch = "";
         Name = account.Name;
-        SelectedType = account.Type;
+        SelectedType = AccountTypes.FirstOrDefault(t => t.Equals(account.Type, StringComparison.OrdinalIgnoreCase)) ?? account.Type;
         Institution = account.Institution;
         Mask = account.Mask;
         OpeningBalance = account.OpeningBalance.ToString("0.00");
         Currency = account.Currency;
+        IsPrimary = account.IsPrimary;
         CreditLimit = account.CreditLimit?.ToString("0.00");
         OpenedAtDates = account.OpenedAt.HasValue ? new List<DateTime> { account.OpenedAt.Value } : null;
         SelectedIcon = account.Icon;

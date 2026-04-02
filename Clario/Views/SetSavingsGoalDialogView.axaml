@@ -1,0 +1,145 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Clario.ViewModels"
+             xmlns:behaviors="clr-namespace:Clario.Behaviors"
+             mc:Ignorable="d"
+             x:Class="Clario.Views.SetSavingsGoalDialogView"
+             x:DataType="vm:SetSavingsGoalDialogViewModel">
+  <Design.DataContext>
+    <vm:SetSavingsGoalDialogViewModel/>
+  </Design.DataContext>
+
+  <Grid>
+    <!-- Dim overlay -->
+    <Border Background="#70000000"/>
+
+    <!-- Card -->
+    <Border HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Background="{DynamicResource BgSurface}"
+            BorderBrush="{DynamicResource AccentBlue}"
+            BorderThickness="1"
+            CornerRadius="18"
+            Padding="28"
+            Width="380"
+            BoxShadow="0 24 72 0 #60000000">
+      <StackPanel Spacing="0">
+
+        <!-- Icon -->
+        <Border Background="{DynamicResource IconBgBlue}"
+                CornerRadius="14"
+                Width="54" Height="54"
+                HorizontalAlignment="Center"
+                Margin="0,0,0,16">
+          <Svg Path="../Assets/Icons/target.svg"
+               Width="22" Height="22"
+               Css="{DynamicResource SvgBlue}"/>
+        </Border>
+
+        <!-- Title -->
+        <TextBlock Text="Set Savings Goal"
+                   FontSize="17"
+                   FontWeight="Bold"
+                   Foreground="{DynamicResource TextPrimary}"
+                   HorizontalAlignment="Center"
+                   Margin="0,0,0,4"/>
+
+        <!-- Subtitle -->
+        <TextBlock Text="Set a monthly savings target to track your progress on the budget page."
+                   FontSize="12"
+                   Foreground="{DynamicResource TextMuted}"
+                   TextWrapping="Wrap"
+                   TextAlignment="Center"
+                   HorizontalAlignment="Center"
+                   Margin="0,0,0,22"/>
+
+        <!-- Amount input -->
+        <TextBlock Text="MONTHLY GOAL" Classes="label" Margin="0,0,0,6"/>
+        <Border Background="{DynamicResource BgBase}"
+                BorderBrush="{DynamicResource BorderSubtle}"
+                BorderThickness="1"
+                CornerRadius="{DynamicResource RadiusControl}"
+                Margin="0,0,0,6">
+          <Grid ColumnDefinitions="Auto,*">
+            <TextBlock Grid.Column="0"
+                       Text="$"
+                       FontSize="15"
+                       FontWeight="SemiBold"
+                       Foreground="{DynamicResource TextMuted}"
+                       VerticalAlignment="Center"
+                       Margin="14,0,0,0"/>
+            <TextBox Grid.Column="1"
+                     Classes="ghost"
+                     Text="{Binding GoalInput, Mode=TwoWay}"
+                     Watermark="0.00"
+                     FontSize="15"
+                     FontWeight="SemiBold"
+                     Padding="8,12">
+              <Interaction.Behaviors>
+                <behaviors:NumericInputBehavior/>
+              </Interaction.Behaviors>
+            </TextBox>
+          </Grid>
+        </Border>
+        <TextBlock Text="Set to 0 to remove the goal"
+                   FontSize="10"
+                   Foreground="{DynamicResource TextDisabled}"
+                   Margin="0,0,0,20"/>
+
+        <!-- Error -->
+        <Border Background="{DynamicResource BadgeBgRed}"
+                BorderBrush="{DynamicResource AccentRed}"
+                BorderThickness="1"
+                CornerRadius="10"
+                Padding="12,8"
+                Margin="0,0,0,16"
+                IsVisible="{Binding HasError}">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <Svg Path="../Assets/Icons/circle-alert.svg"
+                 Width="13" Height="13"
+                 Css="{DynamicResource SvgRed}"/>
+            <TextBlock Text="{Binding ErrorMessage}"
+                       FontSize="12"
+                       Foreground="{DynamicResource AccentRed}"
+                       VerticalAlignment="Center"
+                       TextWrapping="Wrap"/>
+          </StackPanel>
+        </Border>
+
+        <!-- Actions -->
+        <UniformGrid Rows="1">
+          <Button Classes="base"
+                  Margin="0,0,6,0"
+                  Padding="0,11"
+                  HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Center"
+                  FontSize="13"
+                  Content="Cancel"
+                  Command="{Binding CancelCommand}"/>
+          <Button Classes="accented"
+                  Margin="6,0,0,0"
+                  Padding="0,11"
+                  HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Center"
+                  IsEnabled="{Binding IsValid}"
+                  Command="{Binding SaveCommand}">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <Svg Path="../Assets/Icons/check.svg"
+                   Width="13" Height="13"
+                   Css="{DynamicResource SvgBase}"/>
+              <TextBlock Text="Save Goal"
+                         FontSize="13"
+                         FontWeight="SemiBold"
+                         Foreground="{DynamicResource BgBase}"
+                         VerticalAlignment="Center"/>
+            </StackPanel>
+          </Button>
+        </UniformGrid>
+
+      </StackPanel>
+    </Border>
+
+  </Grid>
+</UserControl>

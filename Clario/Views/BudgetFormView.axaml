@@ -277,25 +277,16 @@
                 </Border>
 
                 <!-- ── Delete button (edit mode only) ── -->
-                <Button HorizontalAlignment="Stretch"
+                <Button Classes="danger"
+                        HorizontalAlignment="Stretch"
                         HorizontalContentAlignment="Center"
-                        Background="#1A0808"
-                        BorderBrush="#3A1515"
-                        BorderThickness="1"
-                        CornerRadius="{DynamicResource RadiusControl}"
                         Padding="0,10"
                         Margin="0,0,0,10"
                         IsVisible="{Binding IsEditMode}"
                         Command="{Binding RequestDeleteCommand}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
-                        <Svg Path="../Assets/Icons/trash-2.svg"
-                             Width="13" Height="13"
-                             Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #FF5E5E; }" />
-                        <TextBlock Text="Delete Budget"
-                                   FontSize="13"
-                                   FontWeight="SemiBold"
-                                   Foreground="#FF5E5E"
-                                   VerticalAlignment="Center" />
+                        <Svg Path="../Assets/Icons/trash-2.svg" Width="13" Height="13" Css="{DynamicResource SvgRed}" />
+                        <TextBlock Text="Delete Budget" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center" />
                     </StackPanel>
                 </Button>
 

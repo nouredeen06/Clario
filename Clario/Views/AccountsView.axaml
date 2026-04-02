@@ -41,8 +41,15 @@
                                 </Border>
                                 <TextBlock Grid.Column="1" Text="Total Net Worth" FontSize="14" FontWeight="SemiBold"
                                            Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center" />
-                                <TextBlock Grid.Column="2" Text="{Binding TotalBalance,StringFormat='$0.00'}" FontSize="17" FontWeight="Bold"
-                                           Foreground="{DynamicResource AccentBlue}" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="2" FontSize="17" FontWeight="Bold"
+                                           Foreground="{DynamicResource AccentBlue}" VerticalAlignment="Center">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0}{1:N2}">
+                                            <Binding Path="PrimarySymbol" />
+                                            <Binding Path="TotalBalance" />
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
                             </Grid>
                         </Border>
                         <ItemsControl ItemsSource="{Binding VisibleAccounts}">
@@ -73,8 +80,21 @@
                                                          Css="{Binding Color, Converter={StaticResource HexToColorConverter}, ConverterParameter=css}" />
                                                 </Border>
                                                 <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
-                                                    <TextBlock Text="{Binding Name}" FontSize="14" FontWeight="SemiBold"
-                                                               Foreground="{DynamicResource TextPrimary}" />
+                                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                                        <TextBlock Text="{Binding Name}" FontSize="14" FontWeight="SemiBold"
+                                                                   Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center" />
+                                                        <Border Classes="badge-green"
+                                                                IsVisible="{Binding IsPrimary}"
+                                                                CornerRadius="4"
+                                                                Padding="5,2"
+                                                                Background="{DynamicResource IconBgGreen}"
+                                                                VerticalAlignment="Center">
+                                                            <TextBlock Text="PRIMARY"
+                                                                       FontSize="9"
+                                                                       FontWeight="Bold"
+                                                                       Foreground="{DynamicResource AccentGreen}" />
+                                                        </Border>
+                                                    </StackPanel>
                                                     <StackPanel Orientation="Horizontal" Spacing="8">
                                                         <TextBlock Text="{Binding Institution}" FontSize="12" Foreground="{DynamicResource TextMuted}" />
                                                         <TextBlock Text="{Binding Mask, Converter={StaticResource MaskToStringConverter}}" FontSize="12"
@@ -83,7 +103,7 @@
                                                 </StackPanel>
                                                 <StackPanel Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Spacing="4">
 
-                                                    <TextBlock Text="{Binding CurrentBalance,StringFormat='$0.00'}" FontSize="15" FontWeight="Bold"
+                                                    <TextBlock Text="{Binding CurrentBalanceFormatted}" FontSize="15" FontWeight="Bold"
                                                                Foreground="{DynamicResource TextPrimary}" HorizontalAlignment="Right" />
                                                     <StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Right"
                                                                 IsVisible="{Binding !isCredit}">
@@ -105,7 +125,7 @@
                                                             </Svg.Css>
                                                         </Svg>
                                                         <StackPanel Orientation="Horizontal">
-                                                            <TextBlock Text="{Binding  MonthlyIncrease,Converter={StaticResource DecimalSignConverter}}"
+                                                            <TextBlock Text="{Binding MonthlyIncreaseFormatted}"
                                                                        FontSize="11">
                                                                 <TextBlock.Foreground>
                                                                     <MultiBinding Converter="{StaticResource DecimalColorConverter}">
@@ -203,8 +223,20 @@
                                 </StackPanel>
                                 <StackPanel Grid.Column="1" Grid.Row="1" Spacing="3" Margin="0,0,0,14">
                                     <TextBlock Text="CURRENCY" Classes="label" />
-                                    <TextBlock Text="{Binding SelectedAccount.Currency}" FontSize="13" FontWeight="SemiBold"
-                                               Foreground="{DynamicResource TextPrimary}" />
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <TextBlock Text="{Binding SelectedAccount.Currency}" FontSize="13" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center" />
+                                        <Border IsVisible="{Binding SelectedAccount.IsPrimary}"
+                                                CornerRadius="4"
+                                                Background="{DynamicResource IconBgGreen}"
+                                                Padding="5,2"
+                                                VerticalAlignment="Center">
+                                            <TextBlock Text="PRIMARY"
+                                                       FontSize="9"
+                                                       FontWeight="Bold"
+                                                       Foreground="{DynamicResource AccentGreen}" />
+                                        </Border>
+                                    </StackPanel>
                                 </StackPanel>
                                 <StackPanel Grid.Column="0" Grid.Row="2" Spacing="3">
                                     <TextBlock Text="OPENED" Classes="label" />
@@ -235,7 +267,7 @@
                                 </Border>
                                 <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="1">
                                     <TextBlock Text="Money In" FontSize="11" Foreground="{DynamicResource TextMuted}" />
-                                    <TextBlock Text="{Binding SelectedAccount.TotalIncomeThisMonth, StringFormat='$0.00'}" FontSize="14" FontWeight="SemiBold"
+                                    <TextBlock Text="{Binding SelectedAccount.TotalIncomeFormatted}" FontSize="14" FontWeight="SemiBold"
                                                Foreground="{DynamicResource AccentGreen}" />
                                 </StackPanel>
                                 <TextBlock Grid.Column="2" Text="{Binding SelectedAccount.IncomeTransactionsThisMonth}" FontSize="11"
@@ -248,7 +280,7 @@
                                 </Border>
                                 <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="1">
                                     <TextBlock Text="Money Out" FontSize="11" Foreground="{DynamicResource TextMuted}" />
-                                    <TextBlock Text="{Binding SelectedAccount.TotalExpenseThisMonth,StringFormat='$0.00'}" FontSize="14" FontWeight="SemiBold"
+                                    <TextBlock Text="{Binding SelectedAccount.TotalExpenseFormatted}" FontSize="14" FontWeight="SemiBold"
                                                Foreground="{DynamicResource AccentRed}" />
                                 </StackPanel>
                                 <TextBlock Grid.Column="2" Text="{Binding SelectedAccount.ExpenseTransactionsThisMonth}" FontSize="11"
@@ -348,8 +380,15 @@
                             <Grid ColumnDefinitions="*,Auto">
                                 <TextBlock Grid.Column="0" Text="Total Net Worth" FontSize="12" Foreground="{DynamicResource TextMuted}"
                                            VerticalAlignment="Center" />
-                                <TextBlock Grid.Column="1" Text="{Binding TotalBalance,StringFormat='$0.00'}" FontSize="13" FontWeight="Bold"
-                                           Foreground="{DynamicResource TextPrimary}" />
+                                <TextBlock Grid.Column="1" FontSize="13" FontWeight="Bold"
+                                           Foreground="{DynamicResource TextPrimary}">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0}{1:N2}">
+                                            <Binding Path="PrimarySymbol" />
+                                            <Binding Path="TotalBalance" />
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
                             </Grid>
                         </StackPanel>
                     </Border>
@@ -370,15 +409,18 @@
                                 </StackPanel>
                             </Button>
                             <!-- Delete -->
-                            <Button Background="#2A0D0D" BorderBrush="#3A1515" BorderThickness="1" CornerRadius="10" Padding="14,10"
-                                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Cursor="Hand"
-                                    Command="{Binding RequestDeleteAccountCommand}" CommandParameter="{Binding SelectedAccount}"
+                            <Button Classes="danger"
+                                    CornerRadius="10"
+                                    Padding="14,10"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Left"
+                                    Command="{Binding RequestDeleteAccountCommand}"
+                                    CommandParameter="{Binding SelectedAccount}"
                                     IsEnabled="{Binding CanDeleteAccount}">
                                 <StackPanel Orientation="Horizontal" Spacing="10">
-                                    <Svg Path="../Assets/Icons/trash-2.svg" Width="14" Height="14"
-                                         Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #FF5E5E; }" />
+                                    <Svg Path="../Assets/Icons/trash-2.svg" Width="14" Height="14" Css="{DynamicResource SvgRed}" />
                                     <StackPanel Spacing="1">
-                                        <TextBlock Text="Delete Account" FontSize="12" FontWeight="SemiBold" Foreground="#FF5E5E" />
+                                        <TextBlock Text="Delete Account" FontSize="12" FontWeight="SemiBold" />
                                         <TextBlock Text="Permanently removes all data" FontSize="11" Foreground="{DynamicResource TextMuted}" />
                                     </StackPanel>
                                 </StackPanel>

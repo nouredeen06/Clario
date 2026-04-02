@@ -29,11 +29,13 @@ public partial class MainViewModel : ViewModelBase
     [ObservableProperty] private AccountFormViewModel _accountFormViewModel = null!;
     [ObservableProperty] private BudgetFormViewModel _budgetFormViewModel = null!;
     [ObservableProperty] private SettingsViewModel _settingsViewModel = null!;
+    [ObservableProperty] private SetSavingsGoalDialogViewModel _setSavingsGoalDialogViewModel = null!;
 
     [ObservableProperty] private bool _isDimmed;
     [ObservableProperty] private bool _isTransactionFormVisible;
     [ObservableProperty] private bool _isAccountFormVisible;
     [ObservableProperty] private bool _isBudgetFormVisible;
+    [ObservableProperty] private bool _isSavingsGoalDialogVisible;
 
 
     [ObservableProperty]
@@ -44,8 +46,13 @@ public partial class MainViewModel : ViewModelBase
 
     public MainViewModel()
     {
-        Console.WriteLine("main vm loaded");
-        WeakReferenceMessenger.Default.Register<ProfileUpdated>(this, (_, m) => { Profile = AppData.Profile; });
+        DebugLogger.Log("main vm loaded");
+        WeakReferenceMessenger.Default.Register<ProfileUpdated>(this, (_, m) =>
+        {
+            Profile = AppData.Profile;
+            _ = DataRepo.General.RefreshLiveRatesAndEnrich();
+        });
+        IsDimmed = true;
         CurrentView = new LoadingViewModel();
         _ = InitializeApp();
     }
@@ -62,68 +69,72 @@ public partial class MainViewModel : ViewModelBase
                 var transactionsTask = DataRepo.General.FetchTransactions();
                 var accountsTask = DataRepo.General.FetchAccounts();
                 var budgetsTask = DataRepo.General.FetchBudgets();
-
                 await Task.WhenAll(profilesTask, categoriesTask, accountsTask, transactionsTask, budgetsTask);
 
                 Profile = profilesTask.Result;
 
                 DataRepo.General.LinkTransactionCategories();
+                await DataRepo.General.RefreshLiveRatesAndEnrich();
 
-                Console.WriteLine("fetched all data");
+                DebugLogger.Log("fetched all data");
             });
+
+            AppData.Accounts.CollectionChanged += (_, _) => _ = DataRepo.General.RefreshLiveRatesAndEnrich();
 
             _dashboardViewModel = new DashboardViewModel()
             {
                 parentViewModel = this
             };
-            CurrentView = _dashboardViewModel;
-
-            Console.WriteLine("initialized DashboardViewModel");
+            DebugLogger.Log("initialized DashboardViewModel");
             _transactionsViewModel = new TransactionsViewModel()
             {
                 parentViewModel = this
             };
 
-            Console.WriteLine("initialized TransactionsViewModel");
+            DebugLogger.Log("initialized TransactionsViewModel");
             _accountsViewModel = new AccountsViewModel()
             {
                 parentViewModel = this
             };
 
-            Console.WriteLine("initialized AccountsViewModel");
+            DebugLogger.Log("initialized AccountsViewModel");
             _budgetViewModel = new BudgetViewModel()
             {
                 parentViewModel = this
             };
-            Console.WriteLine("initialized BudgetViewModel");
+            DebugLogger.Log("initialized BudgetViewModel");
             SettingsViewModel = new SettingsViewModel()
             {
                 parentViewModel = this
             };
-            Console.WriteLine("initialized SettingsViewModel");
+            DebugLogger.Log("initialized SettingsViewModel");
             TransactionFormViewModel = new TransactionFormViewModel()
             {
                 parentViewModel = this
             };
-            Console.WriteLine("initialized TransactionFormViewModel");
+            DebugLogger.Log("initialized TransactionFormViewModel");
             AccountFormViewModel = new AccountFormViewModel()
             {
                 parentViewModel = this
             };
-            Console.WriteLine("initialized AccountFormViewModel");
+            DebugLogger.Log("initialized AccountFormViewModel");
             BudgetFormViewModel = new BudgetFormViewModel()
             {
                 parentViewModel = this
             };
-            Console.WriteLine("initialized BudgetFormViewModel");
+            DebugLogger.Log("initialized BudgetFormViewModel");
+            SetSavingsGoalDialogViewModel = new SetSavingsGoalDialogViewModel();
+            DebugLogger.Log("initialized SetSavingsGoalDialogViewModel");
 
             IsDarkTheme = ThemeService.IsDarkTheme;
 
             ThemeService.SwitchToTheme(AppData.Profile?.Theme ?? "system");
+            CurrentView = _dashboardViewModel;
+            IsDimmed = false;
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            DebugLogger.Log(e);
         }
     }
 
@@ -142,7 +153,7 @@ public partial class MainViewModel : ViewModelBase
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            DebugLogger.Log(e);
             throw;
         }
     }
@@ -179,7 +190,7 @@ public partial class MainViewModel : ViewModelBase
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            DebugLogger.Log(e);
             throw;
         }
     }
@@ -198,7 +209,7 @@ public partial class MainViewModel : ViewModelBase
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            DebugLogger.Log(e);
             throw;
         }
     }
@@ -225,7 +236,7 @@ public partial class MainViewModel : ViewModelBase
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            DebugLogger.Log(e);
             throw;
         }
     }
@@ -246,7 +257,7 @@ public partial class MainViewModel : ViewModelBase
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            DebugLogger.Log(e);
             throw;
         }
     }
@@ -255,6 +266,23 @@ public partial class MainViewModel : ViewModelBase
     {
         IsDimmed = false;
         IsBudgetFormVisible = false;
+    }
+
+    [RelayCommand]
+    public void OpenEditSavingsGoal()
+    {
+        if (IsDimmed) return;
+        SetSavingsGoalDialogViewModel.Setup(AppData.Profile?.SavingsGoal);
+        SetSavingsGoalDialogViewModel.OnSaved = CloseSavingsGoalDialog;
+        SetSavingsGoalDialogViewModel.OnCancelled = CloseSavingsGoalDialog;
+        IsSavingsGoalDialogVisible = true;
+        IsDimmed = true;
+    }
+
+    private void CloseSavingsGoalDialog()
+    {
+        IsSavingsGoalDialogVisible = false;
+        IsDimmed = false;
     }
 
     [RelayCommand]

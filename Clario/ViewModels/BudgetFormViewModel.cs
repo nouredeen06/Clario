@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Clario.Data;
 using Clario.Models;
+using Clario.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -101,7 +102,7 @@ public partial class BudgetFormViewModel : ViewModelBase
                 var updated = new Budget
                 {
                     Id = _editingId.Value,
-                    UserId = Guid.Parse(Services.SupabaseService.Client.Auth.CurrentUser!.Id),
+                    UserId = Guid.Parse(SupabaseService.Client.Auth.CurrentUser!.Id),
                     CategoryId = SelectedCategory.Id,
                     LimitAmount = amt,
                     Period = Period,
@@ -117,7 +118,7 @@ public partial class BudgetFormViewModel : ViewModelBase
                 var budget = new Budget
                 {
                     Id = Guid.NewGuid(),
-                    UserId = Guid.Parse(Services.SupabaseService.Client.Auth.CurrentUser!.Id!),
+                    UserId = Guid.Parse(SupabaseService.Client.Auth.CurrentUser!.Id!),
                     CategoryId = SelectedCategory.Id,
                     LimitAmount = amt,
                     Period = Period,
@@ -134,7 +135,7 @@ public partial class BudgetFormViewModel : ViewModelBase
         catch (Exception ex)
         {
             ErrorMessage = "Something went wrong. Please try again.";
-            Console.WriteLine(ex);
+            DebugLogger.Log(ex);
         }
     }
 
@@ -151,7 +152,7 @@ public partial class BudgetFormViewModel : ViewModelBase
         catch (Exception ex)
         {
             ErrorMessage = "Failed to delete budget.";
-            Console.WriteLine(ex);
+            DebugLogger.Log(ex);
         }
     }
 

@@ -30,6 +30,7 @@ public class Budget : BaseModel
     [JsonIgnore] public Category? Category { get; set; }
     [JsonIgnore] public int TransactionsCount { get; set; }
     [JsonIgnore] public decimal Spent { get; set; }
+    [JsonIgnore] public string PrimarySymbol { get; set; } = "$";
 
     [JsonIgnore] public decimal Remaining => LimitAmount - Spent;
     [JsonIgnore] public double PercentageUsed => LimitAmount > 0 ? Math.Round((double)(Spent / LimitAmount), 2) : 0;
@@ -37,14 +38,15 @@ public class Budget : BaseModel
     [JsonIgnore] public bool IsWarning => !IsOverBudget && PercentageUsed * 100 >= AlertThreshold;
     [JsonIgnore] public bool IsOnTrack => PercentageUsed * 100 < AlertThreshold;
 
-    [JsonIgnore] public string SpentFormatted => $"${Spent:N0}";
-    [JsonIgnore] public string AmountFormatted => $"of ${LimitAmount:N0}";
+    [JsonIgnore] public string SpentFormatted => $"{PrimarySymbol}{Spent:N0}";
+    [JsonIgnore] public string LimitFormatted => $"{PrimarySymbol}{LimitAmount:N0}";
+    [JsonIgnore] public string AmountFormatted => $"of {PrimarySymbol}{LimitAmount:N0}";
     [JsonIgnore] public string PercentageFormatted => $"{PercentageUsed:P0} used";
 
     [JsonIgnore]
     public string RemainingFormatted => IsOverBudget
-        ? $"${Math.Abs(Remaining):N0} over"
-        : $"${Remaining:N0} left";
+        ? $"{PrimarySymbol}{Math.Abs(Remaining):N0} over"
+        : $"{PrimarySymbol}{Remaining:N0} left";
 
     [JsonIgnore] public bool GroupHeader { get; set; } = false;
 }

@@ -42,7 +42,7 @@ public partial class App : Application
 
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatformLoading)
         {
-            Console.WriteLine("ANDROID PATH HIT");
+            DebugLogger.Log("ANDROID PATH HIT");
             singleViewPlatformLoading.MainView = new MainAppMobile()
             {
                 DataContext = new LoadingViewModel()
@@ -62,7 +62,7 @@ public partial class App : Application
         }
         catch (Exception e)
         {
-            Console.WriteLine($"[Auth] RetrieveSession failed: {e.Message}");
+            DebugLogger.Log($"[Auth] RetrieveSession failed: {e.Message}");
         }
 
         var user = SupabaseService.Client.Auth.CurrentUser;
@@ -84,7 +84,7 @@ public partial class App : Application
 
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
         {
-            Console.WriteLine("ANDROID PATH HIT");
+            DebugLogger.Log("ANDROID PATH HIT");
             singleViewPlatform.MainView!.DataContext = user is not null ? new MainViewModel() : new AuthViewModel();
         }
     }

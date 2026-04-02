@@ -44,4 +44,10 @@
         <DependentUpon>AccountFormView.axaml</DependentUpon>
       </Compile>
     </ItemGroup>
+
+    <ItemGroup>
+      <None Update="devsettings.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
 </Project>

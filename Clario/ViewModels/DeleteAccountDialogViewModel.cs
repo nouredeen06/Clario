@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Clario.Data;
 using Clario.Models;
+using Clario.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -111,7 +112,7 @@ public partial class DeleteAccountDialogViewModel : ViewModelBase
         catch (Exception ex)
         {
             ErrorMessage = "Failed to delete account. Please try again.";
-            Console.WriteLine(ex);
+            DebugLogger.Log(ex);
         }
     }
 
@@ -148,7 +149,7 @@ public partial class DeleteAccountDialogViewModel : ViewModelBase
         catch (Exception ex)
         {
             ErrorMessage = "Migration failed. Please try again.";
-            Console.WriteLine(ex);
+            DebugLogger.Log(ex);
         }
     }
 }

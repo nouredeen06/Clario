@@ -7,7 +7,8 @@
              xmlns:behaviors="clr-namespace:Clario.Behaviors"
              mc:Ignorable="d"
              x:Class="Clario.Views.AccountFormView"
-             x:DataType="vm:AccountFormViewModel">
+             x:DataType="vm:AccountFormViewModel"
+             x:Name="AccountFormRoot">
     <Design.DataContext>
         <vm:AccountFormViewModel />
     </Design.DataContext>
@@ -158,17 +159,47 @@
                     <!-- Currency -->
                     <StackPanel Grid.Column="2" Spacing="6">
                         <TextBlock Text="CURRENCY" Classes="label" />
+                        <TextBox Text="{Binding CurrencySearch, Mode=TwoWay}"
+                                 Watermark="Search..."
+                                 FontSize="12"
+                                 Height="32"
+                                 Padding="10,0"
+                                 VerticalContentAlignment="Center" />
                         <Border Background="{DynamicResource BgBase}"
                                 BorderBrush="{DynamicResource BorderSubtle}"
                                 BorderThickness="1"
-                                CornerRadius="{DynamicResource RadiusControl}">
-                            <ComboBox ItemsSource="{Binding Currencies}"
-                                      SelectedItem="{Binding Currency, Mode=TwoWay}"
-                                      Background="Transparent"
-                                      BorderThickness="0"
-                                      Padding="12,10"
-                                      FontSize="13"
-                                      HorizontalAlignment="Stretch" />
+                                CornerRadius="{DynamicResource RadiusControl}"
+                                Padding="8">
+                            <ScrollViewer MaxHeight="100"
+                                          HorizontalScrollBarVisibility="Disabled"
+                                          VerticalScrollBarVisibility="Auto">
+                                <ItemsControl ItemsSource="{Binding FilteredCurrencies}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <UniformGrid Columns="4" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Button Classes="nav"
+                                                    Content="{Binding}"
+                                                    Margin="2"
+                                                    Padding="8,4"
+                                                    CornerRadius="6"
+                                                    FontSize="12"
+                                                    Command="{Binding DataContext.SetCurrencyCommand, ElementName=AccountFormRoot}"
+                                                    CommandParameter="{Binding}">
+                                                <Classes.accented>
+                                                    <MultiBinding Converter="{StaticResource EqualValueConverter}">
+                                                        <Binding Path="." />
+                                                        <Binding Path="DataContext.Currency" ElementName="AccountFormRoot" />
+                                                    </MultiBinding>
+                                                </Classes.accented>
+                                            </Button>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
                         </Border>
                     </StackPanel>
                 </Grid>
@@ -271,6 +302,22 @@
                             </ColorPicker>
                         </Border>
                     </StackPanel>
+                </Grid>
+
+                <!-- ── Primary account toggle ──────────── -->
+                <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,16">
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="2">
+                        <TextBlock Text="PRIMARY ACCOUNT" Classes="label" />
+                        <TextBlock Text="Sets this account's currency as the reference currency"
+                                   FontSize="11"
+                                   Foreground="{DynamicResource TextMuted}"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                    <ToggleSwitch Grid.Column="1"
+                                  IsChecked="{Binding IsPrimary, Mode=TwoWay}"
+                                  OffContent=""
+                                  OnContent=""
+                                  VerticalAlignment="Center" />
                 </Grid>
 
                 <!-- ── Validation error ─────────────── -->

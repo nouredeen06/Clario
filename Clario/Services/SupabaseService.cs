@@ -36,7 +36,7 @@ public class SupabaseService
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Session restore failed: {ex.Message}");
+                DebugLogger.Log($"Session restore failed: {ex.Message}");
                 sessionStorage.Delete(); // session invalid, delete it
             }
         }

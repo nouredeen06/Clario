@@ -12,199 +12,114 @@
     <Design.DataContext>
         <vm:MainViewModel />
     </Design.DataContext>
-    <Grid RowDefinitions="Auto,*">
-        <Border Grid.Row="0" Background="#7393B3" IsVisible="False">
-            <!-- Bar -->
-            <Border Height="30" Background="{DynamicResource BorderAccent}" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="2" Margin="4 6"
-                    CornerRadius="15">
-                <!-- Definitions: Content width , Fill, Content width (Fill = full size - (ContentWidth1 + ContentWidth2)  -->
-                <Grid ColumnDefinitions="Auto,*,Auto">
-                    <!-- Menu Button  -->
-                    <Button Grid.Column="0" CornerRadius="15 5 5 15" Classes="nav" Padding="8 3">
-                        <Button.Flyout>
-                            <MenuFlyout>
-                                <MenuItem Header="About this Device" Padding="12 4" />
-                                <Separator Margin="4 0" />
-                                <MenuItem Header="Settings" Padding="12 4" />
-                                <Separator Margin="4 0" />
-                                <MenuItem Header="Sleep" Padding="12 4" />
-                                <MenuItem Header="Restart" Padding="12 4" />
-                                <MenuItem Header="Shutdown" Padding="12 4" />
-                            </MenuFlyout>
-                        </Button.Flyout>
-                        <Svg Path="../Assets/Icons/arch.svg" Width="18" Height="18" Margin="8 0" Css="{DynamicResource SvgFillBlue}" />
-                    </Button>
-                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
-                        <!-- Separator  -->
-                        <Border Width="1" Background="{DynamicResource BorderSubtle}" Margin="0 5" />
+    <Grid ColumnDefinitions="220,*">
+        <!-- ───────────────────────────────────── SIDEBAR ───────────────────────────────────── -->
+        <Border Grid.Column="0" Background="{DynamicResource BgSidebar}" BorderBrush="{DynamicResource BorderSubtle}"
+                BorderThickness="0,0,1,0" Padding="16,28,16,24" IsEnabled="{Binding !IsTransactionFormVisible}">
+            <DockPanel>
+                <!-- Logo / App Name -->
+                <StackPanel DockPanel.Dock="Top" Margin="0,0,0,24">
+                </StackPanel>
+                <!-- User Profile (bottom) -->
+                <Border DockPanel.Dock="Bottom" Background="{DynamicResource BgSurface}" CornerRadius="{StaticResource RadiusInset}"
+                        Padding="12,10">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Grid Grid.Column="0" ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                            <Panel Grid.Column="0">
 
-                        <!-- Window Title -->
-                        <TextBlock Text="Expense Tracker - Dashboard" VerticalAlignment="Center" FontWeight="SemiBold"
-                                   Foreground="{DynamicResource TextSecondary}" />
-                    </StackPanel>
-
-                    <StackPanel Grid.Column="2" Orientation="Horizontal">
-                        <Button CornerRadius="5" Classes="nav" Padding="8 3">
-
-                            <!-- Media Button -->
-                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                <Svg Path="../Assets/Icons/audio-lines.svg" Css="{DynamicResource SvgSecondary}" Height="16" />
-                                <TextBlock Text="Risk it all - Bruno Mars" VerticalAlignment="Center" FontWeight="SemiBold" FontSize="13"
-                                           Foreground="{DynamicResource TextSecondary}" />
-                            </StackPanel>
-                        </Button>
-
-                        <!-- Separator -->
-                        <Border Width="1" Background="{DynamicResource BorderSubtle}" Margin="0 5" />
-
-                        <!-- Control Panel -->
-                        <Button CornerRadius="5" Classes="nav" Padding="8 3">
-                            <StackPanel Orientation="Horizontal" Spacing="12">
-                                <Svg Path="../Assets/Icons/battery-charging.svg" Height="20" Css="{DynamicResource SvgSecondary}" />
-                                <Svg Path="../Assets/Icons/volume-2.svg" Height="18" Css="{DynamicResource SvgSecondary}" />
-                                <Svg Path="../Assets/Icons/wifi.svg" Height="18" Css="{DynamicResource SvgSecondary}" />
-                            </StackPanel>
-                        </Button>
-
-                        <!-- Separator -->
-                        <Border Width="1" Background="{DynamicResource BorderSubtle}" Margin="0 5" />
-
-                        <!-- Date Time Panel -->
-                        <Button CornerRadius="5 15 15 5" Classes="nav" Padding="12 3">
-                            <TextBlock Text="Tue Mar 10 - 10:23 AM" VerticalAlignment="Center" FontWeight="SemiBold" FontSize="13"
+                                <Border CornerRadius="40"
+                                        ClipToBounds="True"
+                                        Width="34"
+                                        Height="34"
+                                        IsVisible="{Binding Profile.HasAvatar}">
+                                    <Image Source="{Binding Profile.Avatar}"
+                                           Stretch="UniformToFill" />
+                                </Border>
+                                <Border Background="{DynamicResource BorderAccent}" CornerRadius="{StaticResource RadiusPill}" Width="34"
+                                        Height="34" IsVisible="{Binding !Profile.HasAvatar}">
+                                    <TextBlock Text="{Binding Profile.DisplayName[0]}" FontSize="{StaticResource FontSizeAmount}" FontWeight="Bold"
+                                               Foreground="{DynamicResource AccentBlue}" HorizontalAlignment="Center"
+                                               VerticalAlignment="Center" />
+                                </Border>
+                            </Panel>
+                            <TextBlock Grid.Column="1" Text="{Binding Profile.DisplayName}" TextTrimming="CharacterEllipsis"
+                                       FontSize="{StaticResource FontSizeBody}"
+                                       FontWeight="SemiBold"
+                                       VerticalAlignment="Center"
                                        Foreground="{DynamicResource TextSecondary}" />
-                        </Button>
-                    </StackPanel>
-
-                    <!-- Workspaces ( Center of bar, Regardless of content ) -->
-                    <StackPanel Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Top" HorizontalAlignment="Center" Orientation="Horizontal" Margin="8 2"
-                                Spacing="4">
-                        <Border Width="35" Background="{DynamicResource AccentBlue}" Height="4" CornerRadius="2" /> <!-- Active Workspace -->
-                        <Border Width="25" Background="{DynamicResource IconBgBlue}" Height="4" CornerRadius="2" />
-                        <Border Width="25" Background="{DynamicResource IconBgBlue}" Height="4" CornerRadius="2" />
-                        <Border Width="25" Background="{DynamicResource IconBgBlue}" Height="4" CornerRadius="2" />
-                        <Border Width="25" Background="{DynamicResource IconBgBlue}" Height="4" CornerRadius="2" />
-                    </StackPanel>
-                </Grid>
-            </Border>
-        </Border>
-        <Grid Grid.Row="1" ColumnDefinitions="220,*">
-            <!-- ───────────────────────────────────── SIDEBAR ───────────────────────────────────── -->
-            <Border Grid.Column="0" Background="{DynamicResource BgSidebar}" BorderBrush="{DynamicResource BorderSubtle}"
-                    BorderThickness="0,0,1,0" Padding="16,28,16,24" IsEnabled="{Binding !IsTransactionFormVisible}">
-                <DockPanel>
-                    <!-- Logo / App Name -->
-                    <StackPanel DockPanel.Dock="Top" Margin="0,0,0,24">
-                        <!-- <Svg Path="../Assets/logo-textmark-no-color.svg" Css="{DynamicResource SvgSecondary}" HorizontalAlignment="Stretch" -->
-                        <!--      Margin="4,12,24,0"/> -->
-                    </StackPanel>
-                    <!-- User Profile (bottom) -->
-                    <Border DockPanel.Dock="Bottom" Background="{DynamicResource BgSurface}" CornerRadius="{StaticResource RadiusInset}"
-                            Padding="12,10">
-                        <Grid ColumnDefinitions="*,Auto">
-                            <Grid Grid.Column="0" ColumnDefinitions="Auto,*" ColumnSpacing="10">
-                                <Panel Grid.Column="0">
-
-                                    <Border CornerRadius="40"
-                                            ClipToBounds="True"
-                                            Width="34"
-                                            Height="34"
-                                            IsVisible="{Binding Profile.HasAvatar}">
-                                        <Image Source="{Binding Profile.Avatar}"
-                                               Stretch="UniformToFill" />
-                                    </Border>
-                                    <Border Background="{DynamicResource BorderAccent}" CornerRadius="{StaticResource RadiusPill}" Width="34"
-                                            Height="34" IsVisible="{Binding !Profile.HasAvatar}">
-                                        <TextBlock Text="N" FontSize="{StaticResource FontSizeAmount}" FontWeight="Bold"
-                                                   Foreground="{DynamicResource AccentBlue}" HorizontalAlignment="Center"
-                                                   VerticalAlignment="Center" />
-                                    </Border>
-                                </Panel>
-                                <TextBlock Grid.Column="1" Text="{Binding Profile.DisplayName}" TextTrimming="CharacterEllipsis"
-                                           FontSize="{StaticResource FontSizeBody}"
-                                           FontWeight="SemiBold"
-                                           VerticalAlignment="Center"
-                                           Foreground="{DynamicResource TextSecondary}" />
-                            </Grid>
-                            <Button Grid.Column="1" Classes="base" Width="24" Height="24" Padding="2" Focusable="False"
-                                    Command="{Binding SwitchThemeCommand}" IsVisible="True">
-                                <Panel>
-                                    <Svg Path="../Assets/Icons/sun.svg" Css="{DynamicResource SvgDisabled}"
-                                         IsVisible="{Binding !IsDarkTheme}" />
-                                    <Svg Path="../Assets/Icons/moon.svg" Css="{DynamicResource SvgDisabled}"
-                                         IsVisible="{Binding IsDarkTheme}" />
-                                </Panel>
-                            </Button>
-                            <!-- <Button Grid.Column="1" Classes="base" Width="24" Height="24" Padding="2" Command="{Binding SignOutCommand}"> -->
-                            <!--     <ToolTip.Tip> -->
-                            <!--         signout -->
-                            <!--     </ToolTip.Tip> -->
-                            <!-- </Button> -->
                         </Grid>
-                    </Border>
-                    <!-- Navigation -->
-                    <StackPanel DockPanel.Dock="Top" Spacing="4">
-                        <TextBlock Classes="label" Text="MAIN" Margin="12,0,0,10" />
+                        <!-- <Button Grid.Column="1" Classes="base" Width="24" Height="24" Padding="2" Command="{Binding SignOutCommand}"> -->
+                        <!--     <ToolTip.Tip> -->
+                        <!--         signout -->
+                        <!--     </ToolTip.Tip> -->
+                        <!-- </Button> -->
+                    </Grid>
+                </Border>
+                <!-- Navigation -->
+                <StackPanel DockPanel.Dock="Top" Spacing="4">
+                    <TextBlock Classes="label" Text="MAIN" Margin="12,0,0,10" />
 
-                        <Button Classes="nav" Classes.active="{Binding isOnDashboard}" HorizontalAlignment="Stretch" Command="{Binding GoToDashboardCommand}">
-                            <StackPanel Orientation="Horizontal" Spacing="12">
-                                <Svg Path="../Assets/Icons/layout-dashboard.svg" Height="14" Width="14" />
-                                <TextBlock Text="Dashboard" FontSize="{StaticResource FontSizeBody}" FontWeight="SemiBold" VerticalAlignment="Center" />
-                            </StackPanel>
-                        </Button>
-                        <Button Classes="nav"
-                                Classes.active="{Binding isOnTransactions}"
-                                HorizontalAlignment="Stretch" Command="{Binding GoToTransactionsCommand}">
-                            <StackPanel Orientation="Horizontal" Spacing="12">
-                                <Svg Path="../Assets/Icons/arrow-right-left.svg" Height="14" Width="14" />
-                                <TextBlock Text="Transactions" FontSize="{StaticResource FontSizeBody}" VerticalAlignment="Center" />
-                            </StackPanel>
-                        </Button>
-                        <Button Classes="nav" HorizontalAlignment="Stretch" Classes.active="{Binding isOnAccounts}" Command="{Binding GoToAccountsCommand}">
-                            <StackPanel Orientation="Horizontal" Spacing="12">
-                                <Svg Path="../Assets/Icons/chart-pie.svg" Height="14" Width="14" />
-                                <TextBlock Text="Accounts" FontSize="{StaticResource FontSizeBody}" VerticalAlignment="Center" />
-                            </StackPanel>
-                        </Button>
-                        <Button Classes="nav" HorizontalAlignment="Stretch" Classes.active="{Binding isOnBudget}" Command="{Binding GoToBudgetCommand}">
-                            <StackPanel Orientation="Horizontal" Spacing="12">
-                                <Svg Path="../Assets/Icons/wallet.svg" Height="14" Width="14" />
-                                <TextBlock Text="Budgets" FontSize="{StaticResource FontSizeBody}" VerticalAlignment="Center" />
-                            </StackPanel>
-                        </Button>
-                        <TextBlock Classes="label" Text="REPORTS" Margin="12,20,0,10" />
-                        <Button Classes="nav" HorizontalAlignment="Stretch">
-                            <StackPanel Orientation="Horizontal" Spacing="12">
-                                <Svg Path="../Assets/Icons/chart-no-axes-combined.svg" Height="14" Width="14" />
-                                <TextBlock Text="Analytics" FontSize="{StaticResource FontSizeBody}" VerticalAlignment="Center" />
-                            </StackPanel>
-                        </Button>
-                        <TextBlock Classes="label" Text="SYSTEM" Margin="12,20,0,10" />
-                        <Button Classes="nav" HorizontalAlignment="Stretch" Classes.active="{Binding isOnSettings}" Command="{Binding GoToSettingsCommand}">
-                            <StackPanel Orientation="Horizontal" Spacing="12">
-                                <Svg Path="../Assets/Icons/settings.svg" Height="14" Width="14" />
-                                <TextBlock Text="Settings" FontSize="{StaticResource FontSizeBody}" VerticalAlignment="Center" />
-                            </StackPanel>
-                        </Button>
-                    </StackPanel>
-                </DockPanel>
-            </Border>
-            <Border Grid.Column="0" Grid.ColumnSpan="2" Background="#70000000" IsVisible="{Binding IsDimmed}" />
-            <Grid Grid.Column="1">
-                <ContentControl Content="{Binding CurrentView}" />
-                <views:TransactionFormView
-                    DataContext="{Binding TransactionFormViewModel}"
-                    IsVisible="{Binding DataContext.IsTransactionFormVisible,ElementName=MainControl}" />
-                <views:AccountFormView
-                    DataContext="{Binding AccountFormViewModel}"
-                    IsVisible="{Binding DataContext.IsAccountFormVisible,ElementName=MainControl}" />
-                <views:BudgetFormView
-                    DataContext="{Binding BudgetFormViewModel}"
-                    IsVisible="{Binding DataContext.IsBudgetFormVisible, ElementName=MainControl}" />
+                    <Button Classes="nav" Classes.active="{Binding isOnDashboard}" HorizontalAlignment="Stretch" Command="{Binding GoToDashboardCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Svg Path="../Assets/Icons/layout-dashboard.svg" Height="14" Width="14" />
+                            <TextBlock Text="Dashboard" FontSize="{StaticResource FontSizeBody}" FontWeight="SemiBold" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <Button Classes="nav"
+                            Classes.active="{Binding isOnTransactions}"
+                            HorizontalAlignment="Stretch" Command="{Binding GoToTransactionsCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Svg Path="../Assets/Icons/arrow-right-left.svg" Height="14" Width="14" />
+                            <TextBlock Text="Transactions" FontSize="{StaticResource FontSizeBody}" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <Button Classes="nav" HorizontalAlignment="Stretch" Classes.active="{Binding isOnAccounts}" Command="{Binding GoToAccountsCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Svg Path="../Assets/Icons/chart-pie.svg" Height="14" Width="14" />
+                            <TextBlock Text="Accounts" FontSize="{StaticResource FontSizeBody}" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <Button Classes="nav" HorizontalAlignment="Stretch" Classes.active="{Binding isOnBudget}" Command="{Binding GoToBudgetCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Svg Path="../Assets/Icons/wallet.svg" Height="14" Width="14" />
+                            <TextBlock Text="Budgets" FontSize="{StaticResource FontSizeBody}" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <TextBlock Classes="label" Text="REPORTS" Margin="12,20,0,10" />
+                    <Button Classes="nav" HorizontalAlignment="Stretch">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Svg Path="../Assets/Icons/chart-no-axes-combined.svg" Height="14" Width="14" />
+                            <TextBlock Text="Analytics" FontSize="{StaticResource FontSizeBody}" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <TextBlock Classes="label" Text="SYSTEM" Margin="12,20,0,10" />
+                    <Button Classes="nav" HorizontalAlignment="Stretch" Classes.active="{Binding isOnSettings}" Command="{Binding GoToSettingsCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Svg Path="../Assets/Icons/settings.svg" Height="14" Width="14" />
+                            <TextBlock Text="Settings" FontSize="{StaticResource FontSizeBody}" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+        <Border Grid.Column="0" Grid.ColumnSpan="2" Background="#70000000" IsVisible="{Binding IsDimmed}" />
+        <Grid Grid.Column="1">
+            <ContentControl Content="{Binding CurrentView}" />
+            <views:TransactionFormView
+                DataContext="{Binding TransactionFormViewModel}"
+                IsVisible="{Binding DataContext.IsTransactionFormVisible,ElementName=MainControl}" />
+            <views:AccountFormView
+                DataContext="{Binding AccountFormViewModel}"
+                IsVisible="{Binding DataContext.IsAccountFormVisible,ElementName=MainControl}" />
+            <views:BudgetFormView
+                DataContext="{Binding BudgetFormViewModel}"
+                IsVisible="{Binding DataContext.IsBudgetFormVisible, ElementName=MainControl}" />
+            <views:SetSavingsGoalDialogView
+                DataContext="{Binding SetSavingsGoalDialogViewModel}"
+                IsVisible="{Binding DataContext.IsSavingsGoalDialogVisible, ElementName=MainControl}" />
 
-
-            </Grid>
         </Grid>
     </Grid>
+
 
 </UserControl>

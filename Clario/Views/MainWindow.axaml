@@ -7,7 +7,7 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         MinWidth="1000" MinHeight="600"
         x:Class="Clario.Views.MainWindow"
-        Icon="../Assets/logo-no-bg.ico"
+        Icon="../Assets/AppIcons/logo-icon-primary-transparent.ico"
         Title="Clario"
         x:CompileBindings="False">
     <ContentControl Content="{Binding}" />

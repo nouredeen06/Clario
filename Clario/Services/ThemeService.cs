@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Styling;
+using Clario.Theme;
 
 namespace Clario.Services;
 
@@ -21,11 +22,14 @@ public class ThemeService
         {
             "dark" => ThemeVariant.Dark,
             "light" => ThemeVariant.Light,
+            "latte" => CustomAppThemeVariants.CatppuccinLatte,
+            "macchiato" => CustomAppThemeVariants.CatppuccinMacchiato,
+            "mocha" => CustomAppThemeVariants.CatppuccinMocha,
             _ => ThemeVariant.Default
         };
         app.RequestedThemeVariant = themeVariant;
     }
 
-    public static bool IsDarkTheme => Application.Current?.RequestedThemeVariant == ThemeVariant.Dark;
-    public static bool IsLightTheme => Application.Current?.RequestedThemeVariant == ThemeVariant.Light;
+    public static bool IsDarkTheme => Application.Current?.ActualThemeVariant == ThemeVariant.Dark;
+    public static bool IsLightTheme => Application.Current?.ActualThemeVariant == ThemeVariant.Light;
 }

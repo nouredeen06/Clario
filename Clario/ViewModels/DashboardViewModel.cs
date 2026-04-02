@@ -5,6 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
 using Clario.Data;
+using Clario.Messages;
+using Clario.Services;
+using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Clario.Models;
@@ -27,6 +30,7 @@ public partial class DashboardViewModel : ViewModelBase
     [ObservableProperty] private ObservableCollection<Account> _accountsSummaryData = new();
     [ObservableProperty] private ObservableCollection<Transaction> _recentTransactions = new();
     [ObservableProperty] private decimal _totalNetworth;
+    public string PrimarySymbol => CurrencyService.GetSymbol(AppData.PrimaryAccount?.Currency ?? AppData.Profile?.Currency ?? "USD");
     [ObservableProperty] private decimal _monthlyIncome;
     private decimal _monthlyIncomeChange;
     private bool _hasLastMonthIncome;
@@ -109,6 +113,7 @@ public partial class DashboardViewModel : ViewModelBase
         AppData.Accounts.CollectionChanged += (s, e) => UpdateUserOverview();
         AppData.Categories.CollectionChanged += (s, e) => UpdateUserOverview();
         AppData.Budgets.CollectionChanged += (s, e) => UpdateUserOverview();
+        WeakReferenceMessenger.Default.Register<RatesRefreshed>(this, (_, _) => UpdateUserOverview());
         initialize();
     }
 
@@ -133,13 +138,13 @@ public partial class DashboardViewModel : ViewModelBase
         var lastMonth = thisMonth.AddMonths(-1);
 
         MonthlyIncome = AppData.Transactions.Where(x => x.Type == "income" && x.Date.Month == thisMonth.Month && x.Date.Year == thisMonth.Year)
-            .Sum(x => x.Amount);
+            .Sum(x => x.ConvertedAmount);
         MonthlyExpenses = AppData.Transactions.Where(x => x.Type == "expense" && x.Date.Month == DateTime.Now.Month && x.Date.Year == DateTime.Now.Year)
-            .Sum(x => x.Amount);
+            .Sum(x => x.ConvertedAmount);
         var lastMonthIncome = AppData.Transactions.Where(x => x.Type == "income" && x.Date.Month == lastMonth.Month && x.Date.Year == lastMonth.Year)
-            .Sum(x => x.Amount);
+            .Sum(x => x.ConvertedAmount);
         var lastMonthExpenses = AppData.Transactions.Where(x => x.Type == "expense" && x.Date.Month == lastMonth.Month && x.Date.Year == lastMonth.Year)
-            .Sum(x => x.Amount);
+            .Sum(x => x.ConvertedAmount);
 
         _hasLastMonthIncome = lastMonthIncome > 0;
         _hasLastMonthExpenses = lastMonthExpenses > 0;
@@ -207,7 +212,7 @@ public partial class DashboardViewModel : ViewModelBase
                     break;
             }
 
-            var balance = categoryTransactions.Sum(x => x.Amount);
+            var balance = categoryTransactions.Sum(x => x.ConvertedAmount);
             if (balance == 0) continue;
             tempList.Add(new ColumnChartData()
                 { id = category.Id, Name = category.Name, Values = [(double)balance], Fill = new SolidColorPaint(SKColor.Parse(category.Color)) });
@@ -242,11 +247,16 @@ public partial class DashboardViewModel : ViewModelBase
 
     private void UpdateAccountsSummary()
     {
+        TotalNetworth = 0;
+        var primaryCurrency = AppData.PrimaryAccount?.Currency ?? AppData.Profile?.Currency ?? "USD";
         foreach (var account in AppData.Accounts)
         {
             var accountTransactions = AppData.Transactions.Where(t => t.AccountId == account.Id).ToList();
             account.CurrentBalance = account.OpeningBalance + accountTransactions.Sum(t => t.Type == "income" ? t.Amount : -t.Amount);
-            TotalNetworth += account.CurrentBalance;
+            if (account.Currency.Equals(primaryCurrency, StringComparison.OrdinalIgnoreCase))
+                TotalNetworth += account.CurrentBalance;
+            else
+                TotalNetworth += accountTransactions.Sum(t => t.Type == "income" ? t.ConvertedAmount : -t.ConvertedAmount);
         }
 
         AccountsSummaryData = new ObservableCollection<Account>(AppData.Accounts.OrderBy(x => x.CreatedAt));

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -27,7 +28,6 @@ public partial class SettingsViewModel : ViewModelBase
     [ObservableProperty] private string _displayName = "";
     [ObservableProperty] private string _avatarUrl = "";
     [ObservableProperty] private Bitmap? _avatarImage;
-    [ObservableProperty] private string _selectedCurrency = "USD";
     [ObservableProperty] private string _selectedTheme = "system";
     [ObservableProperty] private string _selectedLanguage = "en";
 
@@ -77,22 +77,20 @@ public partial class SettingsViewModel : ViewModelBase
     public bool HasAvatar => !string.IsNullOrEmpty(AvatarUrl);
 
     // ── Options ──────────────────────────────────────────────
-    public ObservableCollection<string> Currencies { get; } = new()
-    {
-        "USD", "EUR", "GBP", "JPY", "AED", "SAR", "JOD",
-        "EGP", "CAD", "AUD", "CHF", "CNY", "INR", "BRL"
-    };
 
     public ObservableCollection<(string Value, string Label)> Themes { get; } = new()
     {
         ("system", "System default"),
         ("dark", "Dark"),
-        ("light", "Light")
+        ("light", "Light"),
+        ("latte", "Catppuccin Latte"),
+        ("macchiato", "Catppuccin Macchiato"),
+        ("mocha", "Catppuccin Mocha")
     };
 
     public ObservableCollection<string> ThemeLabels { get; } = new()
     {
-        "System default", "Dark", "Light"
+        "System default", "Dark", "Light", "Catppuccin Latte", "Catppuccin Macchiato", "Catppuccin Mocha"
     };
 
     public ObservableCollection<(string Value, string Label)> Languages { get; } = new()
@@ -112,7 +110,7 @@ public partial class SettingsViewModel : ViewModelBase
 
     partial void OnSelectedThemeIndexChanged(int value)
     {
-        SelectedTheme = value switch { 0 => "system", 1 => "dark", 2 => "light", _ => "system" };
+        SelectedTheme = value switch { 0 => "system", 1 => "dark", 2 => "light", 3 => "latte", 4 => "macchiato", 5 => "mocha", _ => "system" };
     }
 
     partial void OnSelectedLanguageIndexChanged(int value)
@@ -132,12 +130,11 @@ public partial class SettingsViewModel : ViewModelBase
         DisplayName = AppData.Profile?.DisplayName ?? "";
         AvatarUrl = DataRepo.General.BuildPublicUrl(AppData.Profile?.AvatarUrl) ?? "";
         AvatarImage = AppData.Profile?.Avatar;
-        SelectedCurrency = AppData.Profile?.Currency ?? "USD";
         SelectedTheme = AppData.Profile?.Theme ?? "system";
         SelectedLanguage = AppData.Profile?.Language ?? "en";
 
         // sync indices
-        SelectedThemeIndex = SelectedTheme switch { "dark" => 1, "light" => 2, _ => 0 };
+        SelectedThemeIndex = SelectedTheme switch { "dark" => 1, "light" => 2, "latte" => 3, "macchiato" => 4, "mocha" => 5, _ => 0 };
         SelectedLanguageIndex = SelectedLanguage switch { "ar" => 1, _ => 0 };
 
         // mask email
@@ -184,7 +181,7 @@ public partial class SettingsViewModel : ViewModelBase
         catch (Exception ex)
         {
             ErrorMessage = "Failed to upload avatar. Please try again.";
-            Console.WriteLine(ex);
+            DebugLogger.Log(ex);
         }
         finally
         {
@@ -210,7 +207,7 @@ public partial class SettingsViewModel : ViewModelBase
         catch (Exception ex)
         {
             ErrorMessage = "Failed to remove avatar.";
-            Console.WriteLine(ex);
+            DebugLogger.Log(ex);
         }
         finally
         {
@@ -239,7 +236,7 @@ public partial class SettingsViewModel : ViewModelBase
             {
                 Id = AppData.Profile.Id,
                 DisplayName = DisplayName.Trim(),
-                Currency = SelectedCurrency,
+                Currency = AppData.Profile?.Currency ?? "USD",
                 Theme = SelectedTheme,
                 Language = SelectedLanguage,
                 AvatarUrl = AppData.Profile.AvatarUrl,
@@ -258,7 +255,7 @@ public partial class SettingsViewModel : ViewModelBase
         catch (Exception ex)
         {
             ErrorMessage = "Failed to save profile. Please try again.";
-            Console.WriteLine(ex);
+            DebugLogger.Log(ex);
         }
         finally
         {
@@ -322,7 +319,7 @@ public partial class SettingsViewModel : ViewModelBase
         catch (Exception ex)
         {
             EmailErrorMessage = "Failed to update email. Check your password and try again.";
-            Console.WriteLine(ex);
+            DebugLogger.Log(ex);
         }
         finally
         {
@@ -392,7 +389,7 @@ public partial class SettingsViewModel : ViewModelBase
         catch (Exception ex)
         {
             PasswordErrorMessage = "Failed to update password. Check your current password and try again.";
-            Console.WriteLine(ex);
+            DebugLogger.Log(ex);
         }
         finally
         {
@@ -412,7 +409,7 @@ public partial class SettingsViewModel : ViewModelBase
         catch (Exception ex)
         {
             ErrorMessage = "Failed to sign out.";
-            Console.WriteLine(ex);
+            DebugLogger.Log(ex);
         }
     }
 }

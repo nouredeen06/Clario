@@ -12,6 +12,7 @@ using Clario.Models;
 using Clario.Models.GeneralModels;
 using Clario.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Clario.Messages;
 using CommunityToolkit.Mvvm.Messaging;
 using Supabase.Postgrest;
 using FileOptions = Supabase.Storage.FileOptions;
@@ -78,12 +79,13 @@ public partial class GeneralDataRepo : ObservableObject
             if (result.Models.Count >= 1)
             {
                 var resultItem = LinkTransactionCategories(result.Models[0]);
+                LinkTransactionAccounts(resultItem);
                 Transactions.Add(resultItem);
             }
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            DebugLogger.Log(e);
             return;
         }
     }
@@ -98,11 +100,16 @@ public partial class GeneralDataRepo : ObservableObject
             if (item is null) return;
             var index = Transactions.IndexOf(item);
 
-            if (index != -1) Transactions[index] = LinkTransactionCategories(result.Model);
+            if (index != -1)
+            {
+                var enriched = LinkTransactionCategories(result.Model);
+                LinkTransactionAccounts(enriched);
+                Transactions[index] = enriched;
+            }
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            DebugLogger.Log(e);
         }
     }
 
@@ -117,7 +124,7 @@ public partial class GeneralDataRepo : ObservableObject
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            DebugLogger.Log(e);
             throw;
         }
     }
@@ -135,7 +142,7 @@ public partial class GeneralDataRepo : ObservableObject
         if (Accounts.Count != 0 && !forceRefresh) return Accounts.ToList();
         var accounts = await SupabaseService.Client.From<Account>().Get();
         Accounts = new ObservableCollection<Account>(accounts.Models);
-        return accounts.Models;
+        return accounts.Models.OrderBy(x=>x.IsPrimary).ThenBy(x=>x.CreatedAt).ToList();
     }
 
     public async Task<List<Budget>> FetchBudgets(bool forceRefresh = false)
@@ -150,27 +157,29 @@ public partial class GeneralDataRepo : ObservableObject
     {
         var budgets = Budgets;
         var outputList = new List<Budget>();
+        var primarySymbol = CurrencyService.GetSymbol(PrimaryAccount?.Currency ?? Profile?.Currency ?? "USD");
         foreach (var budget in budgets)
         {
             budget.Category = Categories.FirstOrDefault(x => x.Id == budget.CategoryId);
+            budget.PrimarySymbol = primarySymbol;
 
             switch (budget.Period.ToLower())
             {
                 case "monthly":
                     var budgetTransactions = Transactions.Where(x =>
                         x.Date.Month == CurrentPeriod.Month && x.Date.Year == CurrentPeriod.Year && x.CategoryId == budget.CategoryId).ToList();
-                    budget.Spent = budgetTransactions.Sum(x => x.Amount);
+                    budget.Spent = budgetTransactions.Sum(x => x.ConvertedAmount);
                     budget.TransactionsCount = budgetTransactions.Count;
                     break;
                 case "quarterly":
                     var quarterTransactions = Transactions.Where(x =>
                         x.Date.Month >= CurrentPeriod.Month - 3 && x.Date.Month <= CurrentPeriod.Month && x.CategoryId == budget.CategoryId).ToList();
-                    budget.Spent = quarterTransactions.Sum(x => x.Amount);
+                    budget.Spent = quarterTransactions.Sum(x => x.ConvertedAmount);
                     budget.TransactionsCount = quarterTransactions.Count;
                     break;
                 case "yearly":
                     var yearTransactions = Transactions.Where(x => x.Date.Year == CurrentPeriod.Year && x.CategoryId == budget.CategoryId).ToList();
-                    budget.Spent = yearTransactions.Sum(x => x.Amount);
+                    budget.Spent = yearTransactions.Sum(x => x.ConvertedAmount);
                     budget.TransactionsCount = yearTransactions.Count;
                     break;
             }
@@ -226,7 +235,7 @@ public partial class GeneralDataRepo : ObservableObject
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            DebugLogger.Log(e);
             return null;
         }
     }
@@ -244,7 +253,7 @@ public partial class GeneralDataRepo : ObservableObject
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            DebugLogger.Log(e);
         }
     }
 
@@ -268,7 +277,7 @@ public partial class GeneralDataRepo : ObservableObject
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            DebugLogger.Log(e);
             throw;
         }
     }
@@ -319,7 +328,7 @@ public partial class GeneralDataRepo : ObservableObject
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            DebugLogger.Log(e);
             throw;
         }
     }
@@ -337,7 +346,7 @@ public partial class GeneralDataRepo : ObservableObject
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            DebugLogger.Log(e);
             throw;
         }
     }
@@ -353,9 +362,41 @@ public partial class GeneralDataRepo : ObservableObject
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            DebugLogger.Log(e);
             throw;
         }
+    }
+
+    public Account? PrimaryAccount => Accounts.FirstOrDefault(a => a.IsPrimary);
+
+    /// <summary>
+    /// Clears is_primary on the current primary account (if different from <paramref name="newPrimaryId"/>).
+    /// The caller must still save the new primary account via InsertAccount or UpdateAccount.
+    /// </summary>
+    public async Task SetPrimaryAccountAsync(Guid newPrimaryId)
+    {
+        try
+        {
+            var old = Accounts.FirstOrDefault(a => a.IsPrimary && a.Id != newPrimaryId);
+            if (old is null) return;
+            old.IsPrimary = false;
+            var result = await SupabaseService.Client.From<Account>().Update(old);
+            if (result.Model is null) return;
+            var idx = Accounts.IndexOf(old);
+            if (idx != -1) Accounts[idx] = result.Model;
+        }
+        catch (Exception e)
+        {
+            DebugLogger.Log(e);
+        }
+    }
+
+    public async Task RefreshLiveRatesAndEnrich()
+    {
+        var primaryCurrency = PrimaryAccount?.Currency ?? Profile?.Currency ?? "USD";
+        await CurrencyService.RefreshLiveRatesAsync(primaryCurrency, Accounts.Select(a => a.Currency));
+        LinkTransactionAccounts();
+        WeakReferenceMessenger.Default.Send(new RatesRefreshed());
     }
 
     public void LinkTransactionCategories()
@@ -370,6 +411,45 @@ public partial class GeneralDataRepo : ObservableObject
     {
         transaction.Category = Categories.FirstOrDefault(x => x.Id == transaction.CategoryId);
         return transaction;
+    }
+
+    public void LinkTransactionAccounts()
+    {
+        var primaryCurrency = PrimaryAccount?.Currency ?? Profile?.Currency ?? "USD";
+        var primarySymbol = CurrencyService.GetSymbol(primaryCurrency);
+        foreach (var tx in Transactions)
+        {
+            EnrichTransactionAccount(tx, primaryCurrency, primarySymbol);
+        }
+    }
+
+    public Transaction LinkTransactionAccounts(Transaction tx)
+    {
+        var primaryCurrency = PrimaryAccount?.Currency ?? Profile?.Currency ?? "USD";
+        var primarySymbol = CurrencyService.GetSymbol(primaryCurrency);
+        EnrichTransactionAccount(tx, primaryCurrency, primarySymbol);
+        return tx;
+    }
+
+    private void EnrichTransactionAccount(Transaction tx, string primaryCurrency, string primarySymbol)
+    {
+        var account = Accounts.FirstOrDefault(a => a.Id == tx.AccountId);
+        var accountCurrency = account?.Currency ?? primaryCurrency;
+        tx.AccountCurrency = accountCurrency;
+        tx.IsMultiCurrency = !accountCurrency.Equals(primaryCurrency, StringComparison.OrdinalIgnoreCase);
+        tx.PrimaryAmountFormatted = $"{primarySymbol}{tx.ConvertedAmount:N2}";
+        tx.OriginalAmountFormatted = tx.IsMultiCurrency
+            ? $"{CurrencyService.GetSymbol(accountCurrency)}{tx.Amount:N2}"
+            : string.Empty;
+    }
+
+    public async Task UpdateSavingsGoal(decimal? goal)
+    {
+        var profile = Profile;
+        profile.SavingsGoal = goal;
+        var result = await SupabaseService.Client.From<Profile>().Update(profile);
+        if (result.Models.Count < 1) return;
+        Profile = result.Models[0];
     }
 
     public async Task UpdateProfile(Profile profile)

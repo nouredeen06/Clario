@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Clario.Data;
 using Clario.Models;
+using Clario.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -17,6 +18,7 @@ public partial class AccountsViewModel : ViewModelBase
 
     [ObservableProperty] private ObservableCollection<Account> _visibleAccounts = new();
     [ObservableProperty] private decimal _totalBalance;
+    public string PrimarySymbol => CurrencyService.GetSymbol(AppData.PrimaryAccount?.Currency ?? AppData.Profile?.Currency ?? "USD");
     [ObservableProperty] private Account? _selectedAccount;
     [ObservableProperty] private bool _isAccountDeletionConfirmationVisible;
     public bool CanDeleteAccount => VisibleAccounts.Count > 1;
@@ -39,6 +41,8 @@ public partial class AccountsViewModel : ViewModelBase
 
     private void FetchAndProcessAccountInfo()
     {
+        TotalBalance = 0;
+        var primaryCurrency = AppData.PrimaryAccount?.Currency ?? AppData.Profile?.Currency ?? "USD";
         foreach (var account in AppData.Accounts)
         {
             var accountTransactions = AppData.Transactions.Where(t => t.AccountId == account.Id).ToList();
@@ -52,7 +56,10 @@ public partial class AccountsViewModel : ViewModelBase
             var lastMonthBalance = accountTransactions.Where(t => t.Date.Month == DateTime.Now.AddMonths(-1).Month && t.Type == "income")
                 .Sum(t => t.Type == "income" ? t.Amount : -t.Amount);
             account.MonthlyIncrease = account.TotalIncomeThisMonth - account.TotalExpenseThisMonth - lastMonthBalance;
-            TotalBalance += account.CurrentBalance;
+            if (account.Currency.Equals(primaryCurrency, StringComparison.OrdinalIgnoreCase))
+                TotalBalance += account.CurrentBalance;
+            else
+                TotalBalance += accountTransactions.Sum(t => t.Type == "income" ? t.ConvertedAmount : -t.ConvertedAmount);
         }
     }
 
@@ -83,7 +90,11 @@ public partial class AccountsViewModel : ViewModelBase
         VisibleAccounts.Clear();
         foreach (var type in accountTypes)
         {
-            var accountsOfType = AppData.Accounts.Where(a => a.Type.Equals(type, StringComparison.OrdinalIgnoreCase)).ToList();
+            var accountsOfType = AppData.Accounts
+                .Where(a => a.Type.Equals(type, StringComparison.OrdinalIgnoreCase))
+                .OrderByDescending(a => a.IsPrimary)
+                .ThenBy(a => a.CreatedAt)
+                .ToList();
             if (accountsOfType.Any())
             {
                 var header = new Account { Name = type.ToUpper(), GroupHeader = true };

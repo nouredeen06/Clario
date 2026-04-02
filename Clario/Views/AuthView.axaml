@@ -17,7 +17,7 @@
         <!-- <Border Background="{DynamicResource AccentBlue}" VerticalAlignment="Top" HorizontalAlignment="Left" Height="400" Width="400" Padding="10"> -->
         <!--   -->
         <!-- </Border> -->
-       
+
         <!--  Center card  -->
         <Border HorizontalAlignment="Center"
                 VerticalAlignment="Center"
@@ -38,7 +38,7 @@
                         CornerRadius="16"
                         Height="80"
                         HorizontalAlignment="Center" Margin="0 0 0 10">
-                        <Image Source="../Assets/logo-textmark.png" />
+                        <Image Source="{DynamicResource LogoCombinedPrimaryTransparent2x}" />
                     </Border>
                     <!-- REPLACE: app name -->
                     <StackPanel Spacing="4" HorizontalAlignment="Center">

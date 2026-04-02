@@ -7,3 +7,4 @@ obj/
 ./Clario/CLAUDE_CONTEXT.md
 publish/
 *.tar.gz
+Clario/devsettings.json

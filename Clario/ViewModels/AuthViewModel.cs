@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
+using Clario.Models;
 using Clario.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -34,17 +38,25 @@ public partial class AuthViewModel : ViewModelBase
 
     public AuthViewModel()
     {
-        Console.WriteLine("auth vm loaded");
+        DebugLogger.Log("auth vm loaded");
         setDefaults();
     }
 
+    [Conditional("DEBUG")]
     private void setDefaults()
     {
-        FirstName = "clario";
-        LastName = "testing";
-        Email = "Clario@testing.com";
-        Password = "1234ABCD6767";
-        ConfirmPassword = "1234ABCD6767";
+        if (!File.Exists("devsettings.json")) return;
+
+        var json = File.ReadAllText("devsettings.json");
+        var config = JsonSerializer.Deserialize<Wrapper>(json);
+        if (config?.TestDefaults is null) return;
+
+        FirstName = config.TestDefaults.FirstName;
+        LastName = config.TestDefaults.LastName;
+        Email = config.TestDefaults.Email;
+        Password = config.TestDefaults.Password;
+        ConfirmPassword = config.TestDefaults.Password;
+
         ThemeService.SwitchToTheme("system");
     }
 
@@ -62,7 +74,7 @@ public partial class AuthViewModel : ViewModelBase
             await SupabaseService.Client.Auth.SignIn(_email, _password);
 
             var user = SupabaseService.Client.Auth.CurrentUser;
-            
+
             if (Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
                 desktop.MainWindow!.DataContext = user is not null ? new MainViewModel() : new AuthViewModel();
@@ -74,7 +86,7 @@ public partial class AuthViewModel : ViewModelBase
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            DebugLogger.Log(e);
         }
     }
 
@@ -110,7 +122,7 @@ public partial class AuthViewModel : ViewModelBase
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            DebugLogger.Log(e);
         }
     }
 
@@ -123,4 +135,9 @@ public partial class AuthViewModel : ViewModelBase
     public bool canCreateAccount => isCreateAccount && !string.IsNullOrWhiteSpace(_firstName) && !string.IsNullOrWhiteSpace(_lastName) &&
                                     !string.IsNullOrWhiteSpace(_email) &&
                                     !string.IsNullOrWhiteSpace(_password) && _password == _confirmPassword;
+}
+
+class Wrapper
+{
+    public TestDefaults TestDefaults { get; set; }
 }

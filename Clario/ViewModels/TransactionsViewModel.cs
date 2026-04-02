@@ -6,6 +6,7 @@ using System.Linq;
 using Clario.Data;
 using Clario.Messages;
 using Clario.Models;
+using Clario.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -68,6 +69,9 @@ public partial class TransactionsViewModel : ViewModelBase
     [ObservableProperty] private int _incomeCount;
     [ObservableProperty] private string _dateRangeLabel = "";
 
+    public string PrimaryCurrencySymbol =>
+        CurrencyService.GetSymbol(AppData.PrimaryAccount?.Currency ?? AppData.Profile?.Currency ?? "USD");
+
     [ObservableProperty] private string _searchText = "";
     [ObservableProperty] private Category _selectedCategory;
     [ObservableProperty] private Account _selectedAccount;
@@ -92,6 +96,7 @@ public partial class TransactionsViewModel : ViewModelBase
             InitializeAccounts();
             LoadPage(1);
         };
+        WeakReferenceMessenger.Default.Register<RatesRefreshed>(this, (_, _) => LoadPage(CurrentPage));
         Initialize();
     }
 
@@ -219,9 +224,9 @@ public partial class TransactionsViewModel : ViewModelBase
         }
 
 
-        // Calculate totals based on date-filtered transactions
-        TotalExpenses = filtered.Where(x => x.Type == "expense").Sum(x => Convert.ToDouble(x.Amount));
-        TotalIncome = filtered.Where(x => x.Type == "income").Sum(x => Convert.ToDouble(x.Amount));
+        // Calculate totals based on date-filtered transactions (converted to primary currency)
+        TotalExpenses = filtered.Where(x => x.Type == "expense").Sum(x => Convert.ToDouble(x.ConvertedAmount));
+        TotalIncome = filtered.Where(x => x.Type == "income").Sum(x => Convert.ToDouble(x.ConvertedAmount));
 
         if (SelectedCategory.Name != "All Categories")
             filtered = filtered.Where(x => x.CategoryId == SelectedCategory.Id);
@@ -332,7 +337,7 @@ public partial class TransactionsViewModel : ViewModelBase
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            DebugLogger.Log(e);
             throw;
         }
     }
@@ -361,8 +366,8 @@ public partial class TransactionsViewModel : ViewModelBase
 
     private void CalculateMonthlyFinancials()
     {
-        TotalExpenses = AppData.Transactions.Where(x => x.Type == "expense" && x.Date.Month == DateTime.Now.Month).Sum(x => Convert.ToDouble(x.Amount));
-        TotalIncome = AppData.Transactions.Where(x => x.Type == "income" && x.Date.Month == DateTime.Now.Month).Sum(x => Convert.ToDouble(x.Amount));
+        TotalExpenses = AppData.Transactions.Where(x => x.Type == "expense" && x.Date.Month == DateTime.Now.Month).Sum(x => Convert.ToDouble(x.ConvertedAmount));
+        TotalIncome = AppData.Transactions.Where(x => x.Type == "income" && x.Date.Month == DateTime.Now.Month).Sum(x => Convert.ToDouble(x.ConvertedAmount));
         ExpensesCount = AppData.Transactions.Count(x => x.Type == "expense" && x.Date.Month == DateTime.Now.Month);
         IncomeCount = AppData.Transactions.Count(x => x.Type == "income" && x.Date.Month == DateTime.Now.Month);
     }

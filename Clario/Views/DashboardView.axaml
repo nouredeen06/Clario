@@ -8,7 +8,8 @@
              mc:Ignorable="d" d:DesignWidth="1180" d:DesignHeight="800"
              MinWidth="780" MinHeight="600"
              x:DataType="vm:DashboardViewModel"
-             x:Class="Clario.Views.DashboardView">
+             x:Class="Clario.Views.DashboardView"
+             x:Name="DashboardRoot">
     <Design.DataContext>
         <vm:DashboardViewModel />
     </Design.DataContext>
@@ -53,8 +54,14 @@
                                 </Border>
                                 <TextBlock Classes="label" Text="MONTHLY INCOME" VerticalAlignment="Center" />
                             </StackPanel>
-                            <TextBlock Text="{Binding MonthlyIncome, StringFormat='$0.00'}" FontSize="{StaticResource FontSizePageTitle}" FontWeight="Bold"
-                                       Foreground="{DynamicResource TextPrimary}" />
+                            <TextBlock FontSize="{StaticResource FontSizePageTitle}" FontWeight="Bold" Foreground="{DynamicResource TextPrimary}">
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="{}{0}{1:N2}">
+                                        <Binding Path="PrimarySymbol" />
+                                        <Binding Path="MonthlyIncome" />
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
                             <StackPanel Orientation="Horizontal" Spacing="6">
                                 <Border Classes="badge-green">
                                     <TextBlock Text="{Binding MonthlyIncomeChangeFormatted}" FontSize="{StaticResource FontSizeLabel}" FontWeight="SemiBold"
@@ -73,8 +80,14 @@
                                 </Border>
                                 <TextBlock Classes="label" Text="MONTHLY EXPENSES" VerticalAlignment="Center" />
                             </StackPanel>
-                            <TextBlock Text="{Binding MonthlyExpenses, StringFormat='$0.00'}" FontSize="{StaticResource FontSizePageTitle}" FontWeight="Bold"
-                                       Foreground="{DynamicResource TextPrimary}" />
+                            <TextBlock FontSize="{StaticResource FontSizePageTitle}" FontWeight="Bold" Foreground="{DynamicResource TextPrimary}">
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="{}{0}{1:N2}">
+                                        <Binding Path="PrimarySymbol" />
+                                        <Binding Path="MonthlyExpenses" />
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
                             <StackPanel Orientation="Horizontal" Spacing="6">
                                 <Border Classes="badge-red">
                                     <TextBlock Text="{Binding MonthlyExpenseChangeFormatted}" FontSize="{StaticResource FontSizeLabel}" FontWeight="SemiBold"
@@ -156,10 +169,16 @@
                                         </ItemsControl.ItemsPanel>
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate x:DataType="model:ColumnChartData">
-                                                <TextBlock Text="{Binding Values, Converter={StaticResource FirstValueConverter},StringFormat='$0'}"
-                                                           HorizontalAlignment="Center" Margin="4 0" TextTrimming="CharacterEllipsis"
+                                                <TextBlock HorizontalAlignment="Center" Margin="4 0" TextTrimming="CharacterEllipsis"
                                                            Foreground="{Binding Fill, Converter={StaticResource SkPaintToBrushConverter}}"
-                                                           FontWeight="SemiBold" />
+                                                           FontWeight="SemiBold">
+                                                    <TextBlock.Text>
+                                                        <MultiBinding StringFormat="{}{0}{1:N0}">
+                                                            <Binding Path="DataContext.PrimarySymbol" ElementName="DashboardRoot" />
+                                                            <Binding Path="Values" Converter="{StaticResource FirstValueConverter}" />
+                                                        </MultiBinding>
+                                                    </TextBlock.Text>
+                                                </TextBlock>
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>
@@ -206,20 +225,20 @@
                                                         </StackPanel>
                                                         <Panel Grid.Column="1">
                                                             <StackPanel Orientation="Horizontal" IsVisible="{Binding !IsOverBudget}">
-                                                                <TextBlock Text="{Binding Spent, StringFormat='$0'}" FontSize="{StaticResource FontSizeMeta}"
+                                                                <TextBlock Text="{Binding SpentFormatted}" FontSize="{StaticResource FontSizeMeta}"
                                                                            Foreground="{DynamicResource TextMuted}" />
                                                                 <TextBlock Text=" / " FontSize="{StaticResource FontSizeMeta}"
                                                                            Foreground="{DynamicResource TextMuted}" />
-                                                                <TextBlock Text="{Binding LimitAmount, StringFormat='$0'}"
+                                                                <TextBlock Text="{Binding LimitFormatted}"
                                                                            FontSize="{StaticResource FontSizeMeta}"
                                                                            Foreground="{DynamicResource TextMuted}" />
                                                             </StackPanel>
                                                             <StackPanel Orientation="Horizontal" IsVisible="{Binding IsOverBudget}">
-                                                                <TextBlock Text="{Binding Spent, StringFormat='$0'}" FontSize="{StaticResource FontSizeMeta}"
+                                                                <TextBlock Text="{Binding SpentFormatted}" FontSize="{StaticResource FontSizeMeta}"
                                                                            Foreground="{DynamicResource AccentRed}" />
                                                                 <TextBlock Text=" / " FontSize="{StaticResource FontSizeMeta}"
                                                                            Foreground="{DynamicResource AccentRed}" />
-                                                                <TextBlock Text="{Binding LimitAmount, StringFormat='$0'}"
+                                                                <TextBlock Text="{Binding LimitFormatted}"
                                                                            FontSize="{StaticResource FontSizeMeta}"
                                                                            Foreground="{DynamicResource AccentRed}" />
                                                             </StackPanel>
@@ -295,15 +314,10 @@
                                                                 Classes="muted" />
                                                         </StackPanel>
                                                     </StackPanel>
-                                                    <TextBlock Grid.Column="2" FontSize="{StaticResource FontSizeAmount}" FontWeight="SemiBold"
+                                                    <TextBlock Grid.Column="2" Text="{Binding PrimaryAmountSignFormatted}"
+                                                               FontSize="{StaticResource FontSizeAmount}" FontWeight="SemiBold"
                                                                Foreground="{Binding Type, Converter={StaticResource AmountColorConverter}}"
-                                                               VerticalAlignment="Center">
-                                                        <TextBlock.Text>
-                                                            <MultiBinding Converter="{StaticResource AmountSignConverter}">
-                                                                <Binding Path="Amount" /> <Binding Path="Type" />
-                                                            </MultiBinding>
-                                                        </TextBlock.Text>
-                                                    </TextBlock>
+                                                               VerticalAlignment="Center" />
                                                 </Grid>
                                                 <Separator />
                                             </StackPanel>
@@ -357,7 +371,7 @@
                                                     <TextBlock Text="{Binding Mask, Converter={StaticResource MaskToStringConverter}}"
                                                                FontSize="{StaticResource FontSizeLabel}" Classes="muted" />
                                                 </StackPanel>
-                                                <TextBlock Grid.Column="2" Text="{Binding CurrentBalance, StringFormat='$0'}"
+                                                <TextBlock Grid.Column="2" Text="{Binding CurrentBalanceFormatted}"
                                                            FontSize="{StaticResource FontSizeBody}" FontWeight="Bold"
                                                            Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center" />
                                             </Grid>
@@ -370,8 +384,14 @@
                                 <Grid ColumnDefinitions="*,Auto">
                                     <TextBlock Grid.Column="0" Text="Total Balance" FontSize="{StaticResource FontSizeBody}" FontWeight="SemiBold"
                                                Foreground="{DynamicResource TextMuted}" />
-                                    <TextBlock Grid.Column="1" Text="{Binding TotalNetworth, StringFormat=$0}"
-                                               FontSize="{StaticResource FontSizeSectionHeading}" FontWeight="Bold" Foreground="{DynamicResource TextPrimary}" />
+                                    <TextBlock Grid.Column="1" FontSize="{StaticResource FontSizeSectionHeading}" FontWeight="Bold" Foreground="{DynamicResource TextPrimary}">
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat="{}{0}{1:N2}">
+                                                <Binding Path="PrimarySymbol" />
+                                                <Binding Path="TotalNetworth" />
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
                                 </Grid>
                             </StackPanel>
                         </Grid>

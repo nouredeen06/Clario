@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Clario.Services;
 using Newtonsoft.Json;
 using Supabase.Postgrest.Attributes;
 using Supabase.Postgrest.Models;
@@ -38,6 +39,8 @@ public class Account : BaseModel
 
     [Column("color")] public string Color { get; set; } = string.Empty;
 
+    [Column("is_primary")] public bool IsPrimary { get; set; }
+
     [JsonIgnore] public int TransactionsCount { get; set; }
     [JsonIgnore] public int IncomeTransactionsThisMonth { get; set; }
     [JsonIgnore] public int ExpenseTransactionsThisMonth { get; set; }
@@ -48,4 +51,11 @@ public class Account : BaseModel
     [JsonIgnore] public bool isCredit => Type == "Credit";
     [JsonIgnore] public decimal CreditUtilizationPerc => (CurrentBalance < 0 ? CurrentBalance * -1 : 0) / (CreditLimit == 0 ? 1 : CreditLimit) ?? 1;
     [JsonIgnore] public bool GroupHeader { get; set; } = false;
+
+    [JsonIgnore] public string CurrencySymbol => CurrencyService.GetSymbol(Currency);
+    [JsonIgnore] public string CurrentBalanceFormatted => $"{CurrencySymbol}{CurrentBalance:N2}";
+    [JsonIgnore] public string TotalIncomeFormatted => $"{CurrencySymbol}{TotalIncomeThisMonth:N2}";
+    [JsonIgnore] public string TotalExpenseFormatted => $"{CurrencySymbol}{TotalExpenseThisMonth:N2}";
+    [JsonIgnore] public string MonthlyIncreaseFormatted =>
+        $"{(MonthlyIncrease >= 0 ? "+" : "-")}{CurrencySymbol}{Math.Abs(MonthlyIncrease):N2}";
 }

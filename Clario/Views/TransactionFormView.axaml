@@ -127,7 +127,7 @@
                         Margin="0,0,0,16">
                     <Grid ColumnDefinitions="Auto,*,Auto">
                         <TextBlock Grid.Column="0"
-                                   Text="$"
+                                   Text="{Binding CurrencySymbol}"
                                    FontSize="22"
                                    FontWeight="Bold"
                                    Foreground="{DynamicResource TextMuted}"
@@ -245,6 +245,67 @@
 
                 </Grid>
 
+                <!-- ── Exchange Rate (shown for foreign-currency accounts) ── -->
+                <Border IsVisible="{Binding ShowExchangeRateField}"
+                        Background="{DynamicResource BgBase}"
+                        BorderBrush="{DynamicResource BorderSubtle}"
+                        BorderThickness="1"
+                        CornerRadius="{DynamicResource RadiusControl}"
+                        Padding="14,10"
+                        Margin="0,0,0,16">
+                    <StackPanel Spacing="6">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Grid.Column="0"
+                                       Text="EXCHANGE RATE"
+                                       Classes="label"
+                                       VerticalAlignment="Center" />
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6"
+                                        IsVisible="{Binding IsFetchingRate}"
+                                        VerticalAlignment="Center">
+                                <Border Width="8" Height="8"
+                                        CornerRadius="4"
+                                        Background="{DynamicResource AccentBlue}"
+                                        Opacity="0.7" />
+                                <TextBlock Text="Fetching rate..."
+                                           FontSize="11"
+                                           Foreground="{DynamicResource TextMuted}" />
+                            </StackPanel>
+                        </Grid>
+                        <TextBlock Text="{Binding ExchangeRateLabel}"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource TextMuted}" />
+
+                        <!-- Loading skeleton -->
+                        <Border IsVisible="{Binding IsFetchingRate}"
+                                Background="{DynamicResource BgSurface}"
+                                BorderBrush="{DynamicResource BorderSubtle}"
+                                BorderThickness="1"
+                                CornerRadius="{DynamicResource RadiusControl}"
+                                Height="36"
+                                Opacity="0.5" />
+
+                        <!-- Actual input -->
+                        <Border IsVisible="{Binding !IsFetchingRate}"
+                                Background="{DynamicResource BgSurface}"
+                                BorderBrush="{DynamicResource BorderSubtle}"
+                                BorderThickness="1"
+                                CornerRadius="{DynamicResource RadiusControl}"
+                                Padding="12,0">
+                            <TextBox Classes="ghost"
+                                     Text="{Binding ExchangeRate, Mode=TwoWay}"
+                                     Watermark="0.00000"
+                                     FontSize="13"
+                                     Height="36"
+                                     Padding="0"
+                                     VerticalContentAlignment="Center">
+                                <Interaction.Behaviors>
+                                    <behaviors:NumericInputBehavior />
+                                </Interaction.Behaviors>
+                            </TextBox>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
                 <!-- ── Date ────────────────────────── -->
                 <TextBlock Text="DATE" Classes="label" Margin="0,0,0,6" />
                 <Border Background="{DynamicResource BgBase}"
@@ -284,6 +345,46 @@
                          VerticalContentAlignment="Center"
                          Margin="0,0,0,8" />
 
+                <!-- ── Budget approaching warning ─────── -->
+                <Border Background="{DynamicResource BadgeBgYellow}"
+                        BorderBrush="{DynamicResource AccentYellow}"
+                        BorderThickness="1"
+                        CornerRadius="10"
+                        Padding="12,8"
+                        Margin="0,8,0,8"
+                        IsVisible="{Binding HasBudgetApproachingWarning}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Svg Path="../Assets/Icons/triangle-alert.svg"
+                             Width="13" Height="13"
+                             Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #F5C842; }" />
+                        <TextBlock Text="{Binding BudgetWarningMessage}"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource AccentYellow}"
+                                   VerticalAlignment="Center"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+
+                <!-- ── Budget over-limit warning ──────── -->
+                <Border Background="{DynamicResource BadgeBgRed}"
+                        BorderBrush="{DynamicResource AccentRed}"
+                        BorderThickness="1"
+                        CornerRadius="10"
+                        Padding="12,8"
+                        Margin="0,8,0,8"
+                        IsVisible="{Binding BudgetWarningIsOverBudget}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Svg Path="../Assets/Icons/circle-alert.svg"
+                             Width="13" Height="13"
+                             Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #FF5E5E; }" />
+                        <TextBlock Text="{Binding BudgetWarningMessage}"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource AccentRed}"
+                                   VerticalAlignment="Center"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+
                 <!-- ── Validation error ─────────────── -->
                 <Border Background="{DynamicResource BadgeBgRed}"
                         BorderBrush="{DynamicResource AccentRed}"
@@ -304,25 +405,16 @@
                 </Border>
 
                 <!-- ── Delete button (edit mode only) ── -->
-                <Button HorizontalAlignment="Stretch"
+                <Button Classes="danger"
+                        HorizontalAlignment="Stretch"
                         HorizontalContentAlignment="Center"
-                        Background="#1A0808"
-                        BorderBrush="#3A1515"
-                        BorderThickness="1"
-                        CornerRadius="{DynamicResource RadiusControl}"
                         Padding="0,10"
                         Margin="0,0,0,10"
                         IsVisible="{Binding IsEditMode}"
                         Command="{Binding RequestDeleteCommand}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
-                        <Svg Path="../Assets/Icons/trash-2.svg"
-                             Width="13" Height="13"
-                             Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #FF5E5E; }" />
-                        <TextBlock Text="Delete Transaction"
-                                   FontSize="13"
-                                   FontWeight="SemiBold"
-                                   Foreground="#FF5E5E"
-                                   VerticalAlignment="Center" />
+                        <Svg Path="../Assets/Icons/trash-2.svg" Width="13" Height="13" Css="{DynamicResource SvgRed}"/>
+                        <TextBlock Text="Delete Transaction" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
 

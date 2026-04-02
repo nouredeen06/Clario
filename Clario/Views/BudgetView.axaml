@@ -267,14 +267,26 @@
                                 <Grid ColumnDefinitions="*,Auto">
                                     <TextBlock Grid.Column="0" Text="Total Budgeted" FontSize="12" Foreground="{DynamicResource TextMuted}" />
                                     <!-- REPLACE: bind to TotalBudgetedFormatted -->
-                                    <TextBlock Grid.Column="1" Text="{Binding TotalBudgeted, StringFormat='$0'}" FontSize="13" FontWeight="SemiBold"
-                                               Foreground="{DynamicResource TextPrimary}" />
+                                    <TextBlock FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}">
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat="{}{0}{1:N0}">
+                                                <Binding Path="PrimarySymbol" />
+                                                <Binding Path="TotalBudgeted" />
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
                                 </Grid>
                                 <Grid ColumnDefinitions="*,Auto">
                                     <TextBlock Grid.Column="0" Text="Total Spent" FontSize="12" Foreground="{DynamicResource TextMuted}" />
                                     <!-- REPLACE: bind to TotalSpentFormatted -->
-                                    <TextBlock Grid.Column="1" Text="{Binding TotalSpent, StringFormat='$0'}" FontSize="13" FontWeight="SemiBold"
-                                               Foreground="{DynamicResource TextPrimary}" />
+                                    <TextBlock FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}">
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat="{}{0}{1:N0}">
+                                                <Binding Path="PrimarySymbol" />
+                                                <Binding Path="TotalSpent" />
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
                                 </Grid>
 
                                 <!-- Overall progress bar -->
@@ -539,49 +551,116 @@
                                            FontWeight="SemiBold"
                                            Foreground="{DynamicResource TextPrimary}"
                                            VerticalAlignment="Center" />
-                                <!-- REPLACE: Command="{Binding EditSavingsGoalCommand}" -->
                                 <Button Grid.Column="1"
                                         Background="Transparent"
                                         BorderThickness="0"
                                         Padding="4"
-                                        Cursor="Hand">
+                                        Cursor="Hand"
+                                        Command="{Binding EditSavingsGoalCommand}">
                                     <Svg Path="../Assets/Icons/pencil.svg" Width="14" Height="14" Css="{DynamicResource SvgMuted}" />
                                 </Button>
                             </Grid>
 
-                            <!-- Goal amount vs projected -->
-                            <StackPanel Spacing="6">
-                                <Grid ColumnDefinitions="*,Auto">
-                                    <TextBlock Grid.Column="0" Text="Monthly goal" FontSize="12" Foreground="{DynamicResource TextMuted}" />
-                                    <!-- REPLACE: bind to SavingsGoalFormatted -->
-                                    <TextBlock Grid.Column="1" Text="{Binding AppData.Profile.SavingsGoal, StringFormat='$0'}" FontSize="12"
-                                               FontWeight="SemiBold"
-                                               Foreground="{DynamicResource TextPrimary}" />
-                                </Grid>
-                                <Grid ColumnDefinitions="*,Auto">
-                                    <TextBlock Grid.Column="0" Text="Projected savings" FontSize="12" Foreground="{DynamicResource TextMuted}" />
-                                    <!-- REPLACE: bind to ProjectedSavingsFormatted -->
-                                    <TextBlock Grid.Column="1" Text="{Binding TotalLeftFormatted}" FontSize="12" FontWeight="SemiBold"
-                                               Foreground="{DynamicResource AccentYellow}" />
-                                </Grid>
+                            <!-- Empty state — no goal set -->
+                            <StackPanel IsVisible="{Binding !HasSavingsGoal}"
+                                        Spacing="12"
+                                        HorizontalAlignment="Center">
+                                <Border Background="{DynamicResource IconBgBlue}"
+                                        CornerRadius="12"
+                                        Width="44" Height="44"
+                                        HorizontalAlignment="Center">
+                                    <Svg Path="../Assets/Icons/target.svg" Width="20" Height="20" Css="{DynamicResource SvgBlue}" />
+                                </Border>
+                                <TextBlock Text="No savings goal set"
+                                           FontSize="13"
+                                           FontWeight="SemiBold"
+                                           Foreground="{DynamicResource TextPrimary}"
+                                           HorizontalAlignment="Center" />
+                                <TextBlock Text="Set a monthly savings target to track how much of your remaining budget you're saving."
+                                           FontSize="11"
+                                           Foreground="{DynamicResource TextMuted}"
+                                           TextWrapping="Wrap"
+                                           TextAlignment="Center"
+                                           HorizontalAlignment="Center" />
+                                <Button Classes="accented"
+                                        HorizontalAlignment="Center"
+                                        Padding="16,8"
+                                        Command="{Binding EditSavingsGoalCommand}">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <Svg Path="../Assets/Icons/plus.svg" Width="12" Height="12"
+                                             Css="{DynamicResource SvgBase}" />
+                                        <TextBlock Text="Set Goal"
+                                                   FontSize="12"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource BgBase}"
+                                                   VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Button>
                             </StackPanel>
 
-                            <!-- REPLACE: Value="{Binding SavingsGoalPercentage}" -->
-                            <ProgressBar Classes="yellow" Value="{Binding TotalLeft}" Minimum="0" Maximum="{Binding AppData.Profile.SavingsGoal}" Height="6" />
+                            <!-- Goal content — goal is set -->
+                            <StackPanel IsVisible="{Binding HasSavingsGoal}" Spacing="14">
 
-                            <Border Background="{DynamicResource BadgeBgYellow}"
-                                    CornerRadius="10"
-                                    Padding="12,8">
-                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
-                                    <Svg Grid.Column="0" Path="../Assets/Icons/info.svg" Width="14" Height="14"
-                                         Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #F5C842; }" />
-                                    <TextBlock Grid.Column="1" Text="{Binding SavingsHint}"
-                                               FontSize="12"
-                                               Foreground="{DynamicResource AccentYellow}"
-                                               TextWrapping="Wrap"
-                                               VerticalAlignment="Center" />
-                                </Grid>
-                            </Border>
+                                <!-- Goal amount vs projected -->
+                                <StackPanel Spacing="6">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <TextBlock Grid.Column="0" Text="Monthly goal" FontSize="12" Foreground="{DynamicResource TextMuted}" />
+                                        <TextBlock FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}">
+                                            <TextBlock.Text>
+                                                <MultiBinding StringFormat="{}{0}{1:N0}">
+                                                    <Binding Path="PrimarySymbol" />
+                                                    <Binding Path="AppData.Profile.SavingsGoal" />
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <TextBlock Grid.Column="0" Text="Projected savings" FontSize="12" Foreground="{DynamicResource TextMuted}" />
+                                        <TextBlock Grid.Column="1" Text="{Binding TotalLeftFormatted}" FontSize="12" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource AccentYellow}" />
+                                    </Grid>
+                                </StackPanel>
+
+                                <ProgressBar Classes="yellow"
+                                             Classes.green="{Binding IsSavingsGoalMet}"
+                                             Value="{Binding TotalLeft}"
+                                             Minimum="0"
+                                             Maximum="{Binding AppData.Profile.SavingsGoal}"
+                                             Height="6" />
+
+                                <!-- On track hint -->
+                                <Border IsVisible="{Binding IsSavingsGoalMet}"
+                                        Background="{DynamicResource IconBgGreen}"
+                                        CornerRadius="10"
+                                        Padding="12,8">
+                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                                        <Svg Grid.Column="0" Path="../Assets/Icons/check.svg" Width="13" Height="13"
+                                             Css="{DynamicResource SvgGreen}" />
+                                        <TextBlock Grid.Column="1" Text="{Binding SavingsHint}"
+                                                   FontSize="12"
+                                                   Foreground="{DynamicResource AccentGreen}"
+                                                   TextWrapping="Wrap"
+                                                   VerticalAlignment="Center" />
+                                    </Grid>
+                                </Border>
+
+                                <!-- Behind hint -->
+                                <Border IsVisible="{Binding !IsSavingsGoalMet}"
+                                        Background="{DynamicResource BadgeBgYellow}"
+                                        CornerRadius="10"
+                                        Padding="12,8">
+                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                                        <Svg Grid.Column="0" Path="../Assets/Icons/info.svg" Width="13" Height="13"
+                                             Css="{DynamicResource SvgYellow}" />
+                                        <TextBlock Grid.Column="1" Text="{Binding SavingsHint}"
+                                                   FontSize="12"
+                                                   Foreground="{DynamicResource AccentYellow}"
+                                                   TextWrapping="Wrap"
+                                                   VerticalAlignment="Center" />
+                                    </Grid>
+                                </Border>
+
+                            </StackPanel>
                         </StackPanel>
                     </Border>
                 </StackPanel>

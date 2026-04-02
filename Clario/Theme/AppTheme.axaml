@@ -1,6 +1,7 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:cc="clr-namespace:Clario.CustomControls">
+        xmlns:cc="clr-namespace:Clario.CustomControls"
+        xmlns:theme="clr-namespace:Clario.Theme">
     <Design.PreviewWith>
         <Border Padding="20">
             <cc:DateRangePicker SelectionMode="SingleRange"
@@ -59,15 +60,21 @@
             <!-- LAYOUT -->
             <x:Double x:Key="SidebarWidth">220</x:Double>
 
-            <!-- FLYOUT PRESENTER THEME -->
-            <ControlTheme x:Key="TransparentFlyoutPresenter"
-                          TargetType="FlyoutPresenter">
-                <Setter Property="Background" Value="Transparent" />
-                <Setter Property="BorderBrush" Value="Transparent" />
-                <Setter Property="BorderThickness" Value="0" />
-                <Setter Property="Padding" Value="0" />
-                <Setter Property="CornerRadius" Value="0" />
-            </ControlTheme>
+            <!-- Shared Logo Assets -->
+
+
+            <!-- Icon only, transparent bg -->
+            <x:String x:Key="LogoIconPrimaryTransparentSvg">avares://Clario/Assets/Logo/logo-icon-primary-transparent.svg</x:String>
+            <Bitmap x:Key="LogoIconPrimaryTransparent1x">avares://Clario/Assets/Logo/logo-icon-primary-transparent-128.png</Bitmap>
+            <Bitmap x:Key="LogoIconPrimaryTransparent2x">avares://Clario/Assets/Logo/logo-icon-primary-transparent-256.png</Bitmap>
+            <Bitmap x:Key="LogoIconPrimaryTransparent4x">avares://Clario/Assets/Logo/logo-icon-primary-transparent-512.png</Bitmap>
+
+            <!-- Combined (icon + text), transparent bg -->
+            <x:String x:Key="LogoCombinedPrimaryTransparentSvg">avares://Clario/Assets/Logo/logo-combined-primary-transparent.svg</x:String>
+            <Bitmap x:Key="LogoCombinedPrimaryTransparent1x">avares://Clario/Assets/Logo/logo-combined-primary-transparent-192x64.png</Bitmap>
+            <Bitmap x:Key="LogoCombinedPrimaryTransparent2x">avares://Clario/Assets/Logo/logo-combined-primary-transparent-384x128.png</Bitmap>
+            <Bitmap x:Key="LogoCombinedPrimaryTransparent4x">avares://Clario/Assets/Logo/logo-combined-primary-transparent-768x192.png</Bitmap>
+
 
             <ResourceDictionary.ThemeDictionaries>
                 <ResourceDictionary x:Key="Dark">
@@ -96,6 +103,10 @@
                     <SolidColorBrush x:Key="AccentOrange" Color="#FF7E5E" />
                     <SolidColorBrush x:Key="AccentPink" Color="#FF5E9B" />
 
+                    <SolidColorBrush x:Key="DangerButtonBackground" Color="#2A0D0D" />
+                    <SolidColorBrush x:Key="DangerButtonBorder" Color="#3A1515" />
+                    <SolidColorBrush x:Key="DangerButtonBackgroundBrush" Color="#3A1515" />
+                    <SolidColorBrush x:Key="DangerButtonBorderBrush" Color="#4A1C1C" />
 
                     <!-- SVG COLORS -->
 
@@ -148,6 +159,26 @@
                     <SolidColorBrush x:Key="ToggleSwitchTrackOnPressed" Color="#6B8AEF" />
                     <SolidColorBrush x:Key="ToggleSwitchTrackOnDisabled" Color="#4A5A8A" />
 
+                    <!-- logos -->
+
+                    <!-- Icon only, dark bg -->
+                    <x:String x:Key="LogoIconPrimaryBgSvg">avares://Clario/Assets/Logo/logo-icon-primary-bg-dark.svg</x:String>
+                    <Bitmap x:Key="LogoIconPrimaryBg1x">avares://Clario/Assets/Logo/logo-icon-primary-bg-dark-128.png</Bitmap>
+                    <Bitmap x:Key="LogoIconPrimaryBg2x">avares://Clario/Assets/Logo/logo-icon-primary-bg-dark-256.png</Bitmap>
+                    <Bitmap x:Key="LogoIconPrimaryBg4x">avares://Clario/Assets/Logo/logo-icon-primary-bg-dark-512.png</Bitmap>
+
+                    <!-- Icon only, neutral -->
+                    <x:String x:Key="LogoIconNeutralTransparentSvg">avares://Clario/Assets/Logo/logo-icon-neutral-light-transparent.svg</x:String>
+                    <Bitmap x:Key="LogoIconNeutralTransparent1x">avares://Clario/Assets/Logo/logo-icon-neutral-light-transparent-128.png</Bitmap>
+                    <Bitmap x:Key="LogoIconNeutralTransparent2x">avares://Clario/Assets/Logo/logo-icon-neutral-light-transparent-256.png</Bitmap>
+                    <Bitmap x:Key="LogoIconNeutralTransparent4x">avares://Clario/Assets/Logo/logo-icon-neutral-light-transparent-512.png</Bitmap>
+
+                    <!-- Combined (icon + text) -->
+                    <x:String x:Key="LogoCombinedPrimaryBgSvg">avares://Clario/Assets/Logo/logo-combined-primary-bg-dark.svg</x:String>
+                    <Bitmap x:Key="LogoCombinedPrimaryBg1x">avares://Clario/Assets/Logo/logo-combined-primary-bg-dark-192x64.png</Bitmap>
+                    <Bitmap x:Key="LogoCombinedPrimaryBg2x">avares://Clario/Assets/Logo/logo-combined-primary-bg-dark-384x128.png</Bitmap>
+                    <Bitmap x:Key="LogoCombinedPrimaryBg4x">avares://Clario/Assets/Logo/logo-combined-primary-bg-dark-768x192.png</Bitmap>
+
                 </ResourceDictionary>
                 <ResourceDictionary x:Key="Light">
                     <!-- BACKGROUNDS -->
@@ -174,6 +205,11 @@
                     <SolidColorBrush x:Key="AccentPurple" Color="#6B44E0" />
                     <SolidColorBrush x:Key="AccentOrange" Color="#E8622A" />
                     <SolidColorBrush x:Key="AccentPink" Color="#D4306A" />
+
+                    <SolidColorBrush x:Key="DangerButtonBackground" Color="#FFE8E8" />
+                    <SolidColorBrush x:Key="DangerButtonBorder" Color="#FFCCCC" />
+                    <SolidColorBrush x:Key="DangerButtonBackgroundBrush" Color="#FFD5D5" />
+                    <SolidColorBrush x:Key="DangerButtonBorderBrush" Color="#FFBCBC" />
 
                     <!-- ICON BACKGROUNDS -->
                     <SolidColorBrush x:Key="IconBgBlue" Color="#E8EEFF" />
@@ -213,13 +249,334 @@
                     <SolidColorBrush x:Key="ToggleSwitchTrackOnHover" Color="#5580FF" />
                     <SolidColorBrush x:Key="ToggleSwitchTrackOnPressed" Color="#2D5CE8" />
                     <SolidColorBrush x:Key="ToggleSwitchTrackOnDisabled" Color="#A0B4FF" />
+                    <Bitmap x:Key="key">path</Bitmap>
+
+
+                    <!--  logos -->
+                    <!-- Icon only, light bg -->
+                    <x:String x:Key="LogoIconPrimaryBgSvg">avares://Clario/Assets/Logo/logo-icon-primary-bg-light.svg</x:String>
+                    <Bitmap x:Key="LogoIconPrimaryBg1x">avares://Clario/Assets/Logo/logo-icon-primary-bg-light-128.png</Bitmap>
+                    <Bitmap x:Key="LogoIconPrimaryBg2x">avares://Clario/Assets/Logo/logo-icon-primary-bg-light-256.png</Bitmap>
+                    <Bitmap x:Key="LogoIconPrimaryBg4x">avares://Clario/Assets/Logo/logo-icon-primary-bg-light-512.png</Bitmap>
+
+                    <!-- Icon only, neutral -->
+                    <x:String x:Key="LogoIconNeutralTransparentSvg">avares://Clario/Assets/Logo/logo-icon-neutral-dark-transparent.svg</x:String>
+                    <Bitmap x:Key="LogoIconNeutralTransparent1x">avares://Clario/Assets/Logo/logo-icon-neutral-dark-transparent-128.png</Bitmap>
+                    <Bitmap x:Key="LogoIconNeutralTransparent2x">avares://Clario/Assets/Logo/logo-icon-neutral-dark-transparent-256.png</Bitmap>
+                    <Bitmap x:Key="LogoIconNeutralTransparent4x">avares://Clario/Assets/Logo/logo-icon-neutral-dark-transparent-512.png</Bitmap>
+
+                    <!-- Combined (icon + text) -->
+                    <x:String x:Key="LogoCombinedPrimaryBgSvg">avares://Clario/Assets/Logo/logo-combined-primary-bg-light.svg</x:String>
+                    <Bitmap x:Key="LogoCombinedPrimaryBg1x">avares://Clario/Assets/Logo/logo-combined-primary-bg-light-192x64.png</Bitmap>
+                    <Bitmap x:Key="LogoCombinedPrimaryBg2x">avares://Clario/Assets/Logo/logo-combined-primary-bg-light-384x128.png</Bitmap>
+                    <Bitmap x:Key="LogoCombinedPrimaryBg4x">avares://Clario/Assets/Logo/logo-combined-primary-bg-light-768x192.png</Bitmap>
 
                 </ResourceDictionary>
+                <ResourceDictionary x:Key="{x:Static theme:CustomAppThemeVariants.CatppuccinLatte}">
+                    <!-- BACKGROUNDS -->
+                    <SolidColorBrush x:Key="BgBase" Color="#e6e9ef" />      <!-- Mantle  — app background -->
+                    <SolidColorBrush x:Key="BgSidebar" Color="#dce0e8" />   <!-- Crust   — sidebar (darker than bg) -->
+                    <SolidColorBrush x:Key="BgSurface" Color="#eff1f5" />   <!-- Base    — cards (lightest, elevated) -->
+                    <SolidColorBrush x:Key="BgHover" Color="#ccd0da" />     <!-- Surface 0 — hover -->
+
+                    <!-- BORDERS -->
+                    <SolidColorBrush x:Key="BorderSubtle" Color="#bcc0cc" /> <!-- Surface 1 -->
+                    <SolidColorBrush x:Key="BorderAccent" Color="#8839ef" /> <!-- Mauve -->
+
+                    <!-- TEXT -->
+                    <SolidColorBrush x:Key="TextPrimary" Color="#4c4f69" />   <!-- Text      -->
+                    <SolidColorBrush x:Key="TextSecondary" Color="#5c5f77" /> <!-- Subtext 1 -->
+                    <SolidColorBrush x:Key="TextMuted" Color="#6c6f85" />     <!-- Subtext 0 -->
+                    <SolidColorBrush x:Key="TextDisabled" Color="#9ca0b0" />  <!-- Overlay 0 -->
+
+                    <!-- ACCENTS -->
+                    <SolidColorBrush x:Key="AccentBlue" Color="#1e66f5" />
+                    <SolidColorBrush x:Key="AccentGreen" Color="#40a02b" />
+                    <SolidColorBrush x:Key="AccentYellow" Color="#df8e1d" />
+                    <SolidColorBrush x:Key="AccentRed" Color="#d20f39" />
+                    <SolidColorBrush x:Key="AccentPurple" Color="#8839ef" />
+                    <SolidColorBrush x:Key="AccentOrange" Color="#fe640b" />
+                    <SolidColorBrush x:Key="AccentPink" Color="#ea76cb" />
+
+                    <!-- DANGER -->
+                    <SolidColorBrush x:Key="DangerButtonBackground" Color="#fce0e5" />
+                    <SolidColorBrush x:Key="DangerButtonBorder" Color="#f7b8c4" />
+                    <SolidColorBrush x:Key="DangerButtonBackgroundBrush" Color="#f9cdd6" />
+                    <SolidColorBrush x:Key="DangerButtonBorderBrush" Color="#f4a5b6" />
+
+                    <!-- ICON BACKGROUNDS -->
+                    <SolidColorBrush x:Key="IconBgBlue" Color="#d0dcfd" />
+                    <SolidColorBrush x:Key="IconBgGreen" Color="#d6eecf" />
+                    <SolidColorBrush x:Key="IconBgOrange" Color="#fee9d4" />
+                    <SolidColorBrush x:Key="IconBgRed" Color="#fce0e5" />
+                    <SolidColorBrush x:Key="IconBgPurple" Color="#e8d5fc" />
+                    <SolidColorBrush x:Key="IconBgPink" Color="#fbd5f3" />
+
+                    <!-- SEMANTIC OVERLAYS -->
+                    <SolidColorBrush x:Key="BadgeBgGreen" Color="#d6eecf" />
+                    <SolidColorBrush x:Key="BadgeBgRed" Color="#fce0e5" />
+                    <SolidColorBrush x:Key="BadgeBgYellow" Color="#fdf0d0" />
+                    <SolidColorBrush x:Key="BadgeBgBlue" Color="#d0dcfd" />
+                    <SolidColorBrush x:Key="DividerAlpha" Color="#bcc0cc" />
+
+                    <!-- SVG COLORS -->
+                    <x:String x:Key="SvgBase">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #eff1f5; }</x:String>
+                    <x:String x:Key="SvgPrimary">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #4c4f69; }</x:String>
+                    <x:String x:Key="SvgSecondary">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #5c5f77; }</x:String>
+                    <x:String x:Key="SvgMuted">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #6c6f85; }</x:String>
+                    <x:String x:Key="SvgDisabled">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #9ca0b0; }</x:String>
+                    <x:String x:Key="SvgBlue">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #1e66f5; }</x:String>
+                    <x:String x:Key="SvgGreen">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #40a02b; }</x:String>
+                    <x:String x:Key="SvgYellow">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #df8e1d; }</x:String>
+                    <x:String x:Key="SvgRed">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #d20f39; }</x:String>
+                    <x:String x:Key="SvgPurple">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #8839ef; }</x:String>
+                    <x:String x:Key="SvgOrange">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #fe640b; }</x:String>
+                    <x:String x:Key="SvgPink">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #ea76cb; }</x:String>
+                    <x:String x:Key="SvgFillBase">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #eff1f5; }</x:String>
+                    <x:String x:Key="SvgFillPrimary">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #4c4f69; }</x:String>
+                    <x:String x:Key="SvgFillSecondary">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #5c5f77; }</x:String>
+                    <x:String x:Key="SvgFillMuted">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #6c6f85; }</x:String>
+                    <x:String x:Key="SvgFillDisabled">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #9ca0b0; }</x:String>
+                    <x:String x:Key="SvgFillBlue">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #1e66f5; }</x:String>
+                    <x:String x:Key="SvgFillGreen">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #40a02b; }</x:String>
+                    <x:String x:Key="SvgFillYellow">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #df8e1d; }</x:String>
+                    <x:String x:Key="SvgFillRed">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #d20f39; }</x:String>
+                    <x:String x:Key="SvgFillPurple">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #8839ef; }</x:String>
+                    <x:String x:Key="SvgFillOrange">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #fe640b; }</x:String>
+                    <x:String x:Key="SvgFillPink">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #ea76cb; }</x:String>
+
+                    <!-- TOGGLE SWITCH -->
+                    <SolidColorBrush x:Key="ToggleSwitchTrackOff" Color="#bcc0cc" />
+                    <SolidColorBrush x:Key="ToggleSwitchTrackBorderOff" Color="#acb0be" />
+                    <SolidColorBrush x:Key="ToggleSwitchKnobOn" Color="#eff1f5" />
+                    <SolidColorBrush x:Key="ToggleSwitchKnobOff" Color="#7c7f93" />
+                    <SolidColorBrush x:Key="ToggleSwitchTrackOnHover" Color="#7151c8" />
+                    <SolidColorBrush x:Key="ToggleSwitchTrackOnPressed" Color="#5a3db5" />
+                    <SolidColorBrush x:Key="ToggleSwitchTrackOnDisabled" Color="#c9aafc" />
+
+                    <!-- LOGOS -->
+                    <x:String x:Key="LogoIconPrimaryBgSvg">avares://Clario/Assets/Logo/logo-icon-primary-bg-light.svg</x:String>
+                    <Bitmap x:Key="LogoIconPrimaryBg1x">avares://Clario/Assets/Logo/logo-icon-primary-bg-light-128.png</Bitmap>
+                    <Bitmap x:Key="LogoIconPrimaryBg2x">avares://Clario/Assets/Logo/logo-icon-primary-bg-light-256.png</Bitmap>
+                    <Bitmap x:Key="LogoIconPrimaryBg4x">avares://Clario/Assets/Logo/logo-icon-primary-bg-light-512.png</Bitmap>
+                    <x:String x:Key="LogoIconNeutralTransparentSvg">avares://Clario/Assets/Logo/logo-icon-neutral-dark-transparent.svg</x:String>
+                    <Bitmap x:Key="LogoIconNeutralTransparent1x">avares://Clario/Assets/Logo/logo-icon-neutral-dark-transparent-128.png</Bitmap>
+                    <Bitmap x:Key="LogoIconNeutralTransparent2x">avares://Clario/Assets/Logo/logo-icon-neutral-dark-transparent-256.png</Bitmap>
+                    <Bitmap x:Key="LogoIconNeutralTransparent4x">avares://Clario/Assets/Logo/logo-icon-neutral-dark-transparent-512.png</Bitmap>
+                    <x:String x:Key="LogoCombinedPrimaryBgSvg">avares://Clario/Assets/Logo/logo-combined-primary-bg-light.svg</x:String>
+                    <Bitmap x:Key="LogoCombinedPrimaryBg1x">avares://Clario/Assets/Logo/logo-combined-primary-bg-light-192x64.png</Bitmap>
+                    <Bitmap x:Key="LogoCombinedPrimaryBg2x">avares://Clario/Assets/Logo/logo-combined-primary-bg-light-384x128.png</Bitmap>
+                    <Bitmap x:Key="LogoCombinedPrimaryBg4x">avares://Clario/Assets/Logo/logo-combined-primary-bg-light-768x192.png</Bitmap>
+                </ResourceDictionary>
+
+                <ResourceDictionary x:Key="{x:Static theme:CustomAppThemeVariants.CatppuccinMacchiato}">
+                    <!-- BACKGROUNDS -->
+                    <!-- JetBrains: panelBackground=Mantle, editorBackground=Base, popup=Surface0, hover=Surface1 -->
+                    <SolidColorBrush x:Key="BgBase" Color="#24273a" />      <!-- Base      -->
+                    <SolidColorBrush x:Key="BgSidebar" Color="#1e2030" />   <!-- Mantle    -->
+                    <SolidColorBrush x:Key="BgSurface" Color="#363a4f" />   <!-- Surface 0 -->
+                    <SolidColorBrush x:Key="BgHover" Color="#494d64" />     <!-- Surface 1 -->
+
+                    <!-- BORDERS -->
+                    <SolidColorBrush x:Key="BorderSubtle" Color="#5b6078" /> <!-- Surface 2 -->
+                    <SolidColorBrush x:Key="BorderAccent" Color="#c6a0f6" /> <!-- Mauve — JB focusColor=Mauve -->
+
+                    <!-- TEXT -->
+                    <SolidColorBrush x:Key="TextPrimary" Color="#cad3f5" />   <!-- Text      -->
+                    <SolidColorBrush x:Key="TextSecondary" Color="#b8c0e0" /> <!-- Subtext 1 -->
+                    <SolidColorBrush x:Key="TextMuted" Color="#a5adcb" />     <!-- Subtext 0 -->
+                    <SolidColorBrush x:Key="TextDisabled" Color="#6e738d" />  <!-- Overlay 0 -->
+
+                    <!-- ACCENTS -->
+                    <SolidColorBrush x:Key="AccentBlue" Color="#8aadf4" />   <!-- Blue   -->
+                    <SolidColorBrush x:Key="AccentGreen" Color="#a6da95" />  <!-- Green  -->
+                    <SolidColorBrush x:Key="AccentYellow" Color="#eed49f" /> <!-- Yellow -->
+                    <SolidColorBrush x:Key="AccentRed" Color="#ed8796" />    <!-- Red    -->
+                    <SolidColorBrush x:Key="AccentPurple" Color="#c6a0f6" /> <!-- Mauve  -->
+                    <SolidColorBrush x:Key="AccentOrange" Color="#f5a97f" /> <!-- Peach  -->
+                    <SolidColorBrush x:Key="AccentPink" Color="#f5bde6" />   <!-- Pink   -->
+
+                    <!-- DANGER -->
+                    <SolidColorBrush x:Key="DangerButtonBackground" Color="#3a1a22" />
+                    <SolidColorBrush x:Key="DangerButtonBorder" Color="#5a2535" />
+                    <SolidColorBrush x:Key="DangerButtonBackgroundBrush" Color="#4a2030" />
+                    <SolidColorBrush x:Key="DangerButtonBorderBrush" Color="#6a2d3f" />
+
+                    <!-- ICON BACKGROUNDS -->
+                    <SolidColorBrush x:Key="IconBgBlue" Color="#1f2c4a" />
+                    <SolidColorBrush x:Key="IconBgGreen" Color="#1e3328" />
+                    <SolidColorBrush x:Key="IconBgOrange" Color="#3a2615" />
+                    <SolidColorBrush x:Key="IconBgRed" Color="#3a1a22" />
+                    <SolidColorBrush x:Key="IconBgPurple" Color="#2a1f3d" />
+                    <SolidColorBrush x:Key="IconBgPink" Color="#38163a" />
+
+                    <!-- SEMANTIC OVERLAYS -->
+                    <SolidColorBrush x:Key="BadgeBgGreen" Color="#1e3328" />
+                    <SolidColorBrush x:Key="BadgeBgRed" Color="#3a1a22" />
+                    <SolidColorBrush x:Key="BadgeBgYellow" Color="#35290f" />
+                    <SolidColorBrush x:Key="BadgeBgBlue" Color="#1f2c4a" />
+                    <SolidColorBrush x:Key="DividerAlpha" Color="#5b6078" />
+
+                    <!-- SVG COLORS -->
+                    <x:String x:Key="SvgBase">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #24273a; }</x:String>
+                    <x:String x:Key="SvgPrimary">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #cad3f5; }</x:String>
+                    <x:String x:Key="SvgSecondary">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #b8c0e0; }</x:String>
+                    <x:String x:Key="SvgMuted">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #a5adcb; }</x:String>
+                    <x:String x:Key="SvgDisabled">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #6e738d; }</x:String>
+                    <x:String x:Key="SvgBlue">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #8aadf4; }</x:String>
+                    <x:String x:Key="SvgGreen">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #a6da95; }</x:String>
+                    <x:String x:Key="SvgYellow">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #eed49f; }</x:String>
+                    <x:String x:Key="SvgRed">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #ed8796; }</x:String>
+                    <x:String x:Key="SvgPurple">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #c6a0f6; }</x:String>
+                    <x:String x:Key="SvgOrange">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #f5a97f; }</x:String>
+                    <x:String x:Key="SvgPink">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #f5bde6; }</x:String>
+                    <x:String x:Key="SvgFillBase">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #24273a; }</x:String>
+                    <x:String x:Key="SvgFillPrimary">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #cad3f5; }</x:String>
+                    <x:String x:Key="SvgFillSecondary">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #b8c0e0; }</x:String>
+                    <x:String x:Key="SvgFillMuted">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #a5adcb; }</x:String>
+                    <x:String x:Key="SvgFillDisabled">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #6e738d; }</x:String>
+                    <x:String x:Key="SvgFillBlue">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #8aadf4; }</x:String>
+                    <x:String x:Key="SvgFillGreen">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #a6da95; }</x:String>
+                    <x:String x:Key="SvgFillYellow">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #eed49f; }</x:String>
+                    <x:String x:Key="SvgFillRed">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #ed8796; }</x:String>
+                    <x:String x:Key="SvgFillPurple">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #c6a0f6; }</x:String>
+                    <x:String x:Key="SvgFillOrange">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #f5a97f; }</x:String>
+                    <x:String x:Key="SvgFillPink">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #f5bde6; }</x:String>
+
+                    <!-- TOGGLE SWITCH -->
+                    <SolidColorBrush x:Key="ToggleSwitchTrackOff" Color="#494d64" />       <!-- Surface 1 -->
+                    <SolidColorBrush x:Key="ToggleSwitchTrackBorderOff" Color="#5b6078" /> <!-- Surface 2 -->
+                    <SolidColorBrush x:Key="ToggleSwitchKnobOn" Color="#24273a" />         <!-- Base -->
+                    <SolidColorBrush x:Key="ToggleSwitchKnobOff" Color="#939ab7" />        <!-- Overlay 2 -->
+                    <SolidColorBrush x:Key="ToggleSwitchTrackOnHover" Color="#d4baff" />   <!-- Mauve brightened -->
+                    <SolidColorBrush x:Key="ToggleSwitchTrackOnPressed" Color="#a980e8" /> <!-- Mauve pressed -->
+                    <SolidColorBrush x:Key="ToggleSwitchTrackOnDisabled" Color="#4a3a60" /><!-- Mauve muted -->
+
+                    <!-- LOGOS -->
+                    <x:String x:Key="LogoIconPrimaryBgSvg">avares://Clario/Assets/Logo/logo-icon-primary-bg-dark.svg</x:String>
+                    <Bitmap x:Key="LogoIconPrimaryBg1x">avares://Clario/Assets/Logo/logo-icon-primary-bg-dark-128.png</Bitmap>
+                    <Bitmap x:Key="LogoIconPrimaryBg2x">avares://Clario/Assets/Logo/logo-icon-primary-bg-dark-256.png</Bitmap>
+                    <Bitmap x:Key="LogoIconPrimaryBg4x">avares://Clario/Assets/Logo/logo-icon-primary-bg-dark-512.png</Bitmap>
+                    <x:String x:Key="LogoIconNeutralTransparentSvg">avares://Clario/Assets/Logo/logo-icon-neutral-light-transparent.svg</x:String>
+                    <Bitmap x:Key="LogoIconNeutralTransparent1x">avares://Clario/Assets/Logo/logo-icon-neutral-light-transparent-128.png</Bitmap>
+                    <Bitmap x:Key="LogoIconNeutralTransparent2x">avares://Clario/Assets/Logo/logo-icon-neutral-light-transparent-256.png</Bitmap>
+                    <Bitmap x:Key="LogoIconNeutralTransparent4x">avares://Clario/Assets/Logo/logo-icon-neutral-light-transparent-512.png</Bitmap>
+                    <x:String x:Key="LogoCombinedPrimaryBgSvg">avares://Clario/Assets/Logo/logo-combined-primary-bg-dark.svg</x:String>
+                    <Bitmap x:Key="LogoCombinedPrimaryBg1x">avares://Clario/Assets/Logo/logo-combined-primary-bg-dark-192x64.png</Bitmap>
+                    <Bitmap x:Key="LogoCombinedPrimaryBg2x">avares://Clario/Assets/Logo/logo-combined-primary-bg-dark-384x128.png</Bitmap>
+                    <Bitmap x:Key="LogoCombinedPrimaryBg4x">avares://Clario/Assets/Logo/logo-combined-primary-bg-dark-768x192.png</Bitmap>
+                </ResourceDictionary>
+
+                <ResourceDictionary x:Key="{x:Static theme:CustomAppThemeVariants.CatppuccinMocha}">
+                    <!-- BACKGROUNDS -->
+                    <!-- JetBrains: panelBackground=Mantle, editorBackground=Base, popup=Surface0, hover=Surface1 -->
+                    <SolidColorBrush x:Key="BgBase" Color="#1e1e2e" />      <!-- Base      -->
+                    <SolidColorBrush x:Key="BgSidebar" Color="#181825" />   <!-- Mantle    -->
+                    <SolidColorBrush x:Key="BgSurface" Color="#313244" />   <!-- Surface 0 -->
+                    <SolidColorBrush x:Key="BgHover" Color="#45475a" />     <!-- Surface 1 -->
+
+                    <!-- BORDERS -->
+                    <SolidColorBrush x:Key="BorderSubtle" Color="#585b70" /> <!-- Surface 2 -->
+                    <SolidColorBrush x:Key="BorderAccent" Color="#cba6f7" /> <!-- Mauve — JB focusColor=Mauve -->
+
+                    <!-- TEXT -->
+                    <SolidColorBrush x:Key="TextPrimary" Color="#cdd6f4" />   <!-- Text      -->
+                    <SolidColorBrush x:Key="TextSecondary" Color="#bac2de" /> <!-- Subtext 1 -->
+                    <SolidColorBrush x:Key="TextMuted" Color="#a6adc8" />     <!-- Subtext 0 -->
+                    <SolidColorBrush x:Key="TextDisabled" Color="#6c7086" />  <!-- Overlay 0 -->
+
+                    <!-- ACCENTS -->
+                    <SolidColorBrush x:Key="AccentBlue" Color="#89b4fa" />   <!-- Blue   -->
+                    <SolidColorBrush x:Key="AccentGreen" Color="#a6e3a1" />  <!-- Green  -->
+                    <SolidColorBrush x:Key="AccentYellow" Color="#f9e2af" /> <!-- Yellow -->
+                    <SolidColorBrush x:Key="AccentRed" Color="#f38ba8" />    <!-- Red    -->
+                    <SolidColorBrush x:Key="AccentPurple" Color="#cba6f7" /> <!-- Mauve  -->
+                    <SolidColorBrush x:Key="AccentOrange" Color="#fab387" /> <!-- Peach  -->
+                    <SolidColorBrush x:Key="AccentPink" Color="#f5c2e7" />   <!-- Pink   -->
+
+                    <!-- DANGER -->
+                    <SolidColorBrush x:Key="DangerButtonBackground" Color="#3d1424" />
+                    <SolidColorBrush x:Key="DangerButtonBorder" Color="#5e1e38" />
+                    <SolidColorBrush x:Key="DangerButtonBackgroundBrush" Color="#4d1a2e" />
+                    <SolidColorBrush x:Key="DangerButtonBorderBrush" Color="#6e2442" />
+
+                    <!-- ICON BACKGROUNDS -->
+                    <SolidColorBrush x:Key="IconBgBlue" Color="#1a2847" />
+                    <SolidColorBrush x:Key="IconBgGreen" Color="#1a3025" />
+                    <SolidColorBrush x:Key="IconBgOrange" Color="#3d2410" />
+                    <SolidColorBrush x:Key="IconBgRed" Color="#3d1424" />
+                    <SolidColorBrush x:Key="IconBgPurple" Color="#291c3f" />
+                    <SolidColorBrush x:Key="IconBgPink" Color="#3a1035" />
+
+                    <!-- SEMANTIC OVERLAYS -->
+                    <SolidColorBrush x:Key="BadgeBgGreen" Color="#1a3025" />
+                    <SolidColorBrush x:Key="BadgeBgRed" Color="#3d1424" />
+                    <SolidColorBrush x:Key="BadgeBgYellow" Color="#3a2c0a" />
+                    <SolidColorBrush x:Key="BadgeBgBlue" Color="#1a2847" />
+                    <SolidColorBrush x:Key="DividerAlpha" Color="#585b70" />
+
+                    <!-- SVG COLORS -->
+                    <x:String x:Key="SvgBase">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #1e1e2e; }</x:String>
+                    <x:String x:Key="SvgPrimary">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #cdd6f4; }</x:String>
+                    <x:String x:Key="SvgSecondary">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #bac2de; }</x:String>
+                    <x:String x:Key="SvgMuted">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #a6adc8; }</x:String>
+                    <x:String x:Key="SvgDisabled">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #6c7086; }</x:String>
+                    <x:String x:Key="SvgBlue">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #89b4fa; }</x:String>
+                    <x:String x:Key="SvgGreen">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #a6e3a1; }</x:String>
+                    <x:String x:Key="SvgYellow">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #f9e2af; }</x:String>
+                    <x:String x:Key="SvgRed">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #f38ba8; }</x:String>
+                    <x:String x:Key="SvgPurple">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #cba6f7; }</x:String>
+                    <x:String x:Key="SvgOrange">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #fab387; }</x:String>
+                    <x:String x:Key="SvgPink">path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #f5c2e7; }</x:String>
+                    <x:String x:Key="SvgFillBase">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #1e1e2e; }</x:String>
+                    <x:String x:Key="SvgFillPrimary">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #cdd6f4; }</x:String>
+                    <x:String x:Key="SvgFillSecondary">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #bac2de; }</x:String>
+                    <x:String x:Key="SvgFillMuted">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #a6adc8; }</x:String>
+                    <x:String x:Key="SvgFillDisabled">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #6c7086; }</x:String>
+                    <x:String x:Key="SvgFillBlue">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #89b4fa; }</x:String>
+                    <x:String x:Key="SvgFillGreen">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #a6e3a1; }</x:String>
+                    <x:String x:Key="SvgFillYellow">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #f9e2af; }</x:String>
+                    <x:String x:Key="SvgFillRed">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #f38ba8; }</x:String>
+                    <x:String x:Key="SvgFillPurple">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #cba6f7; }</x:String>
+                    <x:String x:Key="SvgFillOrange">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #fab387; }</x:String>
+                    <x:String x:Key="SvgFillPink">path, circle, rect, ellipse, line, polyline, polygon, text, use { fill: #f5c2e7; }</x:String>
+
+                    <!-- TOGGLE SWITCH -->
+                    <SolidColorBrush x:Key="ToggleSwitchTrackOff" Color="#45475a" />       <!-- Surface 1 -->
+                    <SolidColorBrush x:Key="ToggleSwitchTrackBorderOff" Color="#585b70" /> <!-- Surface 2 -->
+                    <SolidColorBrush x:Key="ToggleSwitchKnobOn" Color="#1e1e2e" />         <!-- Base -->
+                    <SolidColorBrush x:Key="ToggleSwitchKnobOff" Color="#9399b2" />        <!-- Overlay 2 -->
+                    <SolidColorBrush x:Key="ToggleSwitchTrackOnHover" Color="#d9baff" />   <!-- Mauve brightened -->
+                    <SolidColorBrush x:Key="ToggleSwitchTrackOnPressed" Color="#ae87e8" /> <!-- Mauve pressed -->
+                    <SolidColorBrush x:Key="ToggleSwitchTrackOnDisabled" Color="#3d2a5e" /><!-- Mauve muted -->
+
+                    <!-- LOGOS -->
+                    <x:String x:Key="LogoIconPrimaryBgSvg">avares://Clario/Assets/Logo/logo-icon-primary-bg-dark.svg</x:String>
+                    <Bitmap x:Key="LogoIconPrimaryBg1x">avares://Clario/Assets/Logo/logo-icon-primary-bg-dark-128.png</Bitmap>
+                    <Bitmap x:Key="LogoIconPrimaryBg2x">avares://Clario/Assets/Logo/logo-icon-primary-bg-dark-256.png</Bitmap>
+                    <Bitmap x:Key="LogoIconPrimaryBg4x">avares://Clario/Assets/Logo/logo-icon-primary-bg-dark-512.png</Bitmap>
+                    <x:String x:Key="LogoIconNeutralTransparentSvg">avares://Clario/Assets/Logo/logo-icon-neutral-light-transparent.svg</x:String>
+                    <Bitmap x:Key="LogoIconNeutralTransparent1x">avares://Clario/Assets/Logo/logo-icon-neutral-light-transparent-128.png</Bitmap>
+                    <Bitmap x:Key="LogoIconNeutralTransparent2x">avares://Clario/Assets/Logo/logo-icon-neutral-light-transparent-256.png</Bitmap>
+                    <Bitmap x:Key="LogoIconNeutralTransparent4x">avares://Clario/Assets/Logo/logo-icon-neutral-light-transparent-512.png</Bitmap>
+                    <x:String x:Key="LogoCombinedPrimaryBgSvg">avares://Clario/Assets/Logo/logo-combined-primary-bg-dark.svg</x:String>
+                    <Bitmap x:Key="LogoCombinedPrimaryBg1x">avares://Clario/Assets/Logo/logo-combined-primary-bg-dark-192x64.png</Bitmap>
+                    <Bitmap x:Key="LogoCombinedPrimaryBg2x">avares://Clario/Assets/Logo/logo-combined-primary-bg-dark-384x128.png</Bitmap>
+                    <Bitmap x:Key="LogoCombinedPrimaryBg4x">avares://Clario/Assets/Logo/logo-combined-primary-bg-dark-768x192.png</Bitmap>
+                </ResourceDictionary>
+
             </ResourceDictionary.ThemeDictionaries>
+            <ControlTheme x:Key="TransparentFlyoutPresenter"
+                          TargetType="FlyoutPresenter">
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderBrush" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="CornerRadius" Value="0" />
+            </ControlTheme>
         </ResourceDictionary>
     </Styles.Resources>
-
-
+    
     <!-- WINDOW / SHELL -->
 
     <Style Selector="Window, FlyoutPresenter, ToolTip">
@@ -592,6 +949,30 @@
         <Setter Property="BorderBrush" Value="{DynamicResource TextPrimary}" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="FocusAdorner" Value="{x:Null}" />
+    </Style>
+
+    <!-- DANGER BUTTON -->
+
+    <Style Selector="Button.danger">
+        <Setter Property="Background" Value="{DynamicResource DangerButtonBackground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource DangerButtonBorder}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{DynamicResource RadiusControl}" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Foreground" Value="{DynamicResource AccentRed}" />
+    </Style>
+
+    <Style Selector="Button.danger:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource DangerButtonBackgroundBrush}" />
+        <Setter Property="Opacity" Value="0.85" />
+    </Style>
+
+    <Style Selector="Button.danger:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource DangerButtonBorderBrush}" />
+    </Style>
+
+    <Style Selector="Button.danger:disabled /template/ ContentPresenter">
+        <Setter Property="Opacity" Value="0.4" />
     </Style>
 
 
