@@ -7,6 +7,7 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Clario.MobileViews.TransactionsViewMobile"
              x:DataType="vm:TransactionsViewModel"
+             x:Name="transactionsRoot"
              Classes="mobile">
     <Grid RowDefinitions="Auto,Auto,*,Auto"
           Background="{DynamicResource BgBase}">
@@ -37,8 +38,7 @@
                                 BorderThickness="1"
                                 CornerRadius="16"
                                 Padding="20"
-                                Width="300"
-                                BoxShadow="0 8 32 0 #3C000000">
+                                Width="300">
                             <StackPanel Spacing="0">
 
                                 <TextBlock Text="FILTERS"
@@ -71,7 +71,7 @@
                                         CornerRadius="{DynamicResource RadiusControl}"
                                         Padding="3"
                                         Margin="0,0,0,14">
-                                    <Grid ColumnDefinitions="*,*,*">
+                                    <Grid ColumnDefinitions="*,*,*,*">
                                         <Button Grid.Column="0"
                                                 Classes="nav"
                                                 Classes.accented="{Binding FilterTypeAll}"
@@ -107,6 +107,18 @@
                                                 Command="{Binding SetTransactionTypeCommand}"
                                                 CommandParameter="expense">
                                             <TextBlock Text="Expense" FontSize="12" HorizontalAlignment="Center" />
+                                        </Button>
+                                        <Button Grid.Column="3"
+                                                Classes="nav"
+                                                Classes.accented="{Binding FilterTypeTransfer}"
+                                                HorizontalAlignment="Stretch"
+                                                HorizontalContentAlignment="Center"
+                                                Focusable="False"
+                                                CornerRadius="7"
+                                                Padding="0,6"
+                                                Command="{Binding SetTransactionTypeCommand}"
+                                                CommandParameter="transfer">
+                                            <TextBlock Text="Transfer" FontSize="12" HorizontalAlignment="Center" />
                                         </Button>
                                     </Grid>
                                 </Border>
@@ -282,69 +294,98 @@
                                                Classes="label" />
                                 </Border>
 
-                                <!-- Transaction row -->
-                                <Border Padding="16,12"
-                                        IsVisible="{Binding !GroupHeader}"
-                                        BorderBrush="{DynamicResource BorderSubtle}"
-                                        BorderThickness="0,1,0,0">
-                                    <Grid ColumnDefinitions="Auto,*,Auto">
+                                <!-- Transaction row (tappable to edit) -->
+                                <Button IsVisible="{Binding !GroupHeader}"
+                                        Padding="0"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Stretch"
+                                        Focusable="False"
+                                        Command="{Binding DataContext.EditTransactionCommand, ElementName=transactionsRoot}"
+                                        CommandParameter="{Binding .}">
+                                    <Border Padding="16,12"
+                                            BorderBrush="{DynamicResource BorderSubtle}"
+                                            BorderThickness="0,1,0,0">
+                                        <Grid ColumnDefinitions="Auto,*,Auto">
 
-                                        <!-- Icon -->
-                                        <Border Grid.Column="0"
-                                                CornerRadius="{DynamicResource RadiusIcon}"
-                                                Width="38" Height="38"
-                                                VerticalAlignment="Center"
-                                                Margin="0,0,12,0">
-                                            <Border.Background>
-                                                <SolidColorBrush
-                                                    Color="{Binding Category.Color, Converter={StaticResource HexToColorConverter}, ConverterParameter=color}"
-                                                    Opacity="0.15" />
-                                            </Border.Background>
-                                            <Svg Path="{Binding Category.Icon, Converter={StaticResource SvgPathFromName}}"
-                                                 Width="17" Height="17"
-                                                 Css="{Binding Category.Color, Converter={StaticResource HexToColorConverter}, ConverterParameter=css}" />
-                                        </Border>
+                                            <!-- Icon -->
+                                            <Panel Grid.Column="0"
+                                                   Width="38" Height="38"
+                                                   VerticalAlignment="Center"
+                                                   Margin="0,0,12,0">
+                                                <!-- Category icon -->
+                                                <Border CornerRadius="{DynamicResource RadiusIcon}"
+                                                        Width="38" Height="38"
+                                                        IsVisible="{Binding !IsTransfer}">
+                                                    <Border.Background>
+                                                        <SolidColorBrush
+                                                            Color="{Binding Category.Color, Converter={StaticResource HexToColorConverter}, ConverterParameter=color}"
+                                                            Opacity="0.15" />
+                                                    </Border.Background>
+                                                    <Svg Path="{Binding Category.Icon, Converter={StaticResource SvgPathFromName}}"
+                                                         Width="17" Height="17"
+                                                         Css="{Binding Category.Color, Converter={StaticResource HexToColorConverter}, ConverterParameter=css}" />
+                                                </Border>
+                                                <!-- Transfer icon -->
+                                                <Border CornerRadius="{DynamicResource RadiusIcon}"
+                                                        Width="38" Height="38"
+                                                        Background="{DynamicResource IconBgBlue}"
+                                                        IsVisible="{Binding IsTransfer}">
+                                                    <Svg Path="../Assets/Icons/arrow-right-left.svg"
+                                                         Width="17" Height="17"
+                                                         Css="{DynamicResource SvgBlue}" />
+                                                </Border>
+                                            </Panel>
 
-                                        <!-- Description + meta -->
-                                        <StackPanel Grid.Column="1"
-                                                    VerticalAlignment="Center"
-                                                    Spacing="2">
-                                            <TextBlock Text="{Binding Description}"
-                                                       FontSize="13"
-                                                       FontWeight="SemiBold"
-                                                       Foreground="{DynamicResource TextPrimary}" />
-                                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                                <TextBlock Text="{Binding Category.Name}"
+                                            <!-- Description + meta -->
+                                            <StackPanel Grid.Column="1"
+                                                        VerticalAlignment="Center"
+                                                        Spacing="2">
+                                                <TextBlock Text="{Binding Description}"
+                                                           FontSize="13"
+                                                           FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource TextPrimary}" />
+                                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                                    <!-- Normal category name -->
+                                                    <TextBlock Text="{Binding Category.Name}"
+                                                               FontSize="11"
+                                                               IsVisible="{Binding !IsTransfer}"
+                                                               Foreground="{DynamicResource TextMuted}" />
+                                                    <!-- Transfer label -->
+                                                    <TextBlock Text="Transfer"
+                                                               FontSize="11"
+                                                               IsVisible="{Binding IsTransfer}"
+                                                               Foreground="{DynamicResource AccentBlue}" />
+                                                    <TextBlock Text="·"
+                                                               FontSize="11"
+                                                               Foreground="{DynamicResource TextDisabled}" />
+                                                    <TextBlock Text="{Binding Date, Converter={StaticResource DateFormatConverter}}"
+                                                               FontSize="11"
+                                                               Foreground="{DynamicResource TextMuted}" />
+                                                </StackPanel>
+                                            </StackPanel>
+
+                                            <!-- Dual-currency amount display -->
+                                            <StackPanel Grid.Column="2"
+                                                        HorizontalAlignment="Right"
+                                                        VerticalAlignment="Center"
+                                                        Spacing="1">
+                                                <TextBlock Text="{Binding PrimaryAmountFormatted}"
+                                                           FontSize="14"
+                                                           FontWeight="SemiBold"
+                                                           HorizontalAlignment="Right"
+                                                           Foreground="{Binding Type, Converter={StaticResource AmountColorConverter}}" />
+                                                <TextBlock Text="{Binding OriginalAmountFormatted}"
                                                            FontSize="11"
-                                                           Foreground="{DynamicResource TextMuted}" />
-                                                <TextBlock Text="·"
-                                                           FontSize="11"
-                                                           Foreground="{DynamicResource TextDisabled}" />
-                                                <TextBlock Text="{Binding Date, Converter={StaticResource DateFormatConverter}}"
-                                                           FontSize="11"
+                                                           HorizontalAlignment="Right"
+                                                           IsVisible="{Binding IsMultiCurrency}"
                                                            Foreground="{DynamicResource TextMuted}" />
                                             </StackPanel>
-                                        </StackPanel>
 
-                                        <!-- Dual-currency amount display -->
-                                        <StackPanel Grid.Column="2"
-                                                    HorizontalAlignment="Right"
-                                                    VerticalAlignment="Center"
-                                                    Spacing="1">
-                                            <TextBlock Text="{Binding PrimaryAmountFormatted}"
-                                                       FontSize="14"
-                                                       FontWeight="SemiBold"
-                                                       HorizontalAlignment="Right"
-                                                       Foreground="{Binding Type, Converter={StaticResource AmountColorConverter}}" />
-                                            <TextBlock Text="{Binding OriginalAmountFormatted}"
-                                                       FontSize="11"
-                                                       HorizontalAlignment="Right"
-                                                       IsVisible="{Binding IsMultiCurrency}"
-                                                       Foreground="{DynamicResource TextMuted}" />
-                                        </StackPanel>
-
-                                    </Grid>
-                                </Border>
+                                        </Grid>
+                                    </Border>
+                                </Button>
 
                             </Panel>
                         </DataTemplate>

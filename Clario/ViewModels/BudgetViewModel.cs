@@ -28,8 +28,8 @@ public partial class BudgetViewModel : ViewModelBase
     [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(NextPeriodCommand), nameof(PreviousPeriodCommand))]
     private DateTime _currentPeriod = DateTime.Now.Date;
 
-    public bool CanGoToNextPeriod => CurrentPeriod.Month < DateTime.Now.Month;
-    public bool CanGoToPreviousPeriod => AppData.Transactions.Any() && CurrentPeriod.Month > AppData.Transactions.Min(x => x.Date.Month);
+    public bool CanGoToNextPeriod => CurrentPeriod.Year < DateTime.Now.Year || (CurrentPeriod.Year == DateTime.Now.Year && CurrentPeriod.Month < DateTime.Now.Month);
+    public bool CanGoToPreviousPeriod => AppData.Transactions.Any() && new DateTime(CurrentPeriod.Year, CurrentPeriod.Month, 1) > new DateTime(AppData.Transactions.Min(x => x.Date).Year, AppData.Transactions.Min(x => x.Date).Month, 1);
     public string CurrentPeriodFormatted => CurrentPeriod.ToString("MMMM yyyy");
 
     [ObservableProperty] private ISeries[] _spendingBreakdownChartSeries = [];
@@ -40,7 +40,7 @@ public partial class BudgetViewModel : ViewModelBase
     public string SpentPercentageFormatted => (TotalSpent / TotalBudgeted).ToString("P0") + " of total budget.";
 
     public decimal TotalLeft => Math.Clamp(Math.Round(TotalBudgeted - TotalSpent), 0, decimal.MaxValue);
-    private string PrimarySymbol => CurrencyService.GetSymbol(AppData.PrimaryAccount?.Currency ?? AppData.Profile?.Currency ?? "USD");
+    public string PrimarySymbol => CurrencyService.GetSymbol(AppData.PrimaryAccount?.Currency ?? AppData.Profile?.Currency ?? "USD");
     public string TotalLeftFormatted => $"{PrimarySymbol}{TotalLeft:N0} left";
 
     public bool HasSavingsGoal => AppData.Profile?.SavingsGoal is > 0;

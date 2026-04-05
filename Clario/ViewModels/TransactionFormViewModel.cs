@@ -21,12 +21,13 @@ public partial class TransactionFormViewModel : ViewModelBase
     [ObservableProperty] [NotifyPropertyChangedFor(nameof(FormTitle), nameof(FormSubtitle), nameof(SaveButtonLabel))]
     private bool _isEditMode = false;
 
-    public string FormTitle => IsEditMode ? "Edit Transaction" : "New Transaction";
+    public string FormTitle => IsEditMode ? (IsTransfer ? "Edit Transfer" : "Edit Transaction") : (IsTransfer ? "New Transfer" : "New Transaction");
     public string FormSubtitle => IsEditMode ? "Update the details below" : "Fill in the details below";
-    public string SaveButtonLabel => IsEditMode ? "Save Changes" : "Save Transaction";
+    public string SaveButtonLabel => IsEditMode ? "Save Changes" : (IsTransfer ? "Save Transfer" : "Save Transaction");
 
     // ── Fields ──────────────────────────────────────────────
-    [ObservableProperty] [NotifyPropertyChangedFor(nameof(IsExpense), nameof(IsIncome), nameof(IsValid))]
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsExpense), nameof(IsIncome), nameof(IsTransfer), nameof(IsValid), nameof(FormTitle), nameof(SaveButtonLabel))]
     private string _type = "expense";
 
     [ObservableProperty] [NotifyPropertyChangedFor(nameof(IsValid))]
@@ -38,6 +39,7 @@ public partial class TransactionFormViewModel : ViewModelBase
     [ObservableProperty] private string? _note;
     [ObservableProperty] private List<DateTime> _dates = [DateTime.Now];
     [ObservableProperty] private DateTime? _selectedDate;
+
     [ObservableProperty] [NotifyPropertyChangedFor(nameof(CurrencySymbol))]
     private string _currency = "USD";
 
@@ -56,6 +58,9 @@ public partial class TransactionFormViewModel : ViewModelBase
     [ObservableProperty] [NotifyPropertyChangedFor(nameof(IsValid))]
     private Account? _selectedAccount;
 
+    [ObservableProperty] [NotifyPropertyChangedFor(nameof(IsValid))]
+    private Account? _selectedToAccount;
+
     [ObservableProperty] private ObservableCollection<Category> _categories = new();
     [ObservableProperty] private ObservableCollection<Account> _accounts = new();
 
@@ -66,24 +71,28 @@ public partial class TransactionFormViewModel : ViewModelBase
     public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
     public bool IsExpense => Type == "expense";
     public bool IsIncome => Type == "income";
+    public bool IsTransfer => Type == "transfer";
 
     public bool IsValid =>
         decimal.TryParse(Amount, out var amt) && amt > 0 &&
-        !string.IsNullOrWhiteSpace(Description) &&
-        SelectedCategory is not null &&
-        SelectedAccount is not null &&
-        Dates is not null;
+        Dates is not null &&
+        (IsTransfer
+            ? SelectedAccount is not null && SelectedToAccount is not null && SelectedAccount.Id != SelectedToAccount.Id
+            : !string.IsNullOrWhiteSpace(Description) && SelectedCategory is not null && SelectedAccount is not null);
 
     // ── Callbacks ───────────────────────────────────────────
     public Action? OnSaved;
     public Action? OnCancelled;
     public Action? OnDeleted;
+    public Action? OnOpenCategoryForm;
+    public Action<Category>? OnOpenEditCategoryForm;
 
     [ObservableProperty] private bool _showDeleteConfirm = false;
 
     // ── Edit mode: original transaction ─────────────────────
     private Transaction? _editingTransaction;
     private Guid? _editingId;
+    private Guid? _transferPairId;
     private decimal _editingOriginalAmount;
     private Guid? _editingOriginalCategoryId;
 
@@ -101,9 +110,10 @@ public partial class TransactionFormViewModel : ViewModelBase
     public bool HasBudgetApproachingWarning => HasBudgetWarning && !BudgetWarningIsOverBudget;
 
     // ── Commands ────────────────────────────────────────────
-    
+
     partial void OnSelectedCategoryChanged(Category? value)
     {
+        if (value is null) return;
         if (value.Type != Type) Type = value.Type;
         CheckBudgetImpact();
     }
@@ -120,6 +130,12 @@ public partial class TransactionFormViewModel : ViewModelBase
 
     partial void OnTypeChanged(string value)
     {
+        if (value == "transfer")
+        {
+            CheckBudgetImpact();
+            return;
+        }
+
         if (value == SelectedCategory?.Type) return;
         SelectedCategory = _categories.FirstOrDefault(c => c.Type == value);
         CheckBudgetImpact();
@@ -127,6 +143,12 @@ public partial class TransactionFormViewModel : ViewModelBase
 
     partial void OnSelectedAccountChanged(Account? value)
     {
+        if (IsTransfer)
+        {
+            Currency = value?.Currency ?? "USD";
+            return;
+        }
+
         var primaryCurrency = AppData.PrimaryAccount?.Currency ?? AppData.Profile?.Currency ?? "USD";
         var accountCurrency = value?.Currency ?? primaryCurrency;
         Currency = accountCurrency;
@@ -136,6 +158,7 @@ public partial class TransactionFormViewModel : ViewModelBase
             IsFetchingRate = true;
             ExchangeRate = "";
         }
+
         ShowExchangeRateField = needsRate;
         OnPropertyChanged(nameof(ExchangeRateLabel));
         if (needsRate)
@@ -164,6 +187,7 @@ public partial class TransactionFormViewModel : ViewModelBase
         BudgetWarningMessage = null;
         BudgetWarningIsOverBudget = false;
 
+        if (IsTransfer) return;
         if (Type != "expense") return;
         if (SelectedCategory is null) return;
         Debug.WriteLine(SelectedCategory.Name);
@@ -215,6 +239,16 @@ public partial class TransactionFormViewModel : ViewModelBase
     }
 
     [RelayCommand]
+    private void OpenCategoryForm() => OnOpenCategoryForm?.Invoke();
+
+    [RelayCommand]
+    private void OpenEditCategoryForm()
+    {
+        if (SelectedCategory is not null)
+            OnOpenEditCategoryForm?.Invoke(SelectedCategory);
+    }
+
+    [RelayCommand]
     private void SetType(string type)
     {
         Type = type;
@@ -234,6 +268,37 @@ public partial class TransactionFormViewModel : ViewModelBase
         if (!decimal.TryParse(Amount, out var amt) || amt <= 0)
         {
             ErrorMessage = "Please enter a valid amount.";
+            return;
+        }
+
+        if (IsTransfer)
+        {
+            if (SelectedAccount is null || SelectedToAccount is null)
+            {
+                ErrorMessage = "Please select both accounts.";
+                return;
+            }
+
+            if (SelectedAccount.Id == SelectedToAccount.Id)
+            {
+                ErrorMessage = "From and To accounts must be different.";
+                return;
+            }
+
+            try
+            {
+                if (IsEditMode && _transferPairId.HasValue)
+                    await DataRepo.General.UpdateTransfer(_transferPairId.Value, SelectedAccount.Id, SelectedToAccount.Id, amt, Dates.FirstOrDefault(), Note);
+                else
+                    await DataRepo.General.InsertTransfer(SelectedAccount.Id, SelectedToAccount.Id, amt, Dates.FirstOrDefault(), Note);
+                OnSaved?.Invoke();
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = "Something went wrong. Please try again.";
+                DebugLogger.Log(ex);
+            }
+
             return;
         }
 
@@ -314,11 +379,14 @@ public partial class TransactionFormViewModel : ViewModelBase
     [RelayCommand]
     private async Task ConfirmDelete()
     {
-        if (!IsEditMode || !_editingId.HasValue) return;
+        if (!IsEditMode) return;
 
         try
         {
-            await DataRepo.General.DeleteTransaction(_editingId.Value);
+            if (IsTransfer && _transferPairId.HasValue)
+                await DataRepo.General.DeleteTransfer(_transferPairId.Value);
+            else if (_editingId.HasValue)
+                await DataRepo.General.DeleteTransaction(_editingId.Value);
             OnDeleted?.Invoke();
         }
         catch (Exception ex)
@@ -354,11 +422,12 @@ public partial class TransactionFormViewModel : ViewModelBase
         ShowDeleteConfirm = false;
         IsEditMode = false;
         _editingId = null;
+        _transferPairId = null;
         _editingOriginalAmount = 0;
         _editingOriginalCategoryId = null;
         Categories = AppData.Categories;
         var sortedAccounts = new ObservableCollection<Account>(
-            AppData.Accounts.OrderByDescending(a => a.IsPrimary).ThenBy(a => a.CreatedAt));
+            AppData.Accounts.Where(a => !a.IsArchived).OrderByDescending(a => a.IsPrimary).ThenBy(a => a.CreatedAt));
         Accounts = sortedAccounts;
         Type = "expense";
         Amount = "";
@@ -368,6 +437,7 @@ public partial class TransactionFormViewModel : ViewModelBase
         ErrorMessage = null;
         SelectedCategory = AppData.Categories.Count > 0 ? AppData.Categories[0] : null;
         SelectedAccount = sortedAccounts.Count > 0 ? sortedAccounts[0] : null;
+        SelectedToAccount = sortedAccounts.Count > 1 ? sortedAccounts[1] : null;
         ShowExchangeRateField = false;
         ExchangeRate = "";
         IsFetchingRate = false;
@@ -377,8 +447,7 @@ public partial class TransactionFormViewModel : ViewModelBase
     }
 
     /// <summary>Call this to open the form for editing an existing transaction.</summary>
-    public void SetupForEdit(
-        Transaction transaction)
+    public void SetupForEdit(Transaction transaction)
     {
         ShowDeleteConfirm = false;
         IsEditMode = true;
@@ -386,30 +455,55 @@ public partial class TransactionFormViewModel : ViewModelBase
         _editingOriginalAmount = transaction.Amount;
         _editingOriginalCategoryId = transaction.CategoryId;
         Categories = AppData.Categories;
-        Accounts = new ObservableCollection<Account>(
-            AppData.Accounts.OrderByDescending(a => a.IsPrimary).ThenBy(a => a.CreatedAt));
-        Type = transaction.Type;
+        var sortedAccounts = new ObservableCollection<Account>(
+            AppData.Accounts.Where(a => !a.IsArchived).OrderByDescending(a => a.IsPrimary).ThenBy(a => a.CreatedAt));
+        Accounts = sortedAccounts;
         Amount = transaction.Amount.ToString("0.00");
-        Description = transaction.Description;
         Note = transaction.Note;
         Dates = [transaction.Date];
         ErrorMessage = null;
-        SelectedCategory = AppData.Categories.FirstOrDefault(c => c.Id == transaction.CategoryId)
-                           ?? (AppData.Categories.Count > 0 ? AppData.Categories[0] : null);
-        SelectedAccount = AppData.Accounts.FirstOrDefault(a => a.Id == transaction.AccountId)
-                          ?? (AppData.Accounts.Count > 0 ? AppData.Accounts[0] : null);
-        if (transaction.ExchangeRate.HasValue)
+        ResultTransaction = transaction;
+
+        if (transaction.IsTransfer && transaction.TransferPairId.HasValue)
         {
-            ShowExchangeRateField = true;
-            ExchangeRate = transaction.ExchangeRate.Value.ToString("0.##########");
+            _transferPairId = transaction.TransferPairId;
+            Type = "transfer";
+            // Find the counterpart to determine from/to
+            var counterpart = AppData.Transactions.FirstOrDefault(t => t.TransferPairId == transaction.TransferPairId && t.Id != transaction.Id);
+            var outTx = transaction.IsTransferOut ? transaction : counterpart;
+            var inTx = transaction.IsTransferOut ? counterpart : transaction;
+            SelectedAccount = AppData.Accounts.FirstOrDefault(a => a.Id == outTx?.AccountId) ?? sortedAccounts.FirstOrDefault();
+            SelectedToAccount = AppData.Accounts.FirstOrDefault(a => a.Id == inTx?.AccountId) ?? sortedAccounts.Skip(1).FirstOrDefault();
+            Description = "Transfer";
+            SelectedCategory = null;
+            ShowExchangeRateField = false;
+            ExchangeRate = "";
+            IsFetchingRate = false;
         }
         else
         {
-            ShowExchangeRateField = false;
-            ExchangeRate = "";
+            _transferPairId = null;
+            Type = transaction.Type;
+            Description = transaction.Description;
+            SelectedCategory = AppData.Categories.FirstOrDefault(c => c.Id == transaction.CategoryId)
+                               ?? (AppData.Categories.Count > 0 ? AppData.Categories[0] : null);
+            SelectedAccount = AppData.Accounts.FirstOrDefault(a => a.Id == transaction.AccountId)
+                              ?? (sortedAccounts.Count > 0 ? sortedAccounts[0] : null);
+            SelectedToAccount = sortedAccounts.Count > 1 ? sortedAccounts[1] : null;
+            if (transaction.ExchangeRate.HasValue)
+            {
+                ShowExchangeRateField = true;
+                ExchangeRate = transaction.ExchangeRate.Value.ToString("0.##########");
+            }
+            else
+            {
+                ShowExchangeRateField = false;
+                ExchangeRate = "";
+            }
+
+            IsFetchingRate = false;
         }
-        IsFetchingRate = false;
-        ResultTransaction = transaction;
+
         CheckBudgetImpact();
     }
 }

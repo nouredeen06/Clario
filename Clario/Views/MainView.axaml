@@ -86,7 +86,9 @@
                         </StackPanel>
                     </Button>
                     <TextBlock Classes="label" Text="REPORTS" Margin="12,20,0,10" />
-                    <Button Classes="nav" HorizontalAlignment="Stretch">
+                    <Button Classes="nav" HorizontalAlignment="Stretch"
+                            Classes.active="{Binding isOnAnalytics}"
+                            Command="{Binding GoToAnalyticsCommand}">
                         <StackPanel Orientation="Horizontal" Spacing="12">
                             <Svg Path="../Assets/Icons/chart-no-axes-combined.svg" Height="14" Width="14" />
                             <TextBlock Text="Analytics" FontSize="{StaticResource FontSizeBody}" VerticalAlignment="Center" />
@@ -117,6 +119,9 @@
             <views:SetSavingsGoalDialogView
                 DataContext="{Binding SetSavingsGoalDialogViewModel}"
                 IsVisible="{Binding DataContext.IsSavingsGoalDialogVisible, ElementName=MainControl}" />
+            <views:CategoryFormView
+                DataContext="{Binding CategoryFormViewModel}"
+                IsVisible="{Binding DataContext.IsCategoryFormVisible, ElementName=MainControl}" />
 
         </Grid>
     </Grid>

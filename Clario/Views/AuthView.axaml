@@ -191,19 +191,18 @@
                     </Button>
 
                     <!-- Error message -->
-                    <!-- REPLACE: IsVisible="{Binding HasError}" Text="{Binding ErrorMessage}" -->
                     <Border Background="{DynamicResource BadgeBgRed}"
                             BorderBrush="{DynamicResource AccentRed}"
                             BorderThickness="1"
                             CornerRadius="10"
                             Padding="12,10"
                             Margin="0,0,0,16"
-                            IsVisible="False">
+                            IsVisible="{Binding HasError}">
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <Svg Path="../Assets/Icons/circle-alert.svg"
                                  Width="14" Height="14"
                                  Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #FF5E5E; }" />
-                            <TextBlock Text="Invalid email or password."
+                            <TextBlock Text="{Binding ErrorMessage}"
                                        FontSize="12"
                                        Foreground="{DynamicResource AccentRed}"
                                        VerticalAlignment="Center" />
@@ -392,19 +391,18 @@
                     </Border>
 
                     <!-- Error message -->
-                    <!-- REPLACE: IsVisible="{Binding HasError}" Text="{Binding ErrorMessage}" -->
                     <Border Background="{DynamicResource BadgeBgRed}"
                             BorderBrush="{DynamicResource AccentRed}"
                             BorderThickness="1"
                             CornerRadius="10"
                             Padding="12,10"
                             Margin="0,0,0,16"
-                            IsVisible="False">
+                            IsVisible="{Binding HasError}">
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <Svg Path="../Assets/Icons/circle-alert.svg"
                                  Width="14" Height="14"
                                  Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #FF5E5E; }" />
-                            <TextBlock Text="Something went wrong. Please try again."
+                            <TextBlock Text="{Binding ErrorMessage}"
                                        FontSize="12"
                                        Foreground="{DynamicResource AccentRed}"
                                        VerticalAlignment="Center" />

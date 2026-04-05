@@ -129,12 +129,176 @@ public partial class GeneralDataRepo : ObservableObject
         }
     }
 
+    public async Task InsertTransfer(Guid fromAccountId, Guid toAccountId, decimal amount, DateTime date, string? note)
+    {
+        try
+        {
+            var userId = Guid.Parse(SupabaseService.Client.Auth.CurrentUser!.Id!);
+            var pairId = Guid.NewGuid();
+
+            var fromCurrency = Accounts.FirstOrDefault(a => a.Id == fromAccountId)?.Currency ?? "";
+            var toCurrency = Accounts.FirstOrDefault(a => a.Id == toAccountId)?.Currency ?? "";
+            var toAmount = ConvertAmount(amount, fromCurrency, toCurrency);
+
+            var outTx = new Transaction
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                AccountId = fromAccountId,
+                Type = "transfer_out",
+                Amount = amount,
+                Description = "Transfer",
+                Note = note?.Trim(),
+                Date = date,
+                TransferPairId = pairId,
+            };
+            var inTx = new Transaction
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                AccountId = toAccountId,
+                Type = "transfer_in",
+                Amount = toAmount,
+                Description = "Transfer",
+                Note = note?.Trim(),
+                Date = date,
+                TransferPairId = pairId,
+            };
+
+            var outResult = await SupabaseService.Client.From<Transaction>().Insert(outTx);
+            var inResult = await SupabaseService.Client.From<Transaction>().Insert(inTx);
+
+            if (outResult.Models.Count >= 1)
+            {
+                var enriched = LinkTransactionCategories(outResult.Models[0]);
+                LinkTransactionAccounts(enriched);
+                Transactions.Add(enriched);
+            }
+            if (inResult.Models.Count >= 1)
+            {
+                var enriched = LinkTransactionCategories(inResult.Models[0]);
+                LinkTransactionAccounts(enriched);
+                Transactions.Add(enriched);
+            }
+            // Re-enrich both so AccountDisplayText can reference the counterpart (from/to)
+            LinkTransactionAccounts();
+        }
+        catch (Exception e)
+        {
+            DebugLogger.Log(e);
+            throw;
+        }
+    }
+
+    public async Task UpdateTransfer(Guid transferPairId, Guid fromAccountId, Guid toAccountId, decimal amount, DateTime date, string? note)
+    {
+        try
+        {
+            var pair = Transactions.Where(t => t.TransferPairId == transferPairId).ToList();
+            var fromCurrency = Accounts.FirstOrDefault(a => a.Id == fromAccountId)?.Currency ?? "";
+            var toCurrency = Accounts.FirstOrDefault(a => a.Id == toAccountId)?.Currency ?? "";
+            var toAmount = ConvertAmount(amount, fromCurrency, toCurrency);
+
+            foreach (var tx in pair)
+            {
+                tx.AccountId = tx.Type == "transfer_out" ? fromAccountId : toAccountId;
+                tx.Amount = tx.Type == "transfer_in" ? toAmount : amount;
+                tx.Date = date;
+                tx.Note = note?.Trim();
+                var result = await SupabaseService.Client.From<Transaction>().Update(tx);
+                if (result.Model is null) continue;
+                var index = Transactions.IndexOf(tx);
+                if (index != -1)
+                {
+                    var enriched = LinkTransactionCategories(result.Model);
+                    LinkTransactionAccounts(enriched);
+                    Transactions[index] = enriched;
+                }
+            }
+            LinkTransactionAccounts();
+        }
+        catch (Exception e)
+        {
+            DebugLogger.Log(e);
+            throw;
+        }
+    }
+
+    public async Task DeleteTransfer(Guid transferPairId)
+    {
+        try
+        {
+            await SupabaseService.Client.From<Transaction>()
+                .Where(x => x.TransferPairId == transferPairId)
+                .Delete();
+            var pair = Transactions.Where(t => t.TransferPairId == transferPairId).ToList();
+            foreach (var tx in pair)
+                Transactions.Remove(tx);
+        }
+        catch (Exception e)
+        {
+            DebugLogger.Log(e);
+            throw;
+        }
+    }
+
     public async Task<List<Category>> FetchCategories(bool forceRefresh = false)
     {
         if (Categories.Count != 0 && !forceRefresh) return Categories.ToList();
+
         var categories = await SupabaseService.Client.From<Category>().Get();
         Categories = new ObservableCollection<Category>(categories.Models);
         return categories.Models;
+    }
+
+    public async Task<Category?> InsertCategory(Category category)
+    {
+        try
+        {
+            var result = await SupabaseService.Client.From<Category>()
+                .Insert(category, new QueryOptions() { Returning = QueryOptions.ReturnType.Representation });
+            if (result.Model is null) return null;
+            Categories.Add(result.Model);
+            return result.Model;
+        }
+        catch (Exception e)
+        {
+            DebugLogger.Log(e);
+            return null;
+        }
+    }
+
+    public async Task UpdateCategory(Category category)
+    {
+        try
+        {
+            var result = await SupabaseService.Client.From<Category>().Update(category);
+            if (result.Model is null) return;
+            var item = Categories.FirstOrDefault(x => x.Id == result.Model.Id);
+            if (item is null) return;
+            var index = Categories.IndexOf(item);
+            if (index != -1) Categories[index] = result.Model;
+        }
+        catch (Exception e)
+        {
+            DebugLogger.Log(e);
+        }
+    }
+
+    public async Task DeleteCategory(Guid id)
+    {
+        try
+        {
+            await SupabaseService.Client.From<Category>().Where(x => x.Id == id).Delete();
+            var item = Categories.FirstOrDefault(x => x.Id == id);
+            if (item is null) return;
+            Categories.Remove(item);
+        }
+        catch (Exception e)
+        {
+            DebugLogger.Log(e);
+            throw;
+        }
     }
 
     public async Task<List<Account>> FetchAccounts(bool forceRefresh = false)
@@ -294,7 +458,7 @@ public partial class GeneralDataRepo : ObservableObject
 
         var balance = accountResult.OpeningBalance +
                       transactionsResult.Sum(t =>
-                          t.Type == "income" ? t.Amount : -t.Amount);
+                          t.Type is "income" or "transfer_in" ? t.Amount : -t.Amount);
 
         accountResult.CurrentBalance = balance;
         await SupabaseService.Client
@@ -399,6 +563,20 @@ public partial class GeneralDataRepo : ObservableObject
         WeakReferenceMessenger.Default.Send(new RatesRefreshed());
     }
 
+    /// Converts <paramref name="amount"/> from <paramref name="fromCurrency"/> to
+    /// <paramref name="toCurrency"/> using the current live rates.
+    /// Falls back to <paramref name="amount"/> unchanged when currencies match or rates are missing.
+    private static decimal ConvertAmount(decimal amount, string fromCurrency, string toCurrency)
+    {
+        if (string.IsNullOrEmpty(fromCurrency) || string.IsNullOrEmpty(toCurrency)) return amount;
+        if (fromCurrency.Equals(toCurrency, StringComparison.OrdinalIgnoreCase)) return amount;
+        if (!CurrencyService.LiveRates.TryGetValue(fromCurrency, out var fromRate)) return amount;
+        if (!CurrencyService.LiveRates.TryGetValue(toCurrency, out var toRate) || toRate == 0) return amount;
+        // fromRate = 1 fromCurrency in primary; toRate = 1 toCurrency in primary
+        // amount * fromRate / toRate = amount converted to toCurrency
+        return Math.Round(amount * fromRate / toRate, 6);
+    }
+
     public void LinkTransactionCategories()
     {
         foreach (var transaction in Transactions)
@@ -441,6 +619,19 @@ public partial class GeneralDataRepo : ObservableObject
         tx.OriginalAmountFormatted = tx.IsMultiCurrency
             ? $"{CurrencyService.GetSymbol(accountCurrency)}{tx.Amount:N2}"
             : string.Empty;
+
+        if (tx.IsTransfer && tx.TransferPairId.HasValue)
+        {
+            var counterpart = Transactions.FirstOrDefault(t => t.TransferPairId == tx.TransferPairId && t.Id != tx.Id);
+            var counterpartAccount = counterpart is not null ? Accounts.FirstOrDefault(a => a.Id == counterpart.AccountId) : null;
+            var fromName = tx.IsTransferOut ? (account?.Name ?? "?") : (counterpartAccount?.Name ?? "?");
+            var toName = tx.IsTransferOut ? (counterpartAccount?.Name ?? "?") : (account?.Name ?? "?");
+            tx.AccountDisplayText = $"{fromName} → {toName}";
+        }
+        else
+        {
+            tx.AccountDisplayText = account?.Name ?? "";
+        }
     }
 
     public async Task UpdateSavingsGoal(decimal? goal)

@@ -1,0 +1,276 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Clario.ViewModels"
+             xmlns:model="clr-namespace:Clario.Models"
+             xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="1180" d:DesignHeight="800"
+             MinWidth="780" MinHeight="600"
+             x:DataType="vm:AnalyticsViewModel"
+             x:Class="Clario.Views.AnalyticsView">
+    <Design.DataContext>
+        <vm:AnalyticsViewModel />
+    </Design.DataContext>
+
+    <Grid RowDefinitions="Auto,*" Margin="32,28,32,0">
+
+        <!-- ── Top Bar ── -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,24">
+            <StackPanel Grid.Column="0">
+                <TextBlock Classes="muted" Text="Insights &amp; Trends" />
+                <TextBlock Text="Analytics" FontSize="26" FontWeight="Bold"
+                           Foreground="{DynamicResource TextPrimary}" Margin="0,2,0,0" />
+            </StackPanel>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                <!-- Period selector -->
+                <ComboBox ItemsSource="{Binding PeriodOptions}"
+                          SelectedItem="{Binding SelectedPeriod}"
+                          Background="{DynamicResource BgSurface}"
+                          Foreground="{DynamicResource TextSecondary}"
+                          BorderBrush="{DynamicResource BorderSubtle}"
+                          CornerRadius="{DynamicResource RadiusControl}"
+                          Padding="10,6" />
+                <!-- Export PDF button -->
+                <Button Classes="base" Padding="14,9"
+                        Command="{Binding ExportPdfCommand}"
+                        IsEnabled="{Binding !IsExporting}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Svg Path="../Assets/Icons/receipt-text.svg" Width="14" Height="14"
+                             Css="{DynamicResource SvgSecondary}" />
+                        <TextBlock Text="Export PDF"
+                                   VerticalAlignment="Center" FontSize="13" />
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <!-- ── Scrollable Content ── -->
+        <ScrollViewer Grid.Row="1" Name="mainScrollviewer"
+                      HorizontalScrollBarVisibility="Disabled"
+                      VerticalScrollBarVisibility="Auto">
+            <StackPanel Spacing="20" Margin="0,0,0,32">
+
+                <!-- Export status message -->
+                <Border IsVisible="{Binding ExportStatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                        Background="{DynamicResource BadgeBgGreen}"
+                        BorderBrush="{DynamicResource AccentGreen}"
+                        BorderThickness="1" CornerRadius="10" Padding="12,8">
+                    <TextBlock Text="{Binding ExportStatusMessage}"
+                               Foreground="{DynamicResource AccentGreen}" FontSize="12" />
+                </Border>
+
+                <!-- ── Section 1: KPI Cards ── -->
+                <Grid ColumnDefinitions="*,*,*,*">
+                    <Grid.Styles>
+                        <Style Selector="Grid > Border">
+                            <Setter Property="Margin" Value="0,0,16,0" />
+                        </Style>
+                    </Grid.Styles>
+
+                    <!-- Total Income -->
+                    <Border Grid.Column="0" Classes="card">
+                        <StackPanel Spacing="10">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Border Background="{DynamicResource IconBgGreen}" CornerRadius="{DynamicResource RadiusIcon}" Padding="7">
+                                    <Svg Path="../Assets/Icons/trending-up.svg" Height="14" Width="14" Css="{DynamicResource SvgGreen}" />
+                                </Border>
+                                <TextBlock Classes="label" Text="TOTAL INCOME" VerticalAlignment="Center" />
+                            </StackPanel>
+                            <TextBlock Text="{Binding TotalIncomeFormatted}" FontSize="20" FontWeight="Bold"
+                                       Foreground="{DynamicResource AccentGreen}" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Total Expenses -->
+                    <Border Grid.Column="1" Classes="card">
+                        <StackPanel Spacing="10">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Border Background="{DynamicResource IconBgRed}" CornerRadius="{DynamicResource RadiusIcon}" Padding="7">
+                                    <Svg Path="../Assets/Icons/trending-down.svg" Height="14" Width="14" Css="{DynamicResource SvgRed}" />
+                                </Border>
+                                <TextBlock Classes="label" Text="TOTAL EXPENSES" VerticalAlignment="Center" />
+                            </StackPanel>
+                            <TextBlock Text="{Binding TotalExpensesFormatted}" FontSize="20" FontWeight="Bold"
+                                       Foreground="{DynamicResource AccentRed}" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Net Savings -->
+                    <Border Grid.Column="2" Classes="card">
+                        <StackPanel Spacing="10">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Border Background="{DynamicResource IconBgBlue}" CornerRadius="{DynamicResource RadiusIcon}" Padding="7">
+                                    <Svg Path="../Assets/Icons/piggy-bank.svg" Height="14" Width="14" Css="{DynamicResource SvgBlue}" />
+                                </Border>
+                                <TextBlock Classes="label" Text="NET SAVINGS" VerticalAlignment="Center" />
+                            </StackPanel>
+                            <TextBlock Text="{Binding NetSavingsFormatted}" FontSize="20" FontWeight="Bold"
+                                       Foreground="{Binding NetSavingsPositive, Converter={StaticResource BoolToColorConverter}, ConverterParameter='#2ECC8A|#FF5E5E'}" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Savings Rate -->
+                    <Border Grid.Column="3" Classes="card" Margin="0">
+                        <StackPanel Spacing="10">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Border Background="{DynamicResource IconBgPurple}" CornerRadius="{DynamicResource RadiusIcon}" Padding="7">
+                                    <Svg Path="../Assets/Icons/percent.svg" Height="14" Width="14" Css="{DynamicResource SvgPurple}" />
+                                </Border>
+                                <TextBlock Classes="label" Text="SAVINGS RATE" VerticalAlignment="Center" />
+                            </StackPanel>
+                            <TextBlock Text="{Binding SavingsRateFormatted}" FontSize="20" FontWeight="Bold"
+                                       Foreground="{DynamicResource AccentPurple}" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- ── Section 2: Cash Flow Trend ── -->
+                <Border Classes="card">
+                    <StackPanel Spacing="16">
+                        <StackPanel>
+                            <TextBlock Text="Cash Flow Trend" FontSize="{StaticResource FontSizeSectionHeading}"
+                                       FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" />
+                            <TextBlock Classes="muted" Text="Monthly income vs expenses" />
+                        </StackPanel>
+                        <lvc:CartesianChart Series="{Binding CashFlowSeries}"
+                                            XAxes="{Binding CashFlowXAxes}"
+                                            YAxes="{Binding CashFlowYAxes}"
+                                            Height="240"
+                                            Background="{DynamicResource BgSurface}"
+                                            LegendPosition="Bottom"
+                                            TooltipPosition="Top"
+                                            ZoomMode="None"
+                                            AnimationsSpeed="00:00:00.2" />
+                    </StackPanel>
+                </Border>
+
+                <!-- ── Section 3: Net Worth ── -->
+                <Border Classes="card">
+                    <StackPanel Spacing="16">
+                        <StackPanel>
+                            <TextBlock Text="Net Worth Progression" FontSize="{StaticResource FontSizeSectionHeading}"
+                                       FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" />
+                            <TextBlock Classes="muted" Text="Cumulative balance across all accounts" />
+                        </StackPanel>
+                        <lvc:CartesianChart Series="{Binding NetWorthSeries}"
+                                            XAxes="{Binding NetWorthXAxes}"
+                                            YAxes="{Binding NetWorthYAxes}"
+                                            Height="220"
+                                            Background="{DynamicResource BgSurface}"
+                                            LegendPosition="Hidden"
+                                            TooltipPosition="Top"
+                                            ZoomMode="None"
+                                            AnimationsSpeed="00:00:00.2" />
+                    </StackPanel>
+                </Border>
+
+                <!-- ── Section 4+6: Day of Week + Income Sources ── -->
+                <Grid ColumnDefinitions="*,*" >
+                    <!-- Day of Week -->
+                    <Border Grid.Column="0" Classes="card" Margin="0,0,10,0">
+                        <StackPanel Spacing="16">
+                            <StackPanel>
+                                <TextBlock Text="Spending by Day of Week" FontSize="{StaticResource FontSizeSectionHeading}"
+                                           FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" />
+                                <TextBlock Classes="muted" Text="Average daily spend per weekday" />
+                            </StackPanel>
+                            <lvc:CartesianChart Series="{Binding DayOfWeekSeries}"
+                                                XAxes="{Binding DayOfWeekXAxes}"
+                                                Height="200"
+                                                Background="{DynamicResource BgSurface}"
+                                                LegendPosition="Hidden"
+                                                TooltipPosition="Top"
+                                                ZoomMode="None"
+                                                AnimationsSpeed="00:00:00.2">
+                                <lvc:CartesianChart.YAxes>
+                                    <lvc:XamlAxis IsVisible="False" />
+                                </lvc:CartesianChart.YAxes>
+                            </lvc:CartesianChart>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Income Sources -->
+                    <Border Grid.Column="1" Classes="card" Margin="10,0,0,0">
+                        <StackPanel Spacing="16">
+                            <StackPanel>
+                                <TextBlock Text="Income Sources" FontSize="{StaticResource FontSizeSectionHeading}"
+                                           FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" />
+                                <TextBlock Classes="muted" Text="Breakdown by income category" />
+                            </StackPanel>
+                            <Panel Height="200">
+                                <TextBlock Text="Not enough income data for this period."
+                                           Classes="muted" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                           IsVisible="{Binding !HasIncomeSources}" />
+                                <lvc:PieChart Series="{Binding IncomeSourcesSeries}"
+                                              IsVisible="{Binding HasIncomeSources}"
+                                              LegendPosition="Bottom"
+                                              TooltipPosition="Center"
+                                              AnimationsSpeed="00:00:00.2"
+                                              Background="{DynamicResource BgSurface}"/>
+                            </Panel>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- ── Section 5: Top Categories ── -->
+                <Border Classes="card">
+                    <StackPanel Spacing="16">
+                        <StackPanel>
+                            <TextBlock Text="Top Spending Categories" FontSize="{StaticResource FontSizeSectionHeading}"
+                                       FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" />
+                            <TextBlock Classes="muted" Text="Where your money is going" />
+                        </StackPanel>
+
+                        <TextBlock Text="No expense data for this period."
+                                   Classes="muted" IsVisible="{Binding !HasTopCategories}" />
+
+                        <ItemsControl ItemsSource="{Binding TopCategories}"
+                                      IsVisible="{Binding HasTopCategories}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Spacing="1" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="model:CategorySpendRow">
+                                    <Border Background="{DynamicResource BgHover}" CornerRadius="10" Padding="16,12" Margin="0,0,0,1">
+                                        <Grid ColumnDefinitions="Auto,*,Auto,80">
+                                            <!-- Icon -->
+                                            <Border Grid.Column="0" CornerRadius="8" Width="34" Height="34" Margin="0,0,12,0">
+                                                <Border.Background>
+                                                    <SolidColorBrush Color="{Binding Color, Converter={StaticResource HexToColorConverter}, ConverterParameter=color}"
+                                                                     Opacity="0.15" />
+                                                </Border.Background>
+                                                <Svg Path="{Binding Icon, Converter={StaticResource SvgPathFromName}}"
+                                                     Width="16" Height="16"
+                                                     Css="{Binding Color, Converter={StaticResource HexToColorConverter}, ConverterParameter=css}" />
+                                            </Border>
+                                            <!-- Name + progress bar -->
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="5">
+                                                <TextBlock Text="{Binding Name}" FontSize="13" FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource TextPrimary}" />
+                                                <ProgressBar Value="{Binding Percentage}" Minimum="0" Maximum="100"
+                                                             Height="4" Classes="blue" CornerRadius="2" />
+                                            </StackPanel>
+                                            <!-- Percentage -->
+                                            <TextBlock Grid.Column="2" Text="{Binding PercentageFormatted}"
+                                                       Classes="muted" FontSize="12" VerticalAlignment="Center"
+                                                       Margin="12,0" />
+                                            <!-- Amount -->
+                                            <TextBlock Grid.Column="3" Text="{Binding AmountFormatted}"
+                                                       FontSize="13" FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource TextPrimary}"
+                                                       HorizontalAlignment="Right" VerticalAlignment="Center" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

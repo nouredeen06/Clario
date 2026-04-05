@@ -1,0 +1,325 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Clario.ViewModels"
+             mc:Ignorable="d"
+             x:Class="Clario.Views.CategoryFormView"
+             x:DataType="vm:CategoryFormViewModel"
+             x:Name="CategoryFormRoot">
+    <Design.DataContext>
+        <vm:CategoryFormViewModel />
+    </Design.DataContext>
+
+    <!-- ── Dim overlay ───────────────────────── -->
+    <Grid>
+        <Border Background="#70000000" />
+
+        <!-- ── Modal card ────────────────────────── -->
+        <Border HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Background="{DynamicResource BgSurface}"
+                BorderBrush="{DynamicResource BorderSubtle}"
+                BorderThickness="1"
+                CornerRadius="18"
+                Padding="28"
+                Width="480"
+                BoxShadow="0 24 72 0 #60000000">
+            <StackPanel Spacing="0">
+
+                <!-- ── Header ──────────────────────── -->
+                <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,0,0,24">
+                    <Border Grid.Column="0"
+                            CornerRadius="10"
+                            Width="42" Height="42"
+                            Margin="0,0,14,0">
+                        <Border.Background>
+                            <SolidColorBrush
+                                Color="{Binding SelectedColor, Converter={StaticResource HexToColorConverter}, ConverterParameter=color}"
+                                Opacity="0.15" />
+                        </Border.Background>
+                        <Svg Path="{Binding SelectedIcon, Converter={StaticResource SvgPathFromName}}"
+                             Width="18" Height="18"
+                             Css="{Binding SelectedColor, Converter={StaticResource HexToColorConverter}, ConverterParameter=css}" />
+                    </Border>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                        <TextBlock Text="{Binding FormTitle}"
+                                   FontSize="16"
+                                   FontWeight="Bold"
+                                   Foreground="{DynamicResource TextPrimary}" />
+                        <TextBlock Text="{Binding FormSubtitle}"
+                                   FontSize="11"
+                                   Foreground="{DynamicResource TextMuted}" />
+                    </StackPanel>
+                    <Button Grid.Column="2"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Padding="6"
+                            VerticalAlignment="Top"
+                            Cursor="Hand"
+                            Command="{Binding CancelCommand}">
+                        <Svg Path="../Assets/Icons/x.svg"
+                             Width="15" Height="15"
+                             Css="{DynamicResource SvgMuted}" />
+                    </Button>
+                </Grid>
+
+                <!-- ── Name ──────────────────────── -->
+                <TextBlock Text="NAME" Classes="label" Margin="0,0,0,6" />
+                <TextBox Text="{Binding Name, Mode=TwoWay}"
+                         Watermark="e.g. Groceries"
+                         FontSize="13"
+                         Height="38"
+                         Padding="12,0"
+                         VerticalContentAlignment="Center"
+                         Margin="0,0,0,16" />
+
+                <!-- ── Type toggle ─────────────────── -->
+                <TextBlock Text="TYPE" Classes="label" Margin="0,0,0,6" />
+                <Border Background="{DynamicResource BgBase}"
+                        BorderBrush="{DynamicResource BorderSubtle}"
+                        BorderThickness="1"
+                        CornerRadius="{DynamicResource RadiusControl}"
+                        Padding="3"
+                        Margin="0,0,0,16">
+                    <Grid ColumnDefinitions="*,*">
+                        <Button Grid.Column="0"
+                                Classes="nav"
+                                Classes.accented="{Binding IsExpense}"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Center"
+                                CornerRadius="7"
+                                Padding="0,8"
+                                Focusable="False"
+                                Command="{Binding SetTypeCommand}"
+                                CommandParameter="expense">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <Svg Path="../Assets/Icons/arrow-up-right.svg" Width="13" Height="13" />
+                                <TextBlock Text="Expense" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                        <Button Grid.Column="1"
+                                Classes="nav"
+                                Classes.accented="{Binding IsIncome}"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Center"
+                                CornerRadius="7"
+                                Padding="0,8"
+                                Focusable="False"
+                                Command="{Binding SetTypeCommand}"
+                                CommandParameter="income">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <Svg Path="../Assets/Icons/arrow-down-left.svg" Width="13" Height="13" />
+                                <TextBlock Text="Income" FontSize="13" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+                </Border>
+
+                <!-- ── Icon picker ─────────────────── -->
+                <TextBlock Text="ICON" Classes="label" Margin="0,0,0,6" />
+                <Border Background="{DynamicResource BgBase}"
+                        BorderBrush="{DynamicResource BorderSubtle}"
+                        BorderThickness="1"
+                        CornerRadius="{DynamicResource RadiusControl}"
+                        Padding="8"
+                        Margin="0,0,0,16">
+                    <ScrollViewer MaxHeight="148"
+                                  HorizontalScrollBarVisibility="Disabled"
+                                  VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding CategoryIcons}" HorizontalAlignment="Center">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid Columns="8" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Classes="nav"
+                                            Width="44"
+                                            Height="44"
+                                            Padding="0"
+                                            Margin="2"
+                                            CornerRadius="8"
+                                            HorizontalContentAlignment="Center"
+                                            VerticalContentAlignment="Center"
+                                            Command="{Binding DataContext.SetIconCommand, ElementName=CategoryFormRoot}"
+                                            CommandParameter="{Binding}">
+                                        <Classes.accented>
+                                            <MultiBinding Converter="{StaticResource EqualValueConverter}">
+                                                <Binding Path="." />
+                                                <Binding Path="DataContext.SelectedIcon" ElementName="CategoryFormRoot" />
+                                            </MultiBinding>
+                                        </Classes.accented>
+                                        <Svg Path="{Binding Converter={StaticResource SvgPathFromName}}"
+                                             Width="16" Height="16"
+                                              />
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Border>
+
+                <!-- ── Color ──────────────────────── -->
+                <TextBlock Text="COLOR" Classes="label" Margin="0,0,0,6" />
+                <Border Background="{DynamicResource BgBase}"
+                        BorderBrush="{DynamicResource BorderSubtle}"
+                        BorderThickness="1"
+                        CornerRadius="{DynamicResource RadiusControl}"
+                        Padding="8"
+                        Margin="0,0,0,20">
+                    <ColorPicker
+                        Color="{Binding SelectedColor, Converter={StaticResource HexToColorConverter}, ConverterParameter=color}"
+                        Width="400"
+                        Height="40"
+                        CornerRadius="{DynamicResource RadiusControl}"
+                        IsAlphaEnabled="False"
+                        IsAlphaVisible="False"
+                        IsColorPaletteVisible="False"
+                        IsAccentColorsVisible="False" />
+                </Border>
+
+                <!-- ── Validation error ─────────────── -->
+                <Border Background="{DynamicResource BadgeBgRed}"
+                        BorderBrush="{DynamicResource AccentRed}"
+                        BorderThickness="1"
+                        CornerRadius="10"
+                        Padding="12,8"
+                        Margin="0,0,0,16"
+                        IsVisible="{Binding HasError}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Svg Path="../Assets/Icons/circle-alert.svg"
+                             Width="13" Height="13"
+                             Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #FF5E5E; }" />
+                        <TextBlock Text="{Binding ErrorMessage}"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource AccentRed}"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                </Border>
+
+                <!-- ── Delete button (edit mode only) ── -->
+                <Button Classes="danger"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        Padding="0,10"
+                        Margin="0,0,0,10"
+                        IsVisible="{Binding IsEditMode}"
+                        IsEnabled="{Binding CanDelete}"
+                        Command="{Binding RequestDeleteCommand}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Svg Path="../Assets/Icons/trash-2.svg" Width="13" Height="13" Css="{DynamicResource SvgRed}" />
+                        <TextBlock Text="{Binding CanDelete, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Delete Category|Min. 4 categories required'}"
+                                   FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+
+                <!-- ── Actions ──────────────────────── -->
+                <UniformGrid Rows="1">
+                    <Button Classes="base"
+                            Margin="0,0,6,0"
+                            Padding="0,11"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Center"
+                            FontSize="13"
+                            Content="Cancel"
+                            Command="{Binding CancelCommand}" />
+                    <Button Classes="accented"
+                            Margin="6,0,0,0"
+                            Padding="0,11"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Center"
+                            IsEnabled="{Binding IsValid}"
+                            Command="{Binding SaveCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Svg Path="../Assets/Icons/check.svg"
+                                 Width="13" Height="13"
+                                 Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #0D0F14; }" />
+                            <TextBlock Text="{Binding SaveButtonLabel}"
+                                       FontSize="13"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource BgBase}"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                </UniformGrid>
+
+            </StackPanel>
+        </Border>
+
+        <!-- ── Delete confirm sub-modal ──────────────── -->
+        <Grid IsVisible="{Binding ShowDeleteConfirm}">
+            <Border Background="#50000000" />
+            <Border HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Background="{DynamicResource BgSurface}"
+                    BorderBrush="{DynamicResource AccentRed}"
+                    BorderThickness="1"
+                    CornerRadius="18"
+                    Padding="28"
+                    Width="340"
+                    BoxShadow="0 24 72 0 #60000000">
+                <StackPanel Spacing="0">
+
+                    <Border Background="#2A0D0D"
+                            CornerRadius="14"
+                            Width="52" Height="52"
+                            HorizontalAlignment="Center"
+                            Margin="0,0,0,16">
+                        <Svg Path="../Assets/Icons/trash-2.svg"
+                             Width="22" Height="22"
+                             Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #FF5E5E; }" />
+                    </Border>
+
+                    <TextBlock Text="Delete Category"
+                               FontSize="16"
+                               FontWeight="Bold"
+                               Foreground="{DynamicResource TextPrimary}"
+                               HorizontalAlignment="Center"
+                               Margin="0,0,0,8" />
+
+                    <TextBlock Text="This action cannot be undone. The category will be permanently removed."
+                               FontSize="13"
+                               Foreground="{DynamicResource TextMuted}"
+                               TextWrapping="Wrap"
+                               TextAlignment="Center"
+                               HorizontalAlignment="Center"
+                               Margin="0,0,0,24" />
+
+                    <UniformGrid Rows="1">
+                        <Button Classes="base"
+                                Margin="0,0,6,0"
+                                Padding="0,11"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Center"
+                                FontSize="13"
+                                Content="Cancel"
+                                Command="{Binding CancelDeleteCommand}" />
+                        <Button Margin="6,0,0,0"
+                                Padding="0,11"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Center"
+                                Background="#FF5E5E"
+                                BorderThickness="0"
+                                CornerRadius="{DynamicResource RadiusControl}"
+                                Command="{Binding ConfirmDeleteCommand}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Svg Path="../Assets/Icons/trash-2.svg"
+                                     Width="13" Height="13"
+                                     Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #FFFFFF; }" />
+                                <TextBlock Text="Delete"
+                                           FontSize="13"
+                                           FontWeight="SemiBold"
+                                           Foreground="#FFFFFF"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                    </UniformGrid>
+
+                </StackPanel>
+            </Border>
+        </Grid>
+
+    </Grid>
+</UserControl>

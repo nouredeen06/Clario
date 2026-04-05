@@ -23,7 +23,10 @@ public partial class TransactionsViewModel : ViewModelBase
     [ObservableProperty] private ObservableCollection<Category> _categories = new();
     [ObservableProperty] private ObservableCollection<Account> _accounts = new();
 
-    [ObservableProperty] private List<Transaction> _filteredTransactions = new();
+    [ObservableProperty] [NotifyPropertyChangedFor(nameof(FilteredTransactionCount))]
+    private List<Transaction> _filteredTransactions = new();
+
+    public int FilteredTransactionCount => _filteredTransactions.Count;
 
     private int _pageSize = 25;
     [ObservableProperty] private int _pageSizeIndex;
@@ -84,7 +87,7 @@ public partial class TransactionsViewModel : ViewModelBase
         new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month))
     };
 
-    [ObservableProperty] [NotifyPropertyChangedFor(nameof(FilterTypeAll), nameof(FilterTypeIncome), nameof(FilterTypeExpense))]
+    [ObservableProperty] [NotifyPropertyChangedFor(nameof(FilterTypeAll), nameof(FilterTypeIncome), nameof(FilterTypeExpense), nameof(FilterTypeTransfer))]
     private string _transactionType = "all";
 
 
@@ -157,8 +160,9 @@ public partial class TransactionsViewModel : ViewModelBase
     private void ApplyFilters()
     {
         var filtered = AppData.Transactions.Where(x =>
-            x.Description.Contains(SearchText, StringComparison.OrdinalIgnoreCase)
-            || x.Note!.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
+            x.Type != "transfer_in" &&
+            (x.Description.Contains(SearchText, StringComparison.OrdinalIgnoreCase)
+            || x.Note!.Contains(SearchText, StringComparison.OrdinalIgnoreCase)));
 
         var culture = new CultureInfo("en-US");
 
@@ -224,7 +228,7 @@ public partial class TransactionsViewModel : ViewModelBase
         }
 
 
-        // Calculate totals based on date-filtered transactions (converted to primary currency)
+        // Calculate totals based on date-filtered transactions (transfers excluded)
         TotalExpenses = filtered.Where(x => x.Type == "expense").Sum(x => Convert.ToDouble(x.ConvertedAmount));
         TotalIncome = filtered.Where(x => x.Type == "income").Sum(x => Convert.ToDouble(x.ConvertedAmount));
 
@@ -234,8 +238,12 @@ public partial class TransactionsViewModel : ViewModelBase
         if (SelectedAccount.Name != "All Accounts")
             filtered = filtered.Where(x => x.AccountId == SelectedAccount.Id);
 
-        if (TransactionType != "all")
-            filtered = filtered.Where(x => x.Type == TransactionType);
+        if (TransactionType == "income")
+            filtered = filtered.Where(x => x.Type == "income");
+        else if (TransactionType == "expense")
+            filtered = filtered.Where(x => x.Type == "expense");
+        else if (TransactionType == "transfer")
+            filtered = filtered.Where(x => x.IsTransfer);
 
         switch (SelectedSortOption)
         {
@@ -281,6 +289,7 @@ public partial class TransactionsViewModel : ViewModelBase
     public bool FilterTypeAll => TransactionType == "all";
     public bool FilterTypeIncome => TransactionType == "income";
     public bool FilterTypeExpense => TransactionType == "expense";
+    public bool FilterTypeTransfer => TransactionType == "transfer";
 
     [RelayCommand(CanExecute = nameof(HasNextPage))]
     private void NextPage()
@@ -344,6 +353,7 @@ public partial class TransactionsViewModel : ViewModelBase
 
     private void InitializeCategories()
     {
+        Categories.Clear();
         Categories.Insert(0, new Category() { Name = "All Categories" });
         foreach (var appDataCategory in AppData.Categories)
         {
@@ -355,6 +365,7 @@ public partial class TransactionsViewModel : ViewModelBase
 
     private void InitializeAccounts()
     {
+        Accounts.Clear();
         Accounts.Insert(0, new Account() { Name = "All Accounts" });
         foreach (var appDataAccount in AppData.Accounts)
         {

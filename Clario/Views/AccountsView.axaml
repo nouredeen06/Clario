@@ -14,12 +14,20 @@
     </Design.DataContext>
     <Grid RowDefinitions="Auto,*" Margin="32,28,32,0">
         <!--  TOP BAR  -->
-        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,24">
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto" Margin="0,0,0,24">
             <StackPanel Grid.Column="0">
-                <TextBlock Text="4 accounts" FontSize="12" Foreground="{DynamicResource TextMuted}" />
+                <TextBlock Text="{Binding ActiveAccountCount, StringFormat='{}{0} accounts'}" FontSize="12" Foreground="{DynamicResource TextMuted}" />
                 <TextBlock Text="Accounts" FontSize="26" FontWeight="Bold" Foreground="{DynamicResource TextPrimary}" Margin="0,2,0,0" />
             </StackPanel>
-            <Button Grid.Column="1" Classes="accented" Padding="16,9" VerticalAlignment="Center" Command="{Binding CreateAccountCommand}">
+            <Button Grid.Column="1" Classes="base" Padding="14,9" VerticalAlignment="Center" Margin="0,0,10,0"
+                    IsVisible="{Binding HasArchivedAccounts}"
+                    Command="{Binding ShowArchivedListCommand}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <Svg Path="../Assets/Icons/archive.svg" Width="14" Height="14" Css="{DynamicResource SvgMuted}" />
+                    <TextBlock Text="Archived" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
+                </StackPanel>
+            </Button>
+            <Button Grid.Column="2" Classes="accented" Padding="16,9" VerticalAlignment="Center" Command="{Binding CreateAccountCommand}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <Svg Path="../Assets/Icons/plus.svg" Width="14" Height="14"
                          Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #0D0F14; }" />
@@ -324,16 +332,26 @@
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate DataType="model:Transaction">
                                         <Grid ColumnDefinitions="Auto,*,Auto">
-                                            <Border Grid.Column="0" CornerRadius="8" Width="32" Height="32"
-                                                    Margin="0,0,12,0">
-                                                <Border.Background>
-                                                    <SolidColorBrush
-                                                        Color="{Binding Category.Color, Converter={StaticResource HexToColorConverter}, ConverterParameter='color'}"
-                                                        Opacity="0.15" />
-                                                </Border.Background>
-                                                <Svg Path="{Binding Category.Icon, Converter={StaticResource SvgPathFromName}}" Width="14" Height="14"
-                                                     Css="{Binding Category.Color, Converter={StaticResource HexToColorConverter}, ConverterParameter='css'}" />
-                                            </Border>
+                                            <Panel Grid.Column="0" Width="32" Height="32" Margin="0,0,12,0">
+                                                <!-- Category icon -->
+                                                <Border CornerRadius="8" Width="32" Height="32"
+                                                        IsVisible="{Binding !IsTransfer}">
+                                                    <Border.Background>
+                                                        <SolidColorBrush
+                                                            Color="{Binding Category.Color, Converter={StaticResource HexToColorConverter}, ConverterParameter='color'}"
+                                                            Opacity="0.15" />
+                                                    </Border.Background>
+                                                    <Svg Path="{Binding Category.Icon, Converter={StaticResource SvgPathFromName}}" Width="14" Height="14"
+                                                         Css="{Binding Category.Color, Converter={StaticResource HexToColorConverter}, ConverterParameter='css'}" />
+                                                </Border>
+                                                <!-- Transfer icon -->
+                                                <Border CornerRadius="8" Width="32" Height="32"
+                                                        Background="{DynamicResource IconBgBlue}"
+                                                        IsVisible="{Binding IsTransfer}">
+                                                    <Svg Path="../Assets/Icons/arrow-right-left.svg" Width="14" Height="14"
+                                                         Css="{DynamicResource SvgBlue}" />
+                                                </Border>
+                                            </Panel>
                                             <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="1">
                                                 <TextBlock Text="{Binding Description}" FontSize="12" FontWeight="SemiBold"
                                                            Foreground="{DynamicResource TextPrimary}" />
@@ -399,7 +417,9 @@
                             <TextBlock Text="Manage" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" Margin="0,0,0,4" />
                             <!-- Archive -->
                             <Button Background="Transparent" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1" CornerRadius="10" Padding="14,10"
-                                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Cursor="Hand">
+                                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Cursor="Hand"
+                                    Command="{Binding RequestArchiveAccountCommand}"
+                                    CommandParameter="{Binding SelectedAccount}">
                                 <StackPanel Orientation="Horizontal" Spacing="10">
                                     <Svg Path="../Assets/Icons/archive.svg" Width="14" Height="14" Css="{DynamicResource SvgMuted}" />
                                     <StackPanel Spacing="1">
@@ -431,8 +451,10 @@
             </ScrollViewer>
         </Grid>
         <Grid Grid.Row="0" Grid.RowSpan="2">
-            <views:DeleteAccountDialogView IsVisible="{Binding DataContext.IsDeleteDialogVisible ,ElementName=AccountsPage }"
+            <views:DeleteAccountDialogView IsVisible="{Binding DataContext.IsDeleteDialogVisible, ElementName=AccountsPage}"
                                            DataContext="{Binding Path=DeleteDialog}" />
+            <views:ArchiveAccountDialogView IsVisible="{Binding IsArchiveDialogVisible}" />
+            <views:ArchivedAccountsDialogView IsVisible="{Binding IsArchivedListVisible}" />
         </Grid>
     </Grid>
 </UserControl>

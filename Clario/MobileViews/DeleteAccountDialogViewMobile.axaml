@@ -1,0 +1,454 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Clario.ViewModels"
+             mc:Ignorable="d"
+             x:Class="Clario.MobileViews.DeleteAccountDialogViewMobile"
+             x:DataType="vm:DeleteAccountDialogViewModel"
+             Classes="mobile">
+    <Design.DataContext>
+        <vm:DeleteAccountDialogViewModel />
+    </Design.DataContext>
+
+    <Grid>
+        <Border Background="#70000000" />
+
+        <!-- STEP 1 — Simple confirm (no transactions) -->
+        <Border IsVisible="{Binding IsSimpleConfirmStep}"
+                VerticalAlignment="Bottom"
+                HorizontalAlignment="Stretch"
+                Background="{DynamicResource BgSurface}"
+                BorderBrush="{DynamicResource AccentRed}"
+                BorderThickness="0,1,0,0"
+                CornerRadius="18,18,0,0"
+                Padding="20,20,20,40">
+            <StackPanel Spacing="0">
+                <Border Width="36" Height="4"
+                        CornerRadius="2"
+                        Background="{DynamicResource BorderSubtle}"
+                        HorizontalAlignment="Center"
+                        Margin="0,0,0,20" />
+
+                <Border Background="{DynamicResource IconBgRed}"
+                        CornerRadius="14"
+                        Width="54" Height="54"
+                        HorizontalAlignment="Center"
+                        Margin="0,0,0,16">
+                    <Svg Path="../Assets/Icons/trash-2.svg"
+                         Width="22" Height="22"
+                         Css="{DynamicResource SvgRed}" />
+                </Border>
+
+                <TextBlock Text="Delete Account"
+                           FontSize="17"
+                           FontWeight="Bold"
+                           Foreground="{DynamicResource TextPrimary}"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,12" />
+
+                <!-- Account badge -->
+                <Border Background="{DynamicResource BgBase}"
+                        BorderBrush="{DynamicResource BorderSubtle}"
+                        BorderThickness="1"
+                        CornerRadius="10"
+                        Padding="12,8"
+                        HorizontalAlignment="Center"
+                        Margin="0,0,0,14">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Border CornerRadius="7" Width="26" Height="26" VerticalAlignment="Center">
+                            <Border.Background>
+                                <SolidColorBrush Color="{Binding Account.Color, Converter={StaticResource HexToColorConverter}, ConverterParameter=color}"
+                                                 Opacity="0.15" />
+                            </Border.Background>
+                            <Svg Path="{Binding Account.Icon, Converter={StaticResource SvgPathFromName}}"
+                                 Width="13" Height="13"
+                                 Css="{Binding Account.Color, Converter={StaticResource HexToColorConverter}, ConverterParameter=css}" />
+                        </Border>
+                        <TextBlock Text="{Binding Account.Name}"
+                                   FontSize="13"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextPrimary}"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                </Border>
+
+                <TextBlock Text="This account has no transactions. It will be permanently deleted and cannot be recovered."
+                           FontSize="13"
+                           Foreground="{DynamicResource TextMuted}"
+                           TextWrapping="Wrap"
+                           TextAlignment="Center"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,24" />
+
+                <UniformGrid Rows="1">
+                    <Button Classes="base"
+                            Margin="0,0,6,0"
+                            Padding="0,13"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Center"
+                            FontSize="14"
+                            Content="Cancel"
+                            Command="{Binding CancelCommand}" />
+                    <Button Classes="danger"
+                            Margin="6,0,0,0"
+                            Padding="0,13"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Center"
+                            Command="{Binding ConfirmDeleteCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Svg Path="../Assets/Icons/trash-2.svg" Width="13" Height="13" Css="{DynamicResource SvgRed}" />
+                            <TextBlock Text="Delete Account" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                </UniformGrid>
+            </StackPanel>
+        </Border>
+
+        <!-- STEP 1B — Has transactions warning -->
+        <Border IsVisible="{Binding IsHasTransactionsStep}"
+                VerticalAlignment="Bottom"
+                HorizontalAlignment="Stretch"
+                Background="{DynamicResource BgSurface}"
+                BorderBrush="{DynamicResource AccentYellow}"
+                BorderThickness="0,1,0,0"
+                CornerRadius="18,18,0,0"
+                Padding="20,20,20,40">
+            <StackPanel Spacing="0">
+                <Border Width="36" Height="4"
+                        CornerRadius="2"
+                        Background="{DynamicResource BorderSubtle}"
+                        HorizontalAlignment="Center"
+                        Margin="0,0,0,20" />
+
+                <Border Background="{DynamicResource BadgeBgYellow}"
+                        CornerRadius="14"
+                        Width="54" Height="54"
+                        HorizontalAlignment="Center"
+                        Margin="0,0,0,16">
+                    <Svg Path="../Assets/Icons/triangle-alert.svg"
+                         Width="22" Height="22"
+                         Css="{DynamicResource SvgYellow}" />
+                </Border>
+
+                <TextBlock Text="Account Has Transactions"
+                           FontSize="17"
+                           FontWeight="Bold"
+                           Foreground="{DynamicResource TextPrimary}"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,12" />
+
+                <!-- Account badge -->
+                <Border Background="{DynamicResource BgBase}"
+                        BorderBrush="{DynamicResource BorderSubtle}"
+                        BorderThickness="1"
+                        CornerRadius="10"
+                        Padding="12,8"
+                        HorizontalAlignment="Center"
+                        Margin="0,0,0,14">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Border CornerRadius="7" Width="26" Height="26" VerticalAlignment="Center">
+                            <Border.Background>
+                                <SolidColorBrush Color="{Binding Account.Color, Converter={StaticResource HexToColorConverter}, ConverterParameter=color}"
+                                                 Opacity="0.15" />
+                            </Border.Background>
+                            <Svg Path="{Binding Account.Icon, Converter={StaticResource SvgPathFromName}}"
+                                 Width="13" Height="13"
+                                 Css="{Binding Account.Color, Converter={StaticResource HexToColorConverter}, ConverterParameter=css}" />
+                        </Border>
+                        <TextBlock Text="{Binding Account.Name}"
+                                   FontSize="13"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextPrimary}"
+                                   VerticalAlignment="Center" />
+                        <Border Background="{DynamicResource BadgeBgYellow}"
+                                CornerRadius="6"
+                                Padding="6,2">
+                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                <TextBlock Text="{Binding Account.TransactionsCount}"
+                                           FontSize="11"
+                                           FontWeight="SemiBold"
+                                           Foreground="{DynamicResource AccentYellow}" />
+                                <TextBlock Text="transactions"
+                                           FontSize="11"
+                                           Foreground="{DynamicResource AccentYellow}" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <TextBlock FontSize="13"
+                           Foreground="{DynamicResource TextMuted}"
+                           TextWrapping="Wrap"
+                           TextAlignment="Center"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,24">
+                    <Run Text="This account has linked transactions. Before deleting, you must migrate them to another account." />
+                </TextBlock>
+
+                <UniformGrid Rows="1">
+                    <Button Classes="base"
+                            Margin="0,0,6,0"
+                            Padding="0,13"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Center"
+                            FontSize="14"
+                            Content="Cancel"
+                            Command="{Binding CancelCommand}" />
+                    <Button Classes="accented"
+                            Margin="6,0,0,0"
+                            Padding="0,13"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Center"
+                            Command="{Binding GoToMigrateStepCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Svg Path="../Assets/Icons/arrow-right-left.svg"
+                                 Width="13" Height="13"
+                                 Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #0D0F14; }" />
+                            <TextBlock Text="Migrate &amp; Delete"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource BgBase}"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                </UniformGrid>
+            </StackPanel>
+        </Border>
+
+        <!-- STEP 2 — Pick target account + confirm -->
+        <Border IsVisible="{Binding IsMigrateStep}"
+                VerticalAlignment="Bottom"
+                HorizontalAlignment="Stretch"
+                Background="{DynamicResource BgSurface}"
+                BorderBrush="{DynamicResource BorderSubtle}"
+                BorderThickness="0,1,0,0"
+                CornerRadius="18,18,0,0"
+                Padding="20,20,20,40">
+            <StackPanel Spacing="0">
+                <Border Width="36" Height="4"
+                        CornerRadius="2"
+                        Background="{DynamicResource BorderSubtle}"
+                        HorizontalAlignment="Center"
+                        Margin="0,0,0,20" />
+
+                <!-- Header -->
+                <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,0,0,20">
+                    <Button Grid.Column="0"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Padding="4"
+                            VerticalAlignment="Center"
+                            Command="{Binding BackToWarningCommand}">
+                        <Svg Path="../Assets/Icons/arrow-left.svg"
+                             Width="16" Height="16"
+                             Css="{DynamicResource SvgMuted}" />
+                    </Button>
+                    <StackPanel Grid.Column="1"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Center"
+                                Spacing="2">
+                        <TextBlock Text="Migrate Transactions"
+                                   FontSize="15"
+                                   FontWeight="Bold"
+                                   Foreground="{DynamicResource TextPrimary}"
+                                   HorizontalAlignment="Center" />
+                        <TextBlock Text="Choose where to move the transactions"
+                                   FontSize="11"
+                                   Foreground="{DynamicResource TextMuted}"
+                                   HorizontalAlignment="Center" />
+                    </StackPanel>
+                    <Button Grid.Column="2"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Padding="4"
+                            VerticalAlignment="Center"
+                            Command="{Binding CancelCommand}">
+                        <Svg Path="../Assets/Icons/x.svg"
+                             Width="14" Height="14"
+                             Css="{DynamicResource SvgMuted}" />
+                    </Button>
+                </Grid>
+
+                <!-- From → To visual -->
+                <Border Background="{DynamicResource BgBase}"
+                        BorderBrush="{DynamicResource BorderSubtle}"
+                        BorderThickness="1"
+                        CornerRadius="12"
+                        Padding="14,12"
+                        Margin="0,0,0,18">
+                    <Grid ColumnDefinitions="*,Auto,*">
+                        <StackPanel Grid.Column="0" Spacing="4" HorizontalAlignment="Center">
+                            <TextBlock Text="FROM" Classes="label" HorizontalAlignment="Center" />
+                            <Border CornerRadius="8" Width="38" Height="38" HorizontalAlignment="Center">
+                                <Border.Background>
+                                    <SolidColorBrush Color="{Binding Account.Color, Converter={StaticResource HexToColorConverter}, ConverterParameter=color}"
+                                                     Opacity="0.15" />
+                                </Border.Background>
+                                <Svg Path="{Binding Account.Icon, Converter={StaticResource SvgPathFromName}}"
+                                     Width="17" Height="17"
+                                     Css="{Binding Account.Color, Converter={StaticResource HexToColorConverter}, ConverterParameter=css}" />
+                            </Border>
+                            <TextBlock Text="{Binding Account.Name}"
+                                       FontSize="12"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextPrimary}"
+                                       HorizontalAlignment="Center"
+                                       TextWrapping="Wrap"
+                                       TextAlignment="Center" />
+                            <Border Background="{DynamicResource BadgeBgRed}"
+                                    CornerRadius="6"
+                                    Padding="6,2"
+                                    HorizontalAlignment="Center">
+                                <TextBlock FontSize="10" Foreground="{DynamicResource AccentRed}" HorizontalAlignment="Center">
+                                    <Run Text="{Binding Account.TransactionsCount}" />
+                                    <Run Text=" transactions" />
+                                </TextBlock>
+                            </Border>
+                        </StackPanel>
+
+                        <Svg Grid.Column="1"
+                             Path="../Assets/Icons/arrow-right.svg"
+                             Width="18" Height="18"
+                             Css="{DynamicResource SvgMuted}"
+                             VerticalAlignment="Center"
+                             Margin="8,0" />
+
+                        <StackPanel Grid.Column="2" Spacing="4" HorizontalAlignment="Center">
+                            <TextBlock Text="TO" Classes="label" HorizontalAlignment="Center" />
+                            <Border CornerRadius="8" Width="38" Height="38" HorizontalAlignment="Center">
+                                <Border.Background>
+                                    <SolidColorBrush Color="{Binding TargetAccount.Color, Converter={StaticResource HexToColorConverter}, ConverterParameter=color}"
+                                                     Opacity="0.15" />
+                                </Border.Background>
+                                <Svg Path="{Binding TargetAccount.Icon, Converter={StaticResource SvgPathFromName}}"
+                                     Width="17" Height="17"
+                                     Css="{Binding TargetAccount.Color, Converter={StaticResource HexToColorConverter}, ConverterParameter=css}" />
+                            </Border>
+                            <TextBlock Text="{Binding TargetAccount.Name}"
+                                       FontSize="12"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextPrimary}"
+                                       HorizontalAlignment="Center"
+                                       TextWrapping="Wrap"
+                                       TextAlignment="Center" />
+                            <Border Background="{DynamicResource IconBgGreen}"
+                                    CornerRadius="6"
+                                    Padding="6,2"
+                                    HorizontalAlignment="Center">
+                                <TextBlock Text="Target"
+                                           FontSize="10"
+                                           Foreground="{DynamicResource AccentGreen}"
+                                           HorizontalAlignment="Center" />
+                            </Border>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- Target account selector -->
+                <TextBlock Text="SELECT TARGET ACCOUNT" Classes="label" Margin="0,0,0,6" />
+                <Border Background="{DynamicResource BgBase}"
+                        BorderBrush="{DynamicResource BorderSubtle}"
+                        BorderThickness="1"
+                        CornerRadius="{DynamicResource RadiusControl}"
+                        Margin="0,0,0,16">
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Border Grid.Column="0"
+                                CornerRadius="7"
+                                Width="30" Height="30"
+                                Margin="10,0,0,0"
+                                VerticalAlignment="Center">
+                            <Border.Background>
+                                <SolidColorBrush Color="{Binding TargetAccount.Color, Converter={StaticResource HexToColorConverter}, ConverterParameter=color}"
+                                                 Opacity="0.15" />
+                            </Border.Background>
+                            <Svg Path="{Binding TargetAccount.Icon, Converter={StaticResource SvgPathFromName}}"
+                                 Width="14" Height="14"
+                                 Css="{Binding TargetAccount.Color, Converter={StaticResource HexToColorConverter}, ConverterParameter=css}" />
+                        </Border>
+                        <ComboBox Grid.Column="1"
+                                  ItemsSource="{Binding AvailableAccounts}"
+                                  SelectedItem="{Binding TargetAccount, Mode=TwoWay}"
+                                  DisplayMemberBinding="{Binding Name}"
+                                  Background="Transparent"
+                                  BorderThickness="0"
+                                  Padding="8,13"
+                                  FontSize="14"
+                                  HorizontalAlignment="Stretch" />
+                    </Grid>
+                </Border>
+
+                <!-- Warning info -->
+                <Border Background="{DynamicResource BadgeBgYellow}"
+                        BorderBrush="{DynamicResource AccentYellow}"
+                        BorderThickness="1"
+                        CornerRadius="10"
+                        Padding="12,8"
+                        Margin="0,0,0,16">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                        <Svg Grid.Column="0"
+                             Path="../Assets/Icons/info.svg"
+                             Width="13" Height="13"
+                             Css="{DynamicResource SvgYellow}"
+                             VerticalAlignment="Top"
+                             Margin="0,1,0,0" />
+                        <TextBlock Grid.Column="1"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource AccentYellow}"
+                                   TextWrapping="Wrap">
+                            <Run Text="All transactions will be moved to" />
+                            <Run Text=" " />
+                            <Run Text="{Binding TargetAccount.Name}" FontWeight="SemiBold" />
+                            <Run Text=". Balances will be recalculated. This cannot be undone." />
+                        </TextBlock>
+                    </Grid>
+                </Border>
+
+                <!-- Error -->
+                <Border Background="{DynamicResource BadgeBgRed}"
+                        BorderBrush="{DynamicResource AccentRed}"
+                        BorderThickness="1"
+                        CornerRadius="10"
+                        Padding="12,8"
+                        Margin="0,0,0,16"
+                        IsVisible="{Binding HasError}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Svg Path="../Assets/Icons/circle-alert.svg"
+                             Width="13" Height="13"
+                             Css="{DynamicResource SvgRed}" />
+                        <TextBlock Text="{Binding ErrorMessage}"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource AccentRed}"
+                                   VerticalAlignment="Center"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Actions -->
+                <UniformGrid Rows="1">
+                    <Button Classes="base"
+                            Margin="0,0,6,0"
+                            Padding="0,13"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Center"
+                            FontSize="14"
+                            Content="Cancel"
+                            Command="{Binding CancelCommand}" />
+                    <Button Classes="danger"
+                            Margin="6,0,0,0"
+                            Padding="0,13"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Center"
+                            IsEnabled="{Binding CanMigrateAndDelete}"
+                            Command="{Binding MigrateAndDeleteCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Svg Path="../Assets/Icons/trash-2.svg" Width="13" Height="13" Css="{DynamicResource SvgRed}" />
+                            <TextBlock Text="Migrate &amp; Delete" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                </UniformGrid>
+
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

@@ -1,0 +1,393 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Clario.ViewModels"
+             xmlns:behaviors="clr-namespace:Clario.Behaviors"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="800"
+             x:Class="Clario.MobileViews.BudgetFormViewMobile"
+             x:DataType="vm:BudgetFormViewModel"
+             Classes="mobile">
+    <Design.DataContext>
+        <vm:BudgetFormViewModel />
+    </Design.DataContext>
+
+    <Grid RowDefinitions="Auto,*,Auto"
+          Background="{DynamicResource BgBase}">
+
+        <!-- ── Top bar ──────────────────────────── -->
+        <Grid Grid.Row="0"
+              ColumnDefinitions="Auto,*,Auto"
+              Margin="16,16,16,0">
+
+            <!-- Close -->
+            <Button Grid.Column="0"
+                    Background="{DynamicResource BgSurface}"
+                    BorderBrush="{DynamicResource BorderSubtle}"
+                    BorderThickness="1"
+                    CornerRadius="20"
+                    Width="36" Height="36"
+                    Padding="0"
+                    HorizontalContentAlignment="Center"
+                    Command="{Binding CancelCommand}">
+                <Svg Path="../Assets/Icons/x.svg"
+                     Width="14" Height="14"
+                     Css="{DynamicResource SvgMuted}" />
+            </Button>
+
+            <!-- Title -->
+            <StackPanel Grid.Column="1"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Spacing="1">
+                <TextBlock Text="{Binding FormTitle}"
+                           FontSize="15"
+                           FontWeight="Bold"
+                           Foreground="{DynamicResource TextPrimary}"
+                           HorizontalAlignment="Center" />
+                <TextBlock Text="{Binding FormSubtitle}"
+                           FontSize="11"
+                           Foreground="{DynamicResource TextMuted}"
+                           HorizontalAlignment="Center" />
+            </StackPanel>
+
+            <!-- Delete (edit mode only) -->
+            <Button Grid.Column="2"
+                    Background="{DynamicResource DangerButtonBackground}"
+                    BorderBrush="{DynamicResource DangerButtonBorder}"
+                    BorderThickness="1"
+                    CornerRadius="20"
+                    Width="36" Height="36"
+                    Padding="0"
+                    HorizontalContentAlignment="Center"
+                    IsVisible="{Binding IsEditMode}"
+                    Command="{Binding RequestDeleteCommand}">
+                <Svg Path="../Assets/Icons/trash-2.svg"
+                     Width="14" Height="14"
+                     Css="{DynamicResource SvgRed}" />
+            </Button>
+
+            <!-- Placeholder to keep title centered -->
+            <Border Grid.Column="2" Width="36" IsVisible="{Binding !IsEditMode}" />
+        </Grid>
+
+        <!-- ── Scrollable form ───────────────────── -->
+        <ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled"
+                      Margin="0,16,0,0">
+            <StackPanel Margin="16,0,16,16" Spacing="0">
+
+                <!-- Limit Amount (hero input) -->
+                <TextBlock Text="LIMIT AMOUNT" Classes="label" Margin="0,0,0,6" />
+                <Border Background="{DynamicResource BgBase}"
+                        BorderBrush="{DynamicResource BorderSubtle}"
+                        BorderThickness="1"
+                        CornerRadius="{DynamicResource RadiusControl}"
+                        Padding="14,0"
+                        Margin="0,0,0,20"
+                        Height="64">
+                    <Grid ColumnDefinitions="Auto,*">
+                        <TextBlock Grid.Column="0"
+                                   Text="$"
+                                   FontSize="32"
+                                   FontWeight="Bold"
+                                   Foreground="{DynamicResource TextMuted}"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,8,0"
+                                   Padding="0,0,0,2" />
+                        <TextBox Grid.Column="1"
+                                 Classes="ghost"
+                                 Text="{Binding LimitAmount, Mode=TwoWay}"
+                                 Watermark="0.00"
+                                 FontSize="32"
+                                 FontWeight="Bold"
+                                 Foreground="{DynamicResource TextPrimary}"
+                                 Height="54"
+                                 Padding="0,0,0,2"
+                                 VerticalContentAlignment="Center">
+                            <Interaction.Behaviors>
+                                <behaviors:NumericInputBehavior />
+                            </Interaction.Behaviors>
+                        </TextBox>
+                    </Grid>
+                </Border>
+
+                <!-- Category -->
+                <TextBlock Text="CATEGORY" Classes="label" Margin="0,0,0,6" />
+                <Border Background="{DynamicResource BgBase}"
+                        BorderBrush="{DynamicResource BorderSubtle}"
+                        BorderThickness="1"
+                        CornerRadius="{DynamicResource RadiusControl}"
+                        Margin="0,0,0,20">
+                    <Grid ColumnDefinitions="Auto,*" Height="48">
+                        <Border Grid.Column="0"
+                                CornerRadius="7"
+                                Width="32" Height="32"
+                                Margin="10,0,0,0"
+                                VerticalAlignment="Center">
+                            <Border.Background>
+                                <SolidColorBrush
+                                    Color="{Binding SelectedCategory.Color, Converter={StaticResource HexToColorConverter}, ConverterParameter=color}"
+                                    Opacity="0.15" />
+                            </Border.Background>
+                            <Svg Path="{Binding SelectedCategory.Icon, Converter={StaticResource SvgPathFromName}}"
+                                 Width="14" Height="14"
+                                 Css="{Binding SelectedCategory.Color, Converter={StaticResource HexToColorConverter}, ConverterParameter=css}" />
+                        </Border>
+                        <ComboBox Grid.Column="1"
+                                  VerticalAlignment="Stretch"
+                                  ItemsSource="{Binding Categories}"
+                                  SelectedItem="{Binding SelectedCategory, Mode=TwoWay}"
+                                  DisplayMemberBinding="{Binding Name}"
+                                  Background="Transparent"
+                                  BorderThickness="0"
+                                  Padding="10,12"
+                                  FontSize="15"
+                                  HorizontalAlignment="Stretch" />
+                    </Grid>
+                </Border>
+
+                <!-- Period -->
+                <TextBlock Text="PERIOD" Classes="label" Margin="0,0,0,6" />
+                <Border Background="{DynamicResource BgBase}"
+                        BorderBrush="{DynamicResource BorderSubtle}"
+                        BorderThickness="1"
+                        CornerRadius="{DynamicResource RadiusControl}"
+                        Padding="3"
+                        Margin="0,0,0,20"
+                        Height="50">
+                    <Grid ColumnDefinitions="*,*,*">
+                        <Button Grid.Column="0"
+                                Classes="nav"
+                                Classes.accented="{Binding IsMonthly}"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Center"
+                                VerticalAlignment="Stretch"
+                                CornerRadius="7"
+                                Padding="0,8"
+                                Focusable="False"
+                                Command="{Binding SetPeriodCommand}"
+                                CommandParameter="monthly">
+                            <TextBlock Text="Monthly" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" />
+                        </Button>
+                        <Button Grid.Column="1"
+                                Classes="nav"
+                                Classes.accented="{Binding IsQuarterly}"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Center"
+                                VerticalAlignment="Stretch"
+                                CornerRadius="7"
+                                Padding="0,8"
+                                Focusable="False"
+                                Command="{Binding SetPeriodCommand}"
+                                CommandParameter="quarterly">
+                            <TextBlock Text="Quarterly" FontSize="14" VerticalAlignment="Center" />
+                        </Button>
+                        <Button Grid.Column="2"
+                                Classes="nav"
+                                Classes.accented="{Binding IsYearly}"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Center"
+                                VerticalAlignment="Stretch"
+                                CornerRadius="7"
+                                Padding="0,8"
+                                Focusable="False"
+                                Command="{Binding SetPeriodCommand}"
+                                CommandParameter="yearly">
+                            <TextBlock Text="Yearly" FontSize="14" VerticalAlignment="Center" />
+                        </Button>
+                    </Grid>
+                </Border>
+
+                <!-- Alert Threshold -->
+                <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,6">
+                    <TextBlock Grid.Column="0" Text="ALERT THRESHOLD" Classes="label" />
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding AlertThresholdLabel}"
+                               FontSize="11"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource AccentBlue}" />
+                </Grid>
+                <Border Background="{DynamicResource BgBase}"
+                        BorderBrush="{DynamicResource BorderSubtle}"
+                        BorderThickness="1"
+                        CornerRadius="{DynamicResource RadiusControl}"
+                        Padding="16,12"
+                        Margin="0,0,0,20">
+                    <StackPanel Spacing="6">
+                        <Slider Minimum="10"
+                                Maximum="100"
+                                TickFrequency="5"
+                                IsSnapToTickEnabled="True"
+                                Value="{Binding AlertThreshold}" />
+                        <Grid ColumnDefinitions="*,*">
+                            <TextBlock Grid.Column="0"
+                                       Text="10%"
+                                       FontSize="10"
+                                       Foreground="{DynamicResource TextDisabled}" />
+                            <TextBlock Grid.Column="1"
+                                       Text="100%"
+                                       FontSize="10"
+                                       Foreground="{DynamicResource TextDisabled}"
+                                       HorizontalAlignment="Right" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Rollover -->
+                <Border Background="{DynamicResource BgBase}"
+                        BorderBrush="{DynamicResource BorderSubtle}"
+                        BorderThickness="1"
+                        CornerRadius="{DynamicResource RadiusControl}"
+                        Padding="14,12"
+                        Margin="0,0,0,20">
+                    <Grid ColumnDefinitions="Auto,*,Auto">
+                        <Border Grid.Column="0"
+                                CornerRadius="8"
+                                Width="34" Height="34"
+                                Margin="0,0,12,0"
+                                Background="{DynamicResource IconBgPurple}">
+                            <Svg Path="../Assets/Icons/refresh-cw.svg"
+                                 Width="14" Height="14"
+                                 Css="{DynamicResource SvgPurple}" />
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                            <TextBlock Text="Rollover"
+                                       FontSize="15"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextPrimary}" />
+                            <TextBlock Text="Carry unused budget to the next period"
+                                       FontSize="11"
+                                       Foreground="{DynamicResource TextMuted}" />
+                        </StackPanel>
+                        <ToggleSwitch Grid.Column="2"
+                                      IsChecked="{Binding Rollover, Mode=TwoWay}"
+                                      OnContent=""
+                                      OffContent=""
+                                      VerticalAlignment="Center" />
+                    </Grid>
+                </Border>
+
+                <!-- Error banner -->
+                <Border Background="{DynamicResource BadgeBgRed}"
+                        BorderBrush="{DynamicResource AccentRed}"
+                        BorderThickness="1"
+                        CornerRadius="10"
+                        Padding="12,8"
+                        Margin="0,0,0,8"
+                        IsVisible="{Binding HasError}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Svg Path="../Assets/Icons/circle-alert.svg"
+                             Width="13" Height="13"
+                             Css="{DynamicResource SvgRed}" />
+                        <TextBlock Text="{Binding ErrorMessage}"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource AccentRed}"
+                                   VerticalAlignment="Center"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- ── Bottom action bar ─────────────────── -->
+        <Border Grid.Row="2"
+                Background="{DynamicResource BgSurface}"
+                BorderBrush="{DynamicResource BorderSubtle}"
+                BorderThickness="0,1,0,0"
+                Padding="16,12,16,20">
+            <Grid ColumnDefinitions="*,*">
+                <Button Grid.Column="0"
+                        Classes="base"
+                        Margin="0,0,6,0"
+                        Padding="0,13"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        FontSize="14"
+                        Content="Cancel"
+                        Command="{Binding CancelCommand}" />
+                <Button Grid.Column="1"
+                        Classes="accented"
+                        Margin="6,0,0,0"
+                        Padding="0,13"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        IsEnabled="{Binding IsValid}"
+                        Command="{Binding SaveCommand}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Svg Path="../Assets/Icons/check.svg"
+                             Width="14" Height="14"
+                             Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #0D0F14; }" />
+                        <TextBlock Text="{Binding SaveButtonLabel}"
+                                   FontSize="14"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource BgBase}"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- ── Delete confirm sub-modal ─────────── -->
+        <Grid Grid.Row="0" Grid.RowSpan="3" IsVisible="{Binding ShowDeleteConfirm}">
+            <Border Background="#50000000" />
+            <Border HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Margin="24,0"
+                    Background="{DynamicResource BgSurface}"
+                    BorderBrush="{DynamicResource AccentRed}"
+                    BorderThickness="1"
+                    CornerRadius="18"
+                    Padding="24">
+                <StackPanel Spacing="0">
+                    <Border Background="{DynamicResource IconBgRed}"
+                            CornerRadius="14"
+                            Width="52" Height="52"
+                            HorizontalAlignment="Center"
+                            Margin="0,0,0,16">
+                        <Svg Path="../Assets/Icons/trash-2.svg"
+                             Width="22" Height="22"
+                             Css="{DynamicResource SvgRed}" />
+                    </Border>
+                    <TextBlock Text="Delete Budget"
+                               FontSize="16"
+                               FontWeight="Bold"
+                               Foreground="{DynamicResource TextPrimary}"
+                               HorizontalAlignment="Center"
+                               Margin="0,0,0,8" />
+                    <TextBlock Text="This action cannot be undone. The budget will be permanently removed."
+                               FontSize="13"
+                               Foreground="{DynamicResource TextMuted}"
+                               TextWrapping="Wrap"
+                               TextAlignment="Center"
+                               HorizontalAlignment="Center"
+                               Margin="0,0,0,24" />
+                    <UniformGrid Rows="1">
+                        <Button Classes="base"
+                                Margin="0,0,6,0"
+                                Padding="0,13"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Center"
+                                FontSize="14"
+                                Content="Cancel"
+                                Command="{Binding CancelDeleteCommand}" />
+                        <Button Classes="danger"
+                                Margin="6,0,0,0"
+                                Padding="0,13"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Center"
+                                Command="{Binding ConfirmDeleteCommand}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Svg Path="../Assets/Icons/trash-2.svg" Width="13" Height="13" Css="{DynamicResource SvgRed}" />
+                                <TextBlock Text="Delete" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                    </UniformGrid>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+    </Grid>
+</UserControl>

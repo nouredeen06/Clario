@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using Clario.Data;
 using Clario.Models;
 using Clario.Services;
@@ -21,37 +22,56 @@ public partial class AccountsViewModel : ViewModelBase
     public string PrimarySymbol => CurrencyService.GetSymbol(AppData.PrimaryAccount?.Currency ?? AppData.Profile?.Currency ?? "USD");
     [ObservableProperty] private Account? _selectedAccount;
     [ObservableProperty] private bool _isAccountDeletionConfirmationVisible;
-    public bool CanDeleteAccount => VisibleAccounts.Count > 1;
+    public bool CanDeleteAccount => VisibleAccounts.Count(x => !x.GroupHeader) > 1;
+    public int ActiveAccountCount => VisibleAccounts.Count(x => !x.GroupHeader);
 
     [ObservableProperty] private bool _isDeleteDialogVisible;
     [ObservableProperty] private DeleteAccountDialogViewModel _deleteDialog = new();
 
+    [ObservableProperty] private bool _isArchiveDialogVisible;
+    [ObservableProperty] private Account? _accountToArchive;
+
+    [ObservableProperty] private bool _isArchivedListVisible;
+    [ObservableProperty] private List<Account> _archivedAccounts = new();
+    public bool HasArchivedAccounts => ArchivedAccounts.Count > 0;
+
     public AccountsViewModel()
     {
         AppData.Accounts.CollectionChanged += (_, _) => { Initialize(); };
+        AppData.Transactions.CollectionChanged += (_, _) => { Initialize(); };
         Initialize();
     }
 
     public void Initialize()
     {
+        var prevSelectedId = SelectedAccount?.Id;
         FetchAndProcessAccountInfo();
         GroupAccounts();
-        SelectedAccount = VisibleAccounts.FirstOrDefault(x => !x.GroupHeader);
+        ArchivedAccounts = AppData.Accounts.Where(a => a.IsArchived).ToList();
+        OnPropertyChanged(nameof(HasArchivedAccounts));
+        OnPropertyChanged(nameof(ActiveAccountCount));
+        OnPropertyChanged(nameof(CanDeleteAccount));
+        // Set to null first so PropertyChanged fires even when re-selecting the same account,
+        // ensuring the detail panel re-reads all computed properties (balance, income, etc.)
+        SelectedAccount = null;
+        SelectedAccount = (prevSelectedId.HasValue
+            ? VisibleAccounts.FirstOrDefault(a => a.Id == prevSelectedId && !a.GroupHeader)
+            : null) ?? VisibleAccounts.FirstOrDefault(x => !x.GroupHeader);
     }
 
     private void FetchAndProcessAccountInfo()
     {
         TotalBalance = 0;
         var primaryCurrency = AppData.PrimaryAccount?.Currency ?? AppData.Profile?.Currency ?? "USD";
-        foreach (var account in AppData.Accounts)
+        foreach (var account in AppData.Accounts.Where(a => !a.IsArchived))
         {
             var accountTransactions = AppData.Transactions.Where(t => t.AccountId == account.Id).ToList();
             account.TransactionsCount = accountTransactions.Count;
-            account.CurrentBalance = account.OpeningBalance + accountTransactions.Sum(t => t.Type == "income" ? t.Amount : -t.Amount);
-            account.TotalIncomeThisMonth = accountTransactions.Where(t => t.Date.Month == DateTime.Now.Month && t.Type == "income").Sum(t => t.Amount);
-            account.TotalExpenseThisMonth = accountTransactions.Where(t => t.Date.Month == DateTime.Now.Month && t.Type == "expense").Sum(t => t.Amount);
-            account.IncomeTransactionsThisMonth = accountTransactions.Count(t => t.Date.Month == DateTime.Now.Month && t.Type == "income");
-            account.ExpenseTransactionsThisMonth = accountTransactions.Count(t => t.Date.Month == DateTime.Now.Month && t.Type == "expense");
+            account.CurrentBalance = account.OpeningBalance + accountTransactions.Sum(t => t.Type is "income" or "transfer_in" ? t.Amount : -t.Amount);
+            account.TotalIncomeThisMonth = accountTransactions.Where(t => t.Date.Month == DateTime.Now.Month && t.Type is "income" or "transfer_in").Sum(t => t.Amount);
+            account.TotalExpenseThisMonth = accountTransactions.Where(t => t.Date.Month == DateTime.Now.Month && t.Type is "expense" or "transfer_out").Sum(t => t.Amount);
+            account.IncomeTransactionsThisMonth = accountTransactions.Count(t => t.Date.Month == DateTime.Now.Month && t.Type is "income" or "transfer_in");
+            account.ExpenseTransactionsThisMonth = accountTransactions.Count(t => t.Date.Month == DateTime.Now.Month && t.Type is "expense" or "transfer_out");
             account.RecentTransactions = accountTransactions.OrderByDescending(t => t.Date).Take(3).ToList();
             var lastMonthBalance = accountTransactions.Where(t => t.Date.Month == DateTime.Now.AddMonths(-1).Month && t.Type == "income")
                 .Sum(t => t.Type == "income" ? t.Amount : -t.Amount);
@@ -59,7 +79,7 @@ public partial class AccountsViewModel : ViewModelBase
             if (account.Currency.Equals(primaryCurrency, StringComparison.OrdinalIgnoreCase))
                 TotalBalance += account.CurrentBalance;
             else
-                TotalBalance += accountTransactions.Sum(t => t.Type == "income" ? t.ConvertedAmount : -t.ConvertedAmount);
+                TotalBalance += accountTransactions.Sum(t => t.Type is "income" or "transfer_in" ? t.ConvertedAmount : -t.ConvertedAmount);
         }
     }
 
@@ -91,7 +111,7 @@ public partial class AccountsViewModel : ViewModelBase
         foreach (var type in accountTypes)
         {
             var accountsOfType = AppData.Accounts
-                .Where(a => a.Type.Equals(type, StringComparison.OrdinalIgnoreCase))
+                .Where(a => a.Type.Equals(type, StringComparison.OrdinalIgnoreCase) && !a.IsArchived)
                 .OrderByDescending(a => a.IsPrimary)
                 .ThenBy(a => a.CreatedAt)
                 .ToList();
@@ -107,6 +127,53 @@ public partial class AccountsViewModel : ViewModelBase
         }
 
         OnPropertyChanged(nameof(CanDeleteAccount));
+    }
+
+    [RelayCommand]
+    private void RequestArchiveAccount(Account account)
+    {
+        AccountToArchive = account;
+        IsArchiveDialogVisible = true;
+    }
+
+    [RelayCommand]
+    private void CancelArchive()
+    {
+        IsArchiveDialogVisible = false;
+        AccountToArchive = null;
+    }
+
+    [RelayCommand]
+    private async Task ConfirmArchive()
+    {
+        if (AccountToArchive is null) return;
+        AccountToArchive.IsArchived = true;
+        await AppData.UpdateAccount(AccountToArchive);
+        IsArchiveDialogVisible = false;
+        AccountToArchive = null;
+        Initialize();
+    }
+
+    [RelayCommand]
+    private void ShowArchivedList()
+    {
+        IsArchivedListVisible = true;
+    }
+
+    [RelayCommand]
+    private void CloseArchivedList()
+    {
+        IsArchivedListVisible = false;
+    }
+
+    [RelayCommand]
+    private async Task UnarchiveAccount(Account account)
+    {
+        account.IsArchived = false;
+        await AppData.UpdateAccount(account);
+        Initialize();
+        if (!HasArchivedAccounts)
+            IsArchivedListVisible = false;
     }
 
     [RelayCommand]

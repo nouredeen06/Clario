@@ -1,0 +1,133 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Clario.ViewModels"
+             xmlns:model="clr-namespace:Clario.Models"
+             mc:Ignorable="d"
+             x:Class="Clario.Views.ArchivedAccountsDialogView"
+             x:Name="ArchivedListView"
+             x:DataType="vm:AccountsViewModel"
+             x:CompileBindings="False">
+  <Design.DataContext>
+    <vm:AccountsViewModel />
+  </Design.DataContext>
+
+  <Grid>
+    <!-- Dim overlay -->
+    <Border Background="#70000000"/>
+
+    <Border HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Background="{DynamicResource BgSurface}"
+            BorderBrush="{DynamicResource BorderSubtle}"
+            BorderThickness="1"
+            CornerRadius="18"
+            Padding="28"
+            Width="440"
+            BoxShadow="0 24 72 0 #60000000">
+      <StackPanel Spacing="0">
+
+        <!-- Header -->
+        <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,18">
+          <StackPanel Grid.Column="0" Spacing="2">
+            <TextBlock Text="Archived Accounts"
+                       FontSize="16"
+                       FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimary}"/>
+            <TextBlock Text="Hidden from active lists and transaction forms"
+                       FontSize="12"
+                       Foreground="{DynamicResource TextMuted}"/>
+          </StackPanel>
+          <Button Grid.Column="1"
+                  Background="Transparent"
+                  BorderThickness="0"
+                  Padding="6"
+                  VerticalAlignment="Top"
+                  Cursor="Hand"
+                  Command="{Binding CloseArchivedListCommand}">
+            <Svg Path="../Assets/Icons/x.svg" Width="14" Height="14" Css="{DynamicResource SvgMuted}"/>
+          </Button>
+        </Grid>
+
+        <!-- Accounts list -->
+        <ScrollViewer MaxHeight="360" VerticalScrollBarVisibility="Auto">
+          <ItemsControl ItemsSource="{Binding ArchivedAccounts}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel Spacing="1"/>
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate DataType="model:Account">
+                <Border Background="{DynamicResource BgBase}"
+                        CornerRadius="10"
+                        Padding="14,10">
+                  <Grid ColumnDefinitions="Auto,*,Auto">
+
+                    <!-- Icon -->
+                    <Border Grid.Column="0"
+                            CornerRadius="10"
+                            Width="40" Height="40"
+                            Margin="0,0,12,0">
+                      <Border.Background>
+                        <SolidColorBrush
+                            Color="{Binding Color, Converter={StaticResource HexToColorConverter}, ConverterParameter=color}"
+                            Opacity="0.15"/>
+                      </Border.Background>
+                      <Svg Path="{Binding Icon, Converter={StaticResource SvgPathFromName}}"
+                           Width="18" Height="18"
+                           Css="{Binding Color, Converter={StaticResource HexToColorConverter}, ConverterParameter=css}"/>
+                    </Border>
+
+                    <!-- Name / meta -->
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
+                      <TextBlock Text="{Binding Name}"
+                                 FontSize="13"
+                                 FontWeight="SemiBold"
+                                 Foreground="{DynamicResource TextPrimary}"/>
+                      <StackPanel Orientation="Horizontal" Spacing="6">
+                        <TextBlock Text="{Binding Type}"
+                                   FontSize="11"
+                                   Foreground="{DynamicResource TextMuted}"/>
+                        <TextBlock Text="·"
+                                   FontSize="11"
+                                   Foreground="{DynamicResource TextDisabled}"/>
+                        <TextBlock Text="{Binding Currency}"
+                                   FontSize="11"
+                                   Foreground="{DynamicResource TextMuted}"/>
+                      </StackPanel>
+                    </StackPanel>
+
+                    <!-- Restore button -->
+                    <Button Grid.Column="2"
+                            Background="Transparent"
+                            BorderBrush="{DynamicResource BorderSubtle}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="10,6"
+                            Cursor="Hand"
+                            Command="{Binding DataContext.UnarchiveAccountCommand, ElementName=ArchivedListView}"
+                            CommandParameter="{Binding .}">
+                      <StackPanel Orientation="Horizontal" Spacing="6">
+                        <Svg Path="../Assets/Icons/rotate-ccw.svg"
+                             Width="12" Height="12"
+                             Css="{DynamicResource SvgBlue}"/>
+                        <TextBlock Text="Restore"
+                                   FontSize="11"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource AccentBlue}"/>
+                      </StackPanel>
+                    </Button>
+
+                  </Grid>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </ScrollViewer>
+
+      </StackPanel>
+    </Border>
+  </Grid>
+</UserControl>

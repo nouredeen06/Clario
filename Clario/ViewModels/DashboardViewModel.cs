@@ -178,6 +178,12 @@ public partial class DashboardViewModel : ViewModelBase
         ((MainViewModel)parentViewModel).OpenAddTransaction();
     }
 
+    [RelayCommand]
+    private void NavigateToSettings()
+    {
+        ((MainViewModel)parentViewModel).GoToSettingsCommand.Execute(null);
+    }
+
     private void UpdateSpendingByCategoryChart(ChartTimePeriod period = ChartTimePeriod.ThisMonth)
     {
         var tempList = new List<ColumnChartData>();
@@ -241,7 +247,7 @@ public partial class DashboardViewModel : ViewModelBase
 
     private void UpdateRecentTransactions()
     {
-        RecentTransactions = new ObservableCollection<Transaction>(AppData.Transactions.OrderByDescending(x => x.Date).Take(5));
+        RecentTransactions = new ObservableCollection<Transaction>(AppData.Transactions.Where(x => !x.IsTransfer).OrderByDescending(x => x.Date).Take(5));
         OnPropertyChanged(nameof(HasTransactionData));
     }
 
@@ -249,17 +255,17 @@ public partial class DashboardViewModel : ViewModelBase
     {
         TotalNetworth = 0;
         var primaryCurrency = AppData.PrimaryAccount?.Currency ?? AppData.Profile?.Currency ?? "USD";
-        foreach (var account in AppData.Accounts)
+        foreach (var account in AppData.Accounts.Where(a => !a.IsArchived))
         {
             var accountTransactions = AppData.Transactions.Where(t => t.AccountId == account.Id).ToList();
-            account.CurrentBalance = account.OpeningBalance + accountTransactions.Sum(t => t.Type == "income" ? t.Amount : -t.Amount);
+            account.CurrentBalance = account.OpeningBalance + accountTransactions.Sum(t => t.Type is "income" or "transfer_in" ? t.Amount : -t.Amount);
             if (account.Currency.Equals(primaryCurrency, StringComparison.OrdinalIgnoreCase))
                 TotalNetworth += account.CurrentBalance;
             else
-                TotalNetworth += accountTransactions.Sum(t => t.Type == "income" ? t.ConvertedAmount : -t.ConvertedAmount);
+                TotalNetworth += accountTransactions.Sum(t => t.Type is "income" or "transfer_in" ? t.ConvertedAmount : -t.ConvertedAmount);
         }
 
-        AccountsSummaryData = new ObservableCollection<Account>(AppData.Accounts.OrderBy(x => x.CreatedAt));
+        AccountsSummaryData = new ObservableCollection<Account>(AppData.Accounts.Where(a => !a.IsArchived).OrderBy(x => x.CreatedAt));
         OnPropertyChanged(nameof(AccountsSubtitle));
     }
 

@@ -12,7 +12,7 @@ namespace Clario.MobileViews;
 
 public partial class AccountsViewMobile : UserControl
 {
-    private bool _sheetVisible = false;
+    private bool _sheetVisible;
 
     private TranslateTransform SheetTranslate =>
         (TranslateTransform)BottomSheet.RenderTransform!;
@@ -24,7 +24,7 @@ public partial class AccountsViewMobile : UserControl
         DimOverlay.PointerPressed += async (_, _) => await HideSheet();
         CloseButton.Click += async (_, _) => await HideSheet();
 
-        AddHandler(Button.ClickEvent, async (sender, e) =>
+        AddHandler(Button.ClickEvent, async (_, e) =>
         {
             if (e.Source is Button { DataContext: Account }) await ShowSheet();
         }, handledEventsToo: false);

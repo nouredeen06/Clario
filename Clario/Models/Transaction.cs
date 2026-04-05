@@ -35,10 +35,13 @@ public class Transaction : BaseModel
 
     [Column("exchange_rate")] public decimal? ExchangeRate { get; set; }
 
+    [Column("transfer_pair_id")] public Guid? TransferPairId { get; set; }
+
     // Set during enrichment by GeneralDataRepo.LinkTransactionAccounts
     [JsonIgnore] public string AccountCurrency { get; set; } = "";
     [JsonIgnore] public string PrimaryAmountFormatted { get; set; } = "";
     [JsonIgnore] public string OriginalAmountFormatted { get; set; } = "";
+    [JsonIgnore] public string AccountDisplayText { get; set; } = "";
 
     [JsonIgnore] public decimal ConvertedAmount =>
         !string.IsNullOrEmpty(AccountCurrency) && CurrencyService.LiveRates.TryGetValue(AccountCurrency, out var liveRate)
@@ -48,5 +51,7 @@ public class Transaction : BaseModel
     [JsonIgnore] public string PrimaryAmountSignFormatted =>
         Type == "expense" ? $"-{PrimaryAmountFormatted}" : $"+{PrimaryAmountFormatted}";
 
+    [JsonIgnore] public bool IsTransfer => Type is "transfer_in" or "transfer_out";
+    [JsonIgnore] public bool IsTransferOut => Type == "transfer_out";
     [JsonIgnore] public bool GroupHeader { get; set; } = false;
 }

@@ -22,10 +22,11 @@
                 Background="{DynamicResource BgSurface}"
                 BorderBrush="{DynamicResource BorderSubtle}"
                 BorderThickness="0,0,1,0"
-                Padding="20,28,20,28">
+                Padding="4,0,4,0">
             <ScrollViewer VerticalScrollBarVisibility="Auto"
-                          HorizontalScrollBarVisibility="Disabled">
-                <StackPanel Spacing="0">
+                          HorizontalScrollBarVisibility="Disabled"
+                          Padding="16,0,16,0">
+                <StackPanel Spacing="0" Margin="0 28 0 28">
 
                     <!-- Period header ─
                REPLACE: bind TextBlock texts to SelectedPeriodLabel
@@ -210,8 +211,7 @@
                             CornerRadius="{DynamicResource RadiusControl}"
                             Padding="3"
                             Margin="0,0,0,14">
-                        <Grid ColumnDefinitions="*,*,*">
-                            <!-- Active pill -->
+                        <Grid ColumnDefinitions="*,*,*,*">
                             <Button Grid.Column="0"
                                     Classes="nav"
                                     Classes.accented="{Binding FilterTypeAll}"
@@ -222,10 +222,7 @@
                                     Padding="0,6"
                                     Command="{Binding SetTransactionTypeCommand}"
                                     CommandParameter="all">
-                                <TextBlock Text="All"
-                                           FontSize="12"
-                                           FontWeight="SemiBold"
-                                           HorizontalAlignment="Center" />
+                                <TextBlock Text="All" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" />
                             </Button>
                             <Button Grid.Column="1"
                                     Classes="nav"
@@ -237,9 +234,7 @@
                                     Padding="0,6"
                                     Command="{Binding SetTransactionTypeCommand}"
                                     CommandParameter="income">
-                                <TextBlock Text="Income"
-                                           FontSize="12" Focusable="False"
-                                           HorizontalAlignment="Center" />
+                                <TextBlock Text="Income" FontSize="12" Focusable="False" HorizontalAlignment="Center" />
                             </Button>
                             <Button Grid.Column="2"
                                     Classes="nav"
@@ -251,9 +246,19 @@
                                     Padding="0,6"
                                     Command="{Binding SetTransactionTypeCommand}"
                                     CommandParameter="expense">
-                                <TextBlock Text="Expense"
-                                           FontSize="12" Focusable="False"
-                                           HorizontalAlignment="Center" />
+                                <TextBlock Text="Expense" FontSize="12" Focusable="False" HorizontalAlignment="Center" />
+                            </Button>
+                            <Button Grid.Column="3"
+                                    Classes="nav"
+                                    Classes.accented="{Binding FilterTypeTransfer}"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Center"
+                                    Focusable="False"
+                                    CornerRadius="7"
+                                    Padding="0,6"
+                                    Command="{Binding SetTransactionTypeCommand}"
+                                    CommandParameter="transfer">
+                                <TextBlock Text="Transfer" FontSize="12" Focusable="False" HorizontalAlignment="Center" />
                             </Button>
                         </Grid>
                     </Border>
@@ -324,8 +329,7 @@
                   ColumnDefinitions="*,Auto"
                   Margin="28,28,28,0">
                 <StackPanel Grid.Column="0">
-                    <!-- REPLACE: bind to FilteredTransactionCount -->
-                    <TextBlock Text="46 transactions"
+                    <TextBlock Text="{Binding FilteredTransactionCount, StringFormat='{}{0} transactions'}"
                                Classes="muted" />
                     <TextBlock Text="Transactions"
                                FontSize="26"
@@ -424,30 +428,42 @@
                                                         BorderThickness="0,1,0,0">
                                                     <Grid ColumnDefinitions="44,*,160,120,100,100">
 
-                                                        <Border Grid.Column="0"
-                                                                CornerRadius="{DynamicResource RadiusIcon}"
-                                                                Width="34" Height="34"
-                                                                VerticalAlignment="Center" Padding="0">
-                                                            <Border.Background>
-                                                                <SolidColorBrush
-                                                                    Color="{Binding Category.Color,Converter={StaticResource HexToColorConverter}, ConverterParameter=color}"
-                                                                    Opacity="0.15" />
-                                                            </Border.Background>
-                                                            <Panel>
-                                                                <Svg Classes="hide" Path="{Binding  Category.Icon,Converter={StaticResource SvgPathFromName}}"
-                                                                     Width="16"
-                                                                     Height="16"
+                                                        <Panel Grid.Column="0"
+                                                               Width="34" Height="34"
+                                                               VerticalAlignment="Center">
+                                                            <!-- Category icon (income / expense) -->
+                                                            <Border CornerRadius="{DynamicResource RadiusIcon}"
+                                                                    Width="34" Height="34"
+                                                                    IsVisible="{Binding !IsTransfer}">
+                                                                <Border.Background>
+                                                                    <SolidColorBrush
+                                                                        Color="{Binding Category.Color,Converter={StaticResource HexToColorConverter}, ConverterParameter=color}"
+                                                                        Opacity="0.15" />
+                                                                </Border.Background>
+                                                                <Svg Classes="hide"
+                                                                     Path="{Binding Category.Icon,Converter={StaticResource SvgPathFromName}}"
+                                                                     Width="16" Height="16"
                                                                      Css="{Binding Category.Color,Converter={StaticResource HexToColorConverter}, ConverterParameter=css}" />
-                                                                <Button Classes="base reveal" CornerRadius="{DynamicResource RadiusSmall}" Width="34"
-                                                                        Height="34" Margin="0"
-                                                                        Command="{Binding DataContext.EditTransactionCommand,ElementName=transactionsControl}"
-                                                                        CommandParameter="{Binding .}">
-                                                                    <Svg Path="../Assets/Icons/pencil.svg" Width="16" Height="16"
-                                                                         Css="{DynamicResource SvgSecondary}" />
-                                                                </Button>
-                                                            </Panel>
-
-                                                        </Border>
+                                                            </Border>
+                                                            <!-- Transfer icon -->
+                                                            <Border CornerRadius="{DynamicResource RadiusIcon}"
+                                                                    Width="34" Height="34"
+                                                                    Background="{DynamicResource IconBgBlue}"
+                                                                    IsVisible="{Binding IsTransfer}">
+                                                                <Svg Path="../Assets/Icons/arrow-right-left.svg"
+                                                                     Width="16" Height="16"
+                                                                     Css="{DynamicResource SvgBlue}" />
+                                                            </Border>
+                                                            <!-- Edit button overlay -->
+                                                            <Button Classes="base reveal"
+                                                                    CornerRadius="{DynamicResource RadiusSmall}"
+                                                                    Width="34" Height="34" Margin="0"
+                                                                    Command="{Binding DataContext.EditTransactionCommand,ElementName=transactionsControl}"
+                                                                    CommandParameter="{Binding .}">
+                                                                <Svg Path="../Assets/Icons/pencil.svg" Width="16" Height="16"
+                                                                     Css="{DynamicResource SvgSecondary}" />
+                                                            </Button>
+                                                        </Panel>
 
                                                         <StackPanel Grid.Column="1"
                                                                     VerticalAlignment="Center"
@@ -463,24 +479,21 @@
                                                                        Foreground="{DynamicResource TextMuted}" />
                                                         </StackPanel>
 
-                                                        <!-- REPLACE: bind to Transaction.Category -->
-                                                        <Border Grid.Column="2"
-                                                                VerticalAlignment="Center"
-                                                                HorizontalAlignment="Center"
-                                                                Margin="0,0,0,0">
-                                                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                                                <Border
-                                                                    CornerRadius="6"
-                                                                    Padding="6,3">
+                                                        <Panel Grid.Column="2"
+                                                               VerticalAlignment="Center"
+                                                               HorizontalAlignment="Center">
+                                                            <!-- Normal category badge -->
+                                                            <StackPanel Orientation="Horizontal" Spacing="6"
+                                                                        IsVisible="{Binding !IsTransfer}">
+                                                                <Border CornerRadius="6" Padding="6,3">
                                                                     <Border.Background>
                                                                         <SolidColorBrush Opacity="0.15"
-                                                                                         Color="{Binding Category.Color, Converter={StaticResource HexToColorConverter}, ConverterParameter=color}">
-                                                                        </SolidColorBrush>
+                                                                            Color="{Binding Category.Color, Converter={StaticResource HexToColorConverter}, ConverterParameter=color}" />
                                                                     </Border.Background>
                                                                     <StackPanel Orientation="Horizontal" Spacing="5">
                                                                         <Svg Path="{Binding Category.Icon, Converter={StaticResource SvgPathFromName}}"
                                                                              Width="11" Height="11"
-                                                                             Css="{Binding Category.Color,Converter={StaticResource HexToColorConverter}, ConverterParameter=css}" />
+                                                                             Css="{Binding Category.Color, Converter={StaticResource HexToColorConverter}, ConverterParameter=css}" />
                                                                         <TextBlock Text="{Binding Category.Name}"
                                                                                    FontSize="12"
                                                                                    Foreground="{Binding Category.Color, Converter={StaticResource HexToColorConverter}, ConverterParameter=brush}"
@@ -488,16 +501,28 @@
                                                                     </StackPanel>
                                                                 </Border>
                                                             </StackPanel>
-                                                        </Border>
+                                                            <!-- Transfer badge -->
+                                                            <Border CornerRadius="6" Padding="6,3"
+                                                                    Background="{DynamicResource IconBgBlue}"
+                                                                    IsVisible="{Binding IsTransfer}">
+                                                                <StackPanel Orientation="Horizontal" Spacing="5">
+                                                                    <Svg Path="../Assets/Icons/arrow-right-left.svg"
+                                                                         Width="11" Height="11"
+                                                                         Css="{DynamicResource SvgBlue}" />
+                                                                    <TextBlock Text="Transfer"
+                                                                               FontSize="12"
+                                                                               Foreground="{DynamicResource AccentBlue}"
+                                                                               VerticalAlignment="Center" />
+                                                                </StackPanel>
+                                                            </Border>
+                                                        </Panel>
 
-                                                        <!-- REPLACE: bind to Transaction.Account -->
-                                                        <TextBlock Grid.Column="3"
-                                                                   Text="{Binding AccountId, Converter={StaticResource AccountFromIdConverter}}"
+                                                                                        <TextBlock Grid.Column="3"
+                                                                   Text="{Binding AccountDisplayText}"
                                                                    FontSize="12"
                                                                    Foreground="{DynamicResource TextMuted}"
                                                                    VerticalAlignment="Center"
-                                                                   HorizontalAlignment="Center"
-                                                                   Margin="0,0,0,0" />
+                                                                   HorizontalAlignment="Center" />
 
                                                         <!-- REPLACE: bind to Transaction.DateFormatted -->
                                                         <TextBlock Grid.Column="4"

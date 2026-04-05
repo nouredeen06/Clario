@@ -25,14 +25,6 @@
                                    Foreground="{DynamicResource TextPrimary}" Margin="0,2,0,0" />
                     </StackPanel>
                     <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
-                        <Border Background="{DynamicResource BgSurface}" CornerRadius="{StaticResource RadiusControl}"
-                                BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1" Padding="14,8">
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <Svg Path="../Assets/Icons/calendar-days.svg" Height="13" Width="13" />
-                                <TextBlock Text="Jan – Mar 2026" FontSize="{StaticResource FontSizeBody}" Foreground="{DynamicResource TextSecondary}"
-                                           VerticalAlignment="Center" />
-                            </StackPanel>
-                        </Border>
                         <Button Background="{DynamicResource AccentBlue}" Foreground="{DynamicResource BgBase}" FontWeight="SemiBold"
                                 FontSize="{StaticResource FontSizeBody}" CornerRadius="{StaticResource RadiusControl}" Padding="16,8" BorderThickness="0"
                                 Cursor="Hand" Content="+ Add Transaction" Command="{Binding CreateTransactionCommand}" />
@@ -384,7 +376,8 @@
                                 <Grid ColumnDefinitions="*,Auto">
                                     <TextBlock Grid.Column="0" Text="Total Balance" FontSize="{StaticResource FontSizeBody}" FontWeight="SemiBold"
                                                Foreground="{DynamicResource TextMuted}" />
-                                    <TextBlock Grid.Column="1" FontSize="{StaticResource FontSizeSectionHeading}" FontWeight="Bold" Foreground="{DynamicResource TextPrimary}">
+                                    <TextBlock Grid.Column="1" FontSize="{StaticResource FontSizeSectionHeading}" FontWeight="Bold"
+                                               Foreground="{DynamicResource TextPrimary}">
                                         <TextBlock.Text>
                                             <MultiBinding StringFormat="{}{0}{1:N2}">
                                                 <Binding Path="PrimarySymbol" />

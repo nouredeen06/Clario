@@ -1,0 +1,123 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Clario.ViewModels"
+             mc:Ignorable="d"
+             x:Class="Clario.MobileViews.ArchiveAccountDialogViewMobile"
+             x:DataType="vm:AccountsViewModel"
+             x:CompileBindings="False"
+             Classes="mobile">
+    <Design.DataContext>
+        <vm:AccountsViewModel />
+    </Design.DataContext>
+
+    <Grid>
+        <Border Background="#70000000" />
+
+        <Border VerticalAlignment="Bottom"
+                HorizontalAlignment="Stretch"
+                Background="{DynamicResource BgSurface}"
+                BorderBrush="{DynamicResource AccentOrange}"
+                BorderThickness="0,1,0,0"
+                CornerRadius="18,18,0,0"
+                Padding="20,20,20,40">
+            <StackPanel Spacing="0">
+
+                <!-- Handle bar -->
+                <Border Width="36" Height="4"
+                        CornerRadius="2"
+                        Background="{DynamicResource BorderSubtle}"
+                        HorizontalAlignment="Center"
+                        Margin="0,0,0,20" />
+
+                <!-- Icon -->
+                <Border Background="{DynamicResource IconBgOrange}"
+                        CornerRadius="14"
+                        Width="54" Height="54"
+                        HorizontalAlignment="Center"
+                        Margin="0,0,0,16">
+                    <Svg Path="../Assets/Icons/archive.svg"
+                         Width="22" Height="22"
+                         Css="{DynamicResource SvgOrange}" />
+                </Border>
+
+                <!-- Title -->
+                <TextBlock Text="Archive Account"
+                           FontSize="17"
+                           FontWeight="Bold"
+                           Foreground="{DynamicResource TextPrimary}"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,12" />
+
+                <!-- Account badge -->
+                <Border Background="{DynamicResource BgBase}"
+                        BorderBrush="{DynamicResource BorderSubtle}"
+                        BorderThickness="1"
+                        CornerRadius="10"
+                        Padding="12,8"
+                        HorizontalAlignment="Center"
+                        Margin="0,0,0,14">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Border CornerRadius="7" Width="26" Height="26" VerticalAlignment="Center">
+                            <Border.Background>
+                                <SolidColorBrush
+                                    Color="{Binding AccountToArchive.Color, Converter={StaticResource HexToColorConverter}, ConverterParameter=color}"
+                                    Opacity="0.15" />
+                            </Border.Background>
+                            <Svg Path="{Binding AccountToArchive.Icon, Converter={StaticResource SvgPathFromName}}"
+                                 Width="13" Height="13"
+                                 Css="{Binding AccountToArchive.Color, Converter={StaticResource HexToColorConverter}, ConverterParameter=css}" />
+                        </Border>
+                        <TextBlock Text="{Binding AccountToArchive.Name}"
+                                   FontSize="13"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextPrimary}"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Description -->
+                <TextBlock Text="This account will be hidden from your active list and won't appear when adding transactions. You can restore it anytime."
+                           FontSize="13"
+                           Foreground="{DynamicResource TextMuted}"
+                           TextWrapping="Wrap"
+                           TextAlignment="Center"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,24" />
+
+                <!-- Actions -->
+                <UniformGrid Rows="1">
+                    <Button Classes="base"
+                            Margin="0,0,6,0"
+                            Padding="0,13"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Center"
+                            FontSize="14"
+                            Content="Cancel"
+                            Command="{Binding CancelArchiveCommand}" />
+                    <Button Margin="6,0,0,0"
+                            Padding="0,13"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Center"
+                            Background="{DynamicResource AccentOrange}"
+                            BorderThickness="0"
+                            CornerRadius="{DynamicResource RadiusControl}"
+                            Command="{Binding ConfirmArchiveCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Svg Path="../Assets/Icons/archive.svg"
+                                 Width="13" Height="13"
+                                 Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #0D0F14; }" />
+                            <TextBlock Text="Archive"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource BgBase}"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                </UniformGrid>
+
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

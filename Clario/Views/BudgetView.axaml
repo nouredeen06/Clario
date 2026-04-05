@@ -267,7 +267,7 @@
                                 <Grid ColumnDefinitions="*,Auto">
                                     <TextBlock Grid.Column="0" Text="Total Budgeted" FontSize="12" Foreground="{DynamicResource TextMuted}" />
                                     <!-- REPLACE: bind to TotalBudgetedFormatted -->
-                                    <TextBlock FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}">
+                                    <TextBlock Grid.Column="1" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}">
                                         <TextBlock.Text>
                                             <MultiBinding StringFormat="{}{0}{1:N0}">
                                                 <Binding Path="PrimarySymbol" />
@@ -279,7 +279,7 @@
                                 <Grid ColumnDefinitions="*,Auto">
                                     <TextBlock Grid.Column="0" Text="Total Spent" FontSize="12" Foreground="{DynamicResource TextMuted}" />
                                     <!-- REPLACE: bind to TotalSpentFormatted -->
-                                    <TextBlock FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}">
+                                    <TextBlock Grid.Column="1" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}">
                                         <TextBlock.Text>
                                             <MultiBinding StringFormat="{}{0}{1:N0}">
                                                 <Binding Path="PrimarySymbol" />

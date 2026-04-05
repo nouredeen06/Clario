@@ -13,6 +13,7 @@
         <PackageReference Include="Deadpikle.AvaloniaProgressRing"/>
         <PackageReference Include="FluentAvalonia.ProgressRing"/>
         <PackageReference Include="LiveChartsCore.SkiaSharpView.Avalonia"/>
+        <PackageReference Include="QuestPDF" />
         <PackageReference Include="SkiaSharp"/>
         <PackageReference Include="SkiaSharp.NativeAssets.Linux" />
         <PackageReference Include="SkiaSharp.NativeAssets.WebAssembly"/>

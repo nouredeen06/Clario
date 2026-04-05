@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:Clario.ViewModels"
              xmlns:model="clr-namespace:Clario.Models"
+             xmlns:mobileViews="clr-namespace:Clario.MobileViews"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Clario.MobileViews.AccountsViewMobile"
              x:DataType="vm:AccountsViewModel"
@@ -30,14 +31,24 @@
                                FontWeight="Bold"
                                Foreground="{DynamicResource TextPrimary}" />
                 </StackPanel>
-                <Button Grid.Column="1"
-                        Classes="accented"
-                        Padding="12,8"
-                        VerticalAlignment="Center">
-                    <Svg Path="../Assets/Icons/plus.svg"
-                         Width="16" Height="16"
-                         Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #0D0F14; }" />
-                </Button>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                    <Button Classes="base"
+                            Padding="12,8"
+                            IsVisible="{Binding HasArchivedAccounts}"
+                            Command="{Binding ShowArchivedListCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <Svg Path="../Assets/Icons/archive.svg" Width="14" Height="14" Css="{DynamicResource SvgMuted}" />
+                            <TextBlock Text="Archived" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <Button Classes="accented"
+                            Padding="12,8"
+                            Command="{Binding CreateAccountCommand}">
+                        <Svg Path="../Assets/Icons/plus.svg"
+                             Width="16" Height="16"
+                             Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #0D0F14; }" />
+                    </Button>
+                </StackPanel>
             </Grid>
 
             <!-- Account list -->
@@ -70,11 +81,17 @@
                                        Foreground="{DynamicResource TextPrimary}"
                                        VerticalAlignment="Center" />
                             <TextBlock Grid.Column="2"
-                                       Text="{Binding TotalBalance, StringFormat='$0.00'}"
                                        FontSize="17"
                                        FontWeight="Bold"
                                        Foreground="{DynamicResource AccentBlue}"
-                                       VerticalAlignment="Center" />
+                                       VerticalAlignment="Center">
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="{}{0}{1:N2}">
+                                        <Binding Path="PrimarySymbol" />
+                                        <Binding Path="TotalBalance" />
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
                         </Grid>
                     </Border>
 
@@ -119,10 +136,23 @@
                                             <StackPanel Grid.Column="1"
                                                         VerticalAlignment="Center"
                                                         Spacing="3">
-                                                <TextBlock Text="{Binding Name}"
-                                                           FontSize="14"
-                                                           FontWeight="SemiBold"
-                                                           Foreground="{DynamicResource TextPrimary}" />
+                                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                                    <TextBlock Text="{Binding Name}"
+                                                               FontSize="14"
+                                                               FontWeight="SemiBold"
+                                                               Foreground="{DynamicResource TextPrimary}"
+                                                               VerticalAlignment="Center" />
+                                                    <Border IsVisible="{Binding IsPrimary}"
+                                                            CornerRadius="4"
+                                                            Padding="5,2"
+                                                            Background="{DynamicResource IconBgGreen}"
+                                                            VerticalAlignment="Center">
+                                                        <TextBlock Text="PRIMARY"
+                                                                   FontSize="9"
+                                                                   FontWeight="Bold"
+                                                                   Foreground="{DynamicResource AccentGreen}" />
+                                                    </Border>
+                                                </StackPanel>
                                                 <StackPanel Orientation="Horizontal" Spacing="6">
                                                     <TextBlock Text="{Binding Institution}"
                                                                FontSize="12"
@@ -137,7 +167,7 @@
                                                         HorizontalAlignment="Right"
                                                         VerticalAlignment="Center"
                                                         Spacing="3">
-                                                <TextBlock Text="{Binding CurrentBalance, StringFormat='$0.00'}"
+                                                <TextBlock Text="{Binding CurrentBalanceFormatted}"
                                                            FontSize="15"
                                                            FontWeight="Bold"
                                                            Foreground="{DynamicResource TextPrimary}"
@@ -159,7 +189,7 @@
                                                             </MultiBinding>
                                                         </Svg.Css>
                                                     </Svg>
-                                                    <TextBlock Text="{Binding MonthlyIncrease, Converter={StaticResource DecimalSignConverter}}"
+                                                    <TextBlock Text="{Binding MonthlyIncreaseFormatted}"
                                                                FontSize="11">
                                                         <TextBlock.Foreground>
                                                             <MultiBinding Converter="{StaticResource DecimalColorConverter}">
@@ -239,20 +269,32 @@
                                            FontSize="12"
                                            Foreground="{DynamicResource TextMuted}" />
                             </StackPanel>
-                            <!-- Close button -->
-                            <Button Grid.Column="2"
-                                    Background="{DynamicResource BgBase}"
-                                    BorderThickness="0"
-                                    CornerRadius="20"
-                                    Width="34" Height="34"
-                                    Padding="0"
-                                    HorizontalContentAlignment="Center"
-                                    VerticalAlignment="Top"
-                                    x:Name="CloseButton">
-                                <Svg Path="../Assets/Icons/x.svg"
-                                     Width="14" Height="14"
-                                     Css="{DynamicResource SvgMuted}" />
-                            </Button>
+                            <!-- Edit + Close buttons -->
+                            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6" VerticalAlignment="Top">
+                                <Button Background="{DynamicResource BgBase}"
+                                        BorderThickness="0"
+                                        CornerRadius="20"
+                                        Width="34" Height="34"
+                                        Padding="0"
+                                        HorizontalContentAlignment="Center"
+                                        Command="{Binding EditAccountCommand}"
+                                        CommandParameter="{Binding SelectedAccount}">
+                                    <Svg Path="../Assets/Icons/pencil.svg"
+                                         Width="14" Height="14"
+                                         Css="{DynamicResource SvgMuted}" />
+                                </Button>
+                                <Button Background="{DynamicResource BgBase}"
+                                        BorderThickness="0"
+                                        CornerRadius="20"
+                                        Width="34" Height="34"
+                                        Padding="0"
+                                        HorizontalContentAlignment="Center"
+                                        x:Name="CloseButton">
+                                    <Svg Path="../Assets/Icons/x.svg"
+                                         Width="14" Height="14"
+                                         Css="{DynamicResource SvgMuted}" />
+                                </Button>
+                            </StackPanel>
                         </Grid>
                     </Grid>
 
@@ -269,7 +311,7 @@
                                     Padding="16,14">
                                 <StackPanel Spacing="4">
                                     <TextBlock Text="CURRENT BALANCE" Classes="label" />
-                                    <TextBlock Text="{Binding SelectedAccount.CurrentBalance, StringFormat='$0.00'}"
+                                    <TextBlock Text="{Binding SelectedAccount.CurrentBalanceFormatted}"
                                                FontSize="28"
                                                FontWeight="Bold"
                                                Foreground="{DynamicResource TextPrimary}" />
@@ -329,7 +371,7 @@
                                         </Border>
                                         <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="1">
                                             <TextBlock Text="Money In" FontSize="11" Foreground="{DynamicResource TextMuted}" />
-                                            <TextBlock Text="{Binding SelectedAccount.TotalIncomeThisMonth, StringFormat='$0.00'}" FontSize="14"
+                                            <TextBlock Text="{Binding SelectedAccount.TotalIncomeFormatted}" FontSize="14"
                                                        FontWeight="SemiBold" Foreground="{DynamicResource AccentGreen}" />
                                         </StackPanel>
                                         <TextBlock Grid.Column="2" Text="{Binding SelectedAccount.IncomeTransactionsThisMonth}" FontSize="11"
@@ -342,7 +384,7 @@
                                         </Border>
                                         <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="1">
                                             <TextBlock Text="Money Out" FontSize="11" Foreground="{DynamicResource TextMuted}" />
-                                            <TextBlock Text="{Binding SelectedAccount.TotalExpenseThisMonth, StringFormat='$0.00'}" FontSize="14"
+                                            <TextBlock Text="{Binding SelectedAccount.TotalExpenseFormatted}" FontSize="14"
                                                        FontWeight="SemiBold" Foreground="{DynamicResource AccentRed}" />
                                         </StackPanel>
                                         <TextBlock Grid.Column="2" Text="{Binding SelectedAccount.ExpenseTransactionsThisMonth}" FontSize="11"
@@ -446,7 +488,9 @@
                                 <StackPanel Spacing="10">
                                     <TextBlock Text="Manage" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" Margin="0,0,0,2" />
                                     <Button Background="Transparent" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1" CornerRadius="10"
-                                            Padding="14,10" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                                            Padding="14,10" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                                            Command="{Binding RequestArchiveAccountCommand}"
+                                            CommandParameter="{Binding SelectedAccount}">
                                         <StackPanel Orientation="Horizontal" Spacing="10">
                                             <Svg Path="../Assets/Icons/archive.svg" Width="14" Height="14" Css="{DynamicResource SvgMuted}" />
                                             <StackPanel Spacing="1">
@@ -456,13 +500,18 @@
                                             </StackPanel>
                                         </StackPanel>
                                     </Button>
-                                    <Button Background="#2A0D0D" BorderBrush="#3A1515" BorderThickness="1" CornerRadius="10" Padding="14,10"
-                                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+                                    <Button Classes="danger"
+                                            CornerRadius="10"
+                                            Padding="14,10"
+                                            HorizontalAlignment="Stretch"
+                                            HorizontalContentAlignment="Left"
+                                            Command="{Binding RequestDeleteAccountCommand}"
+                                            CommandParameter="{Binding SelectedAccount}"
+                                            IsEnabled="{Binding CanDeleteAccount}">
                                         <StackPanel Orientation="Horizontal" Spacing="10">
-                                            <Svg Path="../Assets/Icons/trash-2.svg" Width="14" Height="14"
-                                                 Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #FF5E5E; }" />
+                                            <Svg Path="../Assets/Icons/trash-2.svg" Width="14" Height="14" Css="{DynamicResource SvgRed}" />
                                             <StackPanel Spacing="1">
-                                                <TextBlock Text="Delete Account" FontSize="12" FontWeight="SemiBold" Foreground="#FF5E5E" />
+                                                <TextBlock Text="Delete Account" FontSize="12" FontWeight="SemiBold" />
                                                 <TextBlock Text="Permanently removes all data" FontSize="11" Foreground="{DynamicResource TextMuted}" />
                                             </StackPanel>
                                         </StackPanel>
@@ -476,5 +525,12 @@
             </Border>
 
         </Grid>
+
+        <!-- ── Dialog overlays ───────────────────── -->
+        <mobileViews:DeleteAccountDialogViewMobile IsVisible="{Binding DataContext.IsDeleteDialogVisible, ElementName=AccountsPage}"
+                                                   DataContext="{Binding DeleteDialog}" />
+        <mobileViews:ArchiveAccountDialogViewMobile IsVisible="{Binding IsArchiveDialogVisible}" />
+        <mobileViews:ArchivedAccountsDialogViewMobile IsVisible="{Binding IsArchivedListVisible}" />
+
     </Grid>
 </UserControl>

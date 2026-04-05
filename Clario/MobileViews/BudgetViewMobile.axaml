@@ -8,6 +8,7 @@
              mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="800"
              x:Class="Clario.MobileViews.BudgetViewMobile"
              x:DataType="vm:BudgetViewModel"
+             x:Name="budgetRoot"
              Classes="mobile">
     <Design.DataContext>
         <vm:BudgetViewModel />
@@ -63,7 +64,8 @@
                     </StackPanel>
                 </Border>
                 <Button Classes="accented"
-                        Padding="10,8">
+                        Padding="10,8"
+                        Command="{Binding CreateBudgetCommand}">
                     <Svg Path="../Assets/Icons/plus.svg"
                          Width="16" Height="16"
                          Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #0D0F14; }" />
@@ -93,10 +95,16 @@
                             <TextBlock Text="Budgeted"
                                        FontSize="10"
                                        Foreground="{DynamicResource TextMuted}" />
-                            <TextBlock Text="{Binding TotalBudgeted, StringFormat='$0'}"
-                                       FontSize="13"
+                            <TextBlock FontSize="13"
                                        FontWeight="Bold"
-                                       Foreground="{DynamicResource TextPrimary}" />
+                                       Foreground="{DynamicResource TextPrimary}">
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="{}{0}{1:N0}">
+                                        <Binding Path="PrimarySymbol" />
+                                        <Binding Path="TotalBudgeted" />
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
                         </StackPanel>
                     </Border>
 
@@ -112,10 +120,16 @@
                             <TextBlock Text="Spent"
                                        FontSize="10"
                                        Foreground="{DynamicResource TextMuted}" />
-                            <TextBlock Text="{Binding TotalSpent, StringFormat='$0'}"
-                                       FontSize="13"
+                            <TextBlock FontSize="13"
                                        FontWeight="Bold"
-                                       Foreground="{DynamicResource AccentRed}" />
+                                       Foreground="{DynamicResource AccentRed}">
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="{}{0}{1:N0}">
+                                        <Binding Path="PrimarySymbol" />
+                                        <Binding Path="TotalSpent" />
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
                         </StackPanel>
                     </Border>
 
@@ -248,14 +262,16 @@
                                                            Foreground="{DynamicResource TextMuted}"
                                                            HorizontalAlignment="Right" />
                                             </StackPanel>
-                                            <!-- Menu -->
+                                            <!-- Edit button -->
                                             <Button Grid.Column="3"
                                                     Background="Transparent"
                                                     BorderThickness="0"
                                                     Padding="4"
-                                                    VerticalAlignment="Center">
-                                                <Svg Path="../Assets/Icons/ellipsis.svg"
-                                                     Width="15" Height="15"
+                                                    VerticalAlignment="Center"
+                                                    Command="{Binding DataContext.EditBudgetCommand, ElementName=budgetRoot}"
+                                                    CommandParameter="{Binding .}">
+                                                <Svg Path="../Assets/Icons/pencil.svg"
+                                                     Width="14" Height="14"
                                                      Css="{DynamicResource SvgMuted}" />
                                             </Button>
                                         </Grid>
@@ -419,7 +435,8 @@
                             <Button Grid.Column="1"
                                     Background="Transparent"
                                     BorderThickness="0"
-                                    Padding="4">
+                                    Padding="4"
+                                    Command="{Binding EditSavingsGoalCommand}">
                                 <Svg Path="../Assets/Icons/pencil.svg" Width="14" Height="14" Css="{DynamicResource SvgMuted}" />
                             </Button>
                         </Grid>
@@ -427,8 +444,15 @@
                         <StackPanel Spacing="6">
                             <Grid ColumnDefinitions="*,Auto">
                                 <TextBlock Grid.Column="0" Text="Monthly goal" FontSize="12" Foreground="{DynamicResource TextMuted}" />
-                                <TextBlock Grid.Column="1" Text="{Binding AppData.Profile.SavingsGoal, StringFormat='$0'}" FontSize="12" FontWeight="SemiBold"
-                                           Foreground="{DynamicResource TextPrimary}" />
+                                <TextBlock Grid.Column="1" FontSize="12" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource TextPrimary}">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0}{1:N0}">
+                                            <Binding Path="PrimarySymbol" />
+                                            <Binding Path="AppData.Profile.SavingsGoal" />
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
                             </Grid>
                             <Grid ColumnDefinitions="*,Auto">
                                 <TextBlock Grid.Column="0" Text="Projected savings" FontSize="12" Foreground="{DynamicResource TextMuted}" />

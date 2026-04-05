@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFrameworks>net8.0;net8.0-android</TargetFrameworks>
         <Nullable>enable</Nullable>
         <LangVersion>latest</LangVersion>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
@@ -13,8 +13,8 @@
 
     <ItemGroup>
         <PackageReference Include="Avalonia"/>
-        <PackageReference Include="Avalonia.Controls.ColorPicker" />
-        <PackageReference Include="Avalonia.Svg.Skia" />
+        <PackageReference Include="Avalonia.Controls.ColorPicker"/>
+        <PackageReference Include="Avalonia.Svg.Skia"/>
         <PackageReference Include="Avalonia.Themes.Fluent"/>
         <PackageReference Include="Avalonia.Fonts.Inter"/>
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
@@ -23,31 +23,38 @@
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
         <PackageReference Include="CommunityToolkit.Mvvm"/>
-        <PackageReference Include="Deadpikle.AvaloniaProgressRing" />
-        <PackageReference Include="FluentAvalonia.ProgressRing" />
-        <PackageReference Include="LiveChartsCore.SkiaSharpView.Avalonia" />
-        <PackageReference Include="SkiaSharp.NativeAssets.WebAssembly" />
-        <PackageReference Include="Supabase" />
-        <PackageReference Include="Xaml.Behaviors.Interactions" />
-        <PackageReference Include="Xaml.Behaviors.Interactivity" />
-        <PackageReference Include="SkiaSharp" />
-        <PackageReference Include="SkiaSharp.NativeAssets.Linux" />
-        <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" />
+        <PackageReference Include="Deadpikle.AvaloniaProgressRing"/>
+        <PackageReference Include="FluentAvalonia.ProgressRing"/>
+        <PackageReference Include="LiveChartsCore.SkiaSharpView.Avalonia"/>
+        <PackageReference Include="QuestPDF" />
+        <PackageReference Include="SkiaSharp.NativeAssets.WebAssembly"/>
+        <PackageReference Include="Supabase"/>
+        <PackageReference Include="Xaml.Behaviors.Interactions"/>
+        <PackageReference Include="Xaml.Behaviors.Interactivity"/>
+        <PackageReference Include="SkiaSharp"/>
+        <PackageReference Include="SkiaSharp.NativeAssets.Linux"/>
+        <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Update="MobileViews\MainAppMobile.axaml.cs">
-        <DependentUpon>MobileMainView.axaml</DependentUpon>
-        <SubType>Code</SubType>
-      </Compile>
-      <Compile Update="Views\AccountFormView.axaml.cs">
-        <DependentUpon>AccountFormView.axaml</DependentUpon>
-      </Compile>
+        <Compile Update="MobileViews\MainAppMobile.axaml.cs">
+            <DependentUpon>MobileMainView.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Views\AccountFormView.axaml.cs">
+            <DependentUpon>AccountFormView.axaml</DependentUpon>
+        </Compile>
+        <Compile Update="Views\CategoryFormView.axaml.cs">
+          <DependentUpon>CategoryFormView.axaml</DependentUpon>
+        </Compile>
+        <Compile Update="Views\AnalyticsView.axaml.cs">
+          <DependentUpon>AnalyticsView.axaml</DependentUpon>
+        </Compile>
     </ItemGroup>
 
-    <ItemGroup>
-      <None Update="devsettings.json">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
+    <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+        <None Update="devsettings.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 </Project>

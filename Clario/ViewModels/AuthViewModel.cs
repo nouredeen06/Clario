@@ -6,11 +6,13 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
+using Clario.Enums;
 using Clario.Models;
 using Clario.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Supabase.Gotrue;
+using Supabase.Gotrue.Exceptions;
 
 namespace Clario.ViewModels;
 
@@ -35,6 +37,11 @@ public partial class AuthViewModel : ViewModelBase
     [NotifyPropertyChangedFor(nameof(isSignin), nameof(isCreateAccount))]
     [NotifyCanExecuteChangedFor(nameof(ConfirmCreateAccountCommand), nameof(ConfirmLoginCommand))]
     private string _operation = "login";
+
+    [ObservableProperty] [NotifyPropertyChangedFor(nameof(HasError))]
+    private string? _errorMessage;
+
+    public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
 
     public AuthViewModel()
     {
@@ -64,11 +71,13 @@ public partial class AuthViewModel : ViewModelBase
     private void SetOperation(string operation)
     {
         Operation = operation;
+        ErrorMessage = null;
     }
 
     [RelayCommand(CanExecute = nameof(canSignin))]
     private async Task ConfirmLogin()
     {
+        ErrorMessage = null;
         try
         {
             await SupabaseService.Client.Auth.SignIn(_email, _password);
@@ -84,15 +93,22 @@ public partial class AuthViewModel : ViewModelBase
                 singleViewPlatform.MainView!.DataContext = user is not null ? new MainViewModel() : new AuthViewModel();
             }
         }
+        catch (GotrueException e)
+        {
+            DebugLogger.Log(e);
+            ErrorMessage = GetLoginErrorMessage(e.Reason);
+        }
         catch (Exception e)
         {
             DebugLogger.Log(e);
+            ErrorMessage = GetErrorMessage(AuthError.Unknown);
         }
     }
 
     [RelayCommand(CanExecute = nameof(canCreateAccount))]
     private async Task ConfirmCreateAccount()
     {
+        ErrorMessage = null;
         try
         {
             var session = await SupabaseService.Client.Auth.SignUp(
@@ -120,11 +136,51 @@ public partial class AuthViewModel : ViewModelBase
                 singleViewPlatform.MainView!.DataContext = user is not null ? new MainViewModel() : new AuthViewModel();
             }
         }
+        catch (GotrueException e)
+        {
+            DebugLogger.Log(e);
+            ErrorMessage = GetSignupErrorMessage(e.Reason);
+        }
         catch (Exception e)
         {
             DebugLogger.Log(e);
+            ErrorMessage = GetErrorMessage(AuthError.Unknown);
         }
     }
+
+    private static string GetLoginErrorMessage(FailureHint.Reason reason) => reason switch
+    {
+        FailureHint.Reason.UserBadLogin     => GetErrorMessage(AuthError.InvalidCredentials),
+        FailureHint.Reason.UserBadPassword  => GetErrorMessage(AuthError.InvalidCredentials),
+        FailureHint.Reason.UserEmailNotConfirmed => GetErrorMessage(AuthError.EmailNotConfirmed),
+        FailureHint.Reason.UserTooManyRequests   => GetErrorMessage(AuthError.RateLimited),
+        FailureHint.Reason.UserBadEmailAddress   => GetErrorMessage(AuthError.InvalidEmail),
+        FailureHint.Reason.Offline               => GetErrorMessage(AuthError.Unknown),
+        _                                        => GetErrorMessage(AuthError.Unknown),
+    };
+
+    private static string GetSignupErrorMessage(FailureHint.Reason reason) => reason switch
+    {
+        FailureHint.Reason.UserAlreadyRegistered => GetErrorMessage(AuthError.EmailAlreadyExists),
+        FailureHint.Reason.UserBadPassword       => GetErrorMessage(AuthError.WeakPassword),
+        FailureHint.Reason.UserBadEmailAddress   => GetErrorMessage(AuthError.InvalidEmail),
+        FailureHint.Reason.UserTooManyRequests   => GetErrorMessage(AuthError.RateLimited),
+        FailureHint.Reason.Offline               => GetErrorMessage(AuthError.Unknown),
+        _                                        => GetErrorMessage(AuthError.Unknown),
+    };
+
+    private static string GetErrorMessage(AuthError error) => error switch
+    {
+        AuthError.InvalidCredentials => "Invalid email or password.",
+        AuthError.EmailAlreadyExists => "An account with this email already exists.",
+        AuthError.EmailNotConfirmed  => "Please confirm your email before signing in.",
+        AuthError.WeakPassword       => "Password must be at least 6 characters.",
+        AuthError.InvalidEmail       => "Please enter a valid email address.",
+        AuthError.SignupDisabled     => "Sign-ups are currently disabled.",
+        AuthError.RateLimited        => "Too many attempts. Please wait and try again.",
+        AuthError.SessionExpired     => "Your session has expired. Please sign in again.",
+        _                            => "Something went wrong. Please try again.",
+    };
 
 
     public bool isSignin => Operation == "login";

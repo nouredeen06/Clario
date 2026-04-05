@@ -20,6 +20,7 @@
     <PackageVersion Include="Deadpikle.AvaloniaProgressRing" Version="0.10.10" />
     <PackageVersion Include="FluentAvalonia.ProgressRing" Version="1.69.2" />
     <PackageVersion Include="LiveChartsCore.SkiaSharpView.Avalonia" Version="2.0.0-rc6.1" />
+    <PackageVersion Include="QuestPDF" Version="2026.2.4" />
     <PackageVersion Include="SkiaSharp.NativeAssets.WebAssembly" Version="3.116.1" />
     <PackageVersion Include="Supabase" Version="1.1.1" />
     <PackageVersion Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.0.1.15" />

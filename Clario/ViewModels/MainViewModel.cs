@@ -21,6 +21,7 @@ public partial class MainViewModel : ViewModelBase
     public TransactionsViewModel _transactionsViewModel = null!;
     private AccountsViewModel _accountsViewModel = null!;
     private BudgetViewModel _budgetViewModel = null!;
+    private AnalyticsViewModel _analyticsViewModel = null!;
 
     GeneralDataRepo AppData => DataRepo.General;
     [ObservableProperty] private Profile? _profile;
@@ -28,6 +29,7 @@ public partial class MainViewModel : ViewModelBase
     [ObservableProperty] private TransactionFormViewModel _transactionFormViewModel = null!;
     [ObservableProperty] private AccountFormViewModel _accountFormViewModel = null!;
     [ObservableProperty] private BudgetFormViewModel _budgetFormViewModel = null!;
+    [ObservableProperty] private CategoryFormViewModel _categoryFormViewModel = null!;
     [ObservableProperty] private SettingsViewModel _settingsViewModel = null!;
     [ObservableProperty] private SetSavingsGoalDialogViewModel _setSavingsGoalDialogViewModel = null!;
 
@@ -35,11 +37,12 @@ public partial class MainViewModel : ViewModelBase
     [ObservableProperty] private bool _isTransactionFormVisible;
     [ObservableProperty] private bool _isAccountFormVisible;
     [ObservableProperty] private bool _isBudgetFormVisible;
+    [ObservableProperty] private bool _isCategoryFormVisible;
     [ObservableProperty] private bool _isSavingsGoalDialogVisible;
 
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(isOnDashboard), nameof(isOnTransactions), nameof(isOnAccounts), nameof(isOnBudget), nameof(isOnSettings))]
+    [NotifyPropertyChangedFor(nameof(isOnDashboard), nameof(isOnTransactions), nameof(isOnAccounts), nameof(isOnBudget), nameof(isOnAnalytics), nameof(isOnSettings))]
     private ViewModelBase? _currentView;
 
     [ObservableProperty] private bool _isDarkTheme;
@@ -103,6 +106,11 @@ public partial class MainViewModel : ViewModelBase
                 parentViewModel = this
             };
             DebugLogger.Log("initialized BudgetViewModel");
+            _analyticsViewModel = new AnalyticsViewModel()
+            {
+                parentViewModel = this
+            };
+            DebugLogger.Log("initialized AnalyticsViewModel");
             SettingsViewModel = new SettingsViewModel()
             {
                 parentViewModel = this
@@ -112,6 +120,8 @@ public partial class MainViewModel : ViewModelBase
             {
                 parentViewModel = this
             };
+            TransactionFormViewModel.OnOpenCategoryForm = OpenAddCategoryFromTransactionForm;
+            TransactionFormViewModel.OnOpenEditCategoryForm = OpenEditCategoryFromTransactionForm;
             DebugLogger.Log("initialized TransactionFormViewModel");
             AccountFormViewModel = new AccountFormViewModel()
             {
@@ -123,6 +133,11 @@ public partial class MainViewModel : ViewModelBase
                 parentViewModel = this
             };
             DebugLogger.Log("initialized BudgetFormViewModel");
+            CategoryFormViewModel = new CategoryFormViewModel()
+            {
+                parentViewModel = this
+            };
+            DebugLogger.Log("initialized CategoryFormViewModel");
             SetSavingsGoalDialogViewModel = new SetSavingsGoalDialogViewModel();
             DebugLogger.Log("initialized SetSavingsGoalDialogViewModel");
 
@@ -268,6 +283,78 @@ public partial class MainViewModel : ViewModelBase
         IsBudgetFormVisible = false;
     }
 
+    private void OpenEditCategoryFromTransactionForm(Category category)
+    {
+        CategoryFormViewModel.SetupForEdit(category);
+        CategoryFormViewModel.OnSaved = () =>
+        {
+            TransactionFormViewModel.Categories = AppData.Categories;
+            // Keep the selected category in sync after edit
+            var updated = AppData.Categories.FirstOrDefault(c => c.Id == category.Id);
+            if (updated is not null) TransactionFormViewModel.SelectedCategory = updated;
+            CloseCategoryForm();
+        };
+        CategoryFormViewModel.OnCancelled = CloseCategoryForm;
+        CategoryFormViewModel.OnDeleted = () =>
+        {
+            TransactionFormViewModel.Categories = AppData.Categories;
+            TransactionFormViewModel.SelectedCategory = AppData.Categories.FirstOrDefault(c => c.Type == TransactionFormViewModel.Type);
+            CloseCategoryForm();
+        };
+        IsCategoryFormVisible = true;
+    }
+
+    // Called by the plus button inside TransactionFormView
+    private void OpenAddCategoryFromTransactionForm()
+    {
+        CategoryFormViewModel.SetupForAdd();
+        CategoryFormViewModel.OnSaved = () =>
+        {
+            // Refresh the category list in the transaction form after adding
+            TransactionFormViewModel.Categories = AppData.Categories;
+            CloseCategoryForm();
+        };
+        CategoryFormViewModel.OnCancelled = CloseCategoryForm;
+        CategoryFormViewModel.OnDeleted = () =>
+        {
+            TransactionFormViewModel.Categories = AppData.Categories;
+            CloseCategoryForm();
+        };
+        IsCategoryFormVisible = true;
+    }
+
+    [RelayCommand]
+    public void OpenAddCategory()
+    {
+        if (IsDimmed) return;
+        CategoryFormViewModel.SetupForAdd();
+        CategoryFormViewModel.OnSaved = CloseCategoryForm;
+        CategoryFormViewModel.OnCancelled = CloseCategoryForm;
+        CategoryFormViewModel.OnDeleted = CloseCategoryForm;
+        IsCategoryFormVisible = true;
+        IsDimmed = true;
+    }
+
+    [RelayCommand]
+    public void OpenEditCategory(Category category)
+    {
+        if (IsDimmed) return;
+        CategoryFormViewModel.SetupForEdit(category);
+        CategoryFormViewModel.OnSaved = CloseCategoryForm;
+        CategoryFormViewModel.OnCancelled = CloseCategoryForm;
+        CategoryFormViewModel.OnDeleted = CloseCategoryForm;
+        IsCategoryFormVisible = true;
+        IsDimmed = true;
+    }
+
+    private void CloseCategoryForm()
+    {
+        IsCategoryFormVisible = false;
+        // Only clear the dim if no other modal is open
+        if (!IsTransactionFormVisible)
+            IsDimmed = false;
+    }
+
     [RelayCommand]
     public void OpenEditSavingsGoal()
     {
@@ -317,6 +404,12 @@ public partial class MainViewModel : ViewModelBase
     }
 
     [RelayCommand]
+    private void GoToAnalytics()
+    {
+        CurrentView = _analyticsViewModel;
+    }
+
+    [RelayCommand]
     private void GoToSettings()
     {
         CurrentView = _settingsViewModel;
@@ -343,5 +436,6 @@ public partial class MainViewModel : ViewModelBase
     public bool isOnTransactions => CurrentView is TransactionsViewModel;
     public bool isOnAccounts => CurrentView is AccountsViewModel;
     public bool isOnBudget => CurrentView is BudgetViewModel;
+    public bool isOnAnalytics => CurrentView is AnalyticsViewModel;
     public bool isOnSettings => CurrentView is SettingsViewModel;
 }

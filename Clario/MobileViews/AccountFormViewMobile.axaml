@@ -1,0 +1,408 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Clario.ViewModels"
+             xmlns:cc="clr-namespace:Clario.CustomControls"
+             xmlns:behaviors="clr-namespace:Clario.Behaviors"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="800"
+             x:Class="Clario.MobileViews.AccountFormViewMobile"
+             x:DataType="vm:AccountFormViewModel"
+             x:Name="AccountFormRoot"
+             Classes="mobile">
+    <Design.DataContext>
+        <vm:AccountFormViewModel />
+    </Design.DataContext>
+
+    <Grid RowDefinitions="Auto,*,Auto"
+          Background="{DynamicResource BgBase}">
+
+        <!-- ── Top bar ──────────────────────────── -->
+        <Grid Grid.Row="0"
+              ColumnDefinitions="Auto,*,Auto"
+              Margin="16,16,16,0">
+
+            <!-- Close -->
+            <Button Grid.Column="0"
+                    Background="{DynamicResource BgSurface}"
+                    BorderBrush="{DynamicResource BorderSubtle}"
+                    BorderThickness="1"
+                    CornerRadius="20"
+                    Width="36" Height="36"
+                    Padding="0"
+                    HorizontalContentAlignment="Center"
+                    Command="{Binding CancelCommand}">
+                <Svg Path="../Assets/Icons/x.svg"
+                     Width="14" Height="14"
+                     Css="{DynamicResource SvgMuted}" />
+            </Button>
+
+            <!-- Title -->
+            <StackPanel Grid.Column="1"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Spacing="1">
+                <TextBlock Text="{Binding FormTitle}"
+                           FontSize="15"
+                           FontWeight="Bold"
+                           Foreground="{DynamicResource TextPrimary}"
+                           HorizontalAlignment="Center" />
+                <TextBlock Text="{Binding FormSubtitle}"
+                           FontSize="11"
+                           Foreground="{DynamicResource TextMuted}"
+                           HorizontalAlignment="Center" />
+            </StackPanel>
+
+            <!-- Placeholder to keep title centered -->
+            <Border Grid.Column="2" Width="36" />
+        </Grid>
+
+        <!-- ── Scrollable form ───────────────────── -->
+        <ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled"
+                      Margin="0,16,0,0">
+            <StackPanel Margin="16,0,16,16" Spacing="0">
+
+                <!-- Icon preview + Name -->
+                <Grid ColumnDefinitions="Auto,*" Margin="0,0,0,20">
+                    <Border Grid.Column="0"
+                            CornerRadius="14"
+                            Width="52" Height="52"
+                            Margin="0,0,14,0"
+                            VerticalAlignment="Center">
+                        <Border.Background>
+                            <SolidColorBrush
+                                Color="{Binding SelectedColor, Converter={StaticResource HexToColorConverter}, ConverterParameter=color}"
+                                Opacity="0.15" />
+                        </Border.Background>
+                        <Svg Path="{Binding SelectedIcon, Converter={StaticResource SvgPathFromName}}"
+                             Width="22" Height="22"
+                             Css="{Binding SelectedColor, Converter={StaticResource HexToColorConverter}, ConverterParameter=css}" />
+                    </Border>
+                    <TextBox Grid.Column="1"
+                             Text="{Binding Name, Mode=TwoWay}"
+                             Watermark="Account name"
+                             FontSize="20"
+                             FontWeight="Bold"
+                             Foreground="{DynamicResource TextPrimary}"
+                             Background="Transparent"
+                             BorderThickness="0,0,0,1"
+                             BorderBrush="{DynamicResource BorderSubtle}"
+                             Padding="0,0,0,8"
+                             VerticalContentAlignment="Bottom"
+                             CornerRadius="0" />
+                </Grid>
+
+                <!-- Type -->
+                <TextBlock Text="TYPE" Classes="label" Margin="0,0,0,6" />
+                <Border Background="{DynamicResource BgBase}"
+                        BorderBrush="{DynamicResource BorderSubtle}"
+                        BorderThickness="1"
+                        CornerRadius="{DynamicResource RadiusControl}"
+                        Margin="0,0,0,20">
+                    <ComboBox ItemsSource="{Binding AccountTypes}"
+                              SelectedItem="{Binding SelectedType, Mode=TwoWay}"
+                              Background="Transparent"
+                              BorderThickness="0"
+                              Padding="14,12"
+                              FontSize="15"
+                              HorizontalAlignment="Stretch" />
+                </Border>
+
+                <!-- Institution -->
+                <TextBlock Text="INSTITUTION  (OPTIONAL)" Classes="label" Margin="0,0,0,6" />
+                <TextBox Text="{Binding Institution, Mode=TwoWay}"
+                         Watermark="e.g. Chase"
+                         FontSize="15"
+                         Height="48"
+                         Padding="14,0"
+                         VerticalContentAlignment="Center"
+                         Margin="0,0,0,20" />
+
+                <!-- Last 4 digits -->
+                <TextBlock Text="LAST 4 DIGITS  (OPTIONAL)" Classes="label" Margin="0,0,0,6" />
+                <TextBox Text="{Binding Mask, Mode=TwoWay}"
+                         Watermark="e.g. 1234"
+                         FontSize="15"
+                         Height="48"
+                         Padding="14,0"
+                         MaxLength="4"
+                         VerticalContentAlignment="Center"
+                         Margin="0,0,0,20">
+                    <Interaction.Behaviors>
+                        <behaviors:NumericInputBehavior />
+                    </Interaction.Behaviors>
+                </TextBox>
+
+                <!-- Opening Balance -->
+                <TextBlock Text="OPENING BALANCE" Classes="label" Margin="0,0,0,6" />
+                <Border Background="{DynamicResource BgBase}"
+                        BorderBrush="{DynamicResource BorderSubtle}"
+                        BorderThickness="1"
+                        CornerRadius="{DynamicResource RadiusControl}"
+                        Padding="14,0"
+                        Margin="0,0,0,20"
+                        Height="52">
+                    <Grid ColumnDefinitions="Auto,*">
+                        <TextBlock Grid.Column="0"
+                                   Text="$"
+                                   FontSize="20"
+                                   FontWeight="Bold"
+                                   Foreground="{DynamicResource TextMuted}"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,6,0" />
+                        <TextBox Grid.Column="1"
+                                 Classes="ghost"
+                                 Text="{Binding OpeningBalance, Mode=TwoWay}"
+                                 Watermark="0.00"
+                                 FontSize="20"
+                                 FontWeight="Bold"
+                                 Foreground="{DynamicResource TextPrimary}"
+                                 Height="48"
+                                 Padding="0"
+                                 VerticalContentAlignment="Center">
+                            <Interaction.Behaviors>
+                                <behaviors:NumericInputBehavior />
+                            </Interaction.Behaviors>
+                        </TextBox>
+                    </Grid>
+                </Border>
+
+                <!-- Currency -->
+                <TextBlock Text="CURRENCY" Classes="label" Margin="0,0,0,6" />
+                <TextBox Text="{Binding CurrencySearch, Mode=TwoWay}"
+                         Watermark="Search currency..."
+                         FontSize="14"
+                         Height="42"
+                         Padding="14,0"
+                         VerticalContentAlignment="Center"
+                         Margin="0,0,0,6" />
+                <Border Background="{DynamicResource BgBase}"
+                        BorderBrush="{DynamicResource BorderSubtle}"
+                        BorderThickness="1"
+                        CornerRadius="{DynamicResource RadiusControl}"
+                        Padding="8"
+                        Margin="0,0,0,20">
+                    <ScrollViewer MaxHeight="100"
+                                  HorizontalScrollBarVisibility="Disabled"
+                                  VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding FilteredCurrencies}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid Columns="4" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Classes="nav"
+                                            Content="{Binding}"
+                                            Margin="2"
+                                            Padding="8,6"
+                                            CornerRadius="6"
+                                            FontSize="13"
+                                            Command="{Binding DataContext.SetCurrencyCommand, ElementName=AccountFormRoot}"
+                                            CommandParameter="{Binding}">
+                                        <Classes.accented>
+                                            <MultiBinding Converter="{StaticResource EqualValueConverter}">
+                                                <Binding Path="." />
+                                                <Binding Path="DataContext.Currency" ElementName="AccountFormRoot" />
+                                            </MultiBinding>
+                                        </Classes.accented>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Border>
+
+                <!-- Credit Limit -->
+                <StackPanel Spacing="6" Margin="0,0,0,20" IsVisible="{Binding IsCredit}">
+                    <TextBlock Text="CREDIT LIMIT  (OPTIONAL)" Classes="label" />
+                    <Border Background="{DynamicResource BgBase}"
+                            BorderBrush="{DynamicResource BorderSubtle}"
+                            BorderThickness="1"
+                            CornerRadius="{DynamicResource RadiusControl}"
+                            Padding="14,0"
+                            Height="52">
+                        <Grid ColumnDefinitions="Auto,*">
+                            <TextBlock Grid.Column="0"
+                                       Text="$"
+                                       FontSize="20"
+                                       FontWeight="Bold"
+                                       Foreground="{DynamicResource TextMuted}"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,6,0" />
+                            <TextBox Grid.Column="1"
+                                     Classes="ghost"
+                                     Text="{Binding CreditLimit, Mode=TwoWay}"
+                                     Watermark="0.00"
+                                     FontSize="20"
+                                     FontWeight="Bold"
+                                     Foreground="{DynamicResource TextPrimary}"
+                                     Height="48"
+                                     Padding="0"
+                                     VerticalContentAlignment="Center">
+                                <Interaction.Behaviors>
+                                    <behaviors:NumericInputBehavior />
+                                </Interaction.Behaviors>
+                            </TextBox>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+
+                <!-- Opened At -->
+                <TextBlock Text="OPENED ON  (OPTIONAL)" Classes="label" Margin="0,0,0,6" />
+                <Border Background="{DynamicResource BgBase}"
+                        BorderBrush="{DynamicResource BorderSubtle}"
+                        BorderThickness="1"
+                        CornerRadius="{DynamicResource RadiusControl}"
+                        Margin="0,0,0,20">
+                    <cc:DateRangePicker Classes="ghost"
+                                        SelectionMode="SingleDate"
+                                        SelectedDates="{Binding OpenedAtDates}"
+                                        HorizontalAlignment="Stretch"
+                                        Padding="14,12" />
+                </Border>
+
+                <!-- Icon -->
+                <TextBlock Text="ICON" Classes="label" Margin="0,0,0,6" />
+                <Border Background="{DynamicResource BgBase}"
+                        BorderBrush="{DynamicResource BorderSubtle}"
+                        BorderThickness="1"
+                        CornerRadius="{DynamicResource RadiusControl}"
+                        Margin="0,0,0,20">
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Border Grid.Column="0"
+                                CornerRadius="7"
+                                Width="32" Height="32"
+                                Margin="10,0,0,0"
+                                VerticalAlignment="Center">
+                            <Border.Background>
+                                <SolidColorBrush
+                                    Color="{Binding SelectedColor, Converter={StaticResource HexToColorConverter}, ConverterParameter=color}"
+                                    Opacity="0.15" />
+                            </Border.Background>
+                            <Svg Path="{Binding SelectedIcon, Converter={StaticResource SvgPathFromName}}"
+                                 Width="14" Height="14"
+                                 Css="{Binding SelectedColor, Converter={StaticResource HexToColorConverter}, ConverterParameter=css}" />
+                        </Border>
+                        <ComboBox Grid.Column="1"
+                                  ItemsSource="{Binding Icons}"
+                                  SelectedItem="{Binding SelectedIcon, Mode=TwoWay}"
+                                  Background="Transparent"
+                                  BorderThickness="0"
+                                  Padding="10,12"
+                                  FontSize="15"
+                                  HorizontalAlignment="Stretch" />
+                    </Grid>
+                </Border>
+
+                <!-- Color -->
+                <TextBlock Text="COLOR" Classes="label" Margin="0,0,0,6" />
+                <Border Background="{DynamicResource BgBase}"
+                        BorderBrush="{DynamicResource BorderSubtle}"
+                        BorderThickness="1"
+                        CornerRadius="{DynamicResource RadiusControl}"
+                        Height="48"
+                        Margin="0,0,0,20">
+                    <ColorPicker
+                        Color="{Binding SelectedColor, Converter={StaticResource HexToColorConverter}, ConverterParameter=color}"
+                        HorizontalAlignment="Stretch"
+                        Height="48"
+                        CornerRadius="{DynamicResource RadiusControl}"
+                        IsAlphaEnabled="False"
+                        IsAlphaVisible="False"
+                        IsColorPaletteVisible="False"
+                        IsAccentColorsVisible="False" />
+                </Border>
+
+                <!-- Primary account toggle -->
+                <Border Background="{DynamicResource BgBase}"
+                        BorderBrush="{DynamicResource BorderSubtle}"
+                        BorderThickness="1"
+                        CornerRadius="{DynamicResource RadiusControl}"
+                        Padding="14,12"
+                        Margin="0,0,0,20">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="2">
+                            <TextBlock Text="Primary Account"
+                                       FontSize="15"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextPrimary}" />
+                            <TextBlock Text="Sets this account's currency as the reference currency"
+                                       FontSize="11"
+                                       Foreground="{DynamicResource TextMuted}"
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
+                        <ToggleSwitch Grid.Column="1"
+                                      IsChecked="{Binding IsPrimary, Mode=TwoWay}"
+                                      OffContent=""
+                                      OnContent=""
+                                      VerticalAlignment="Center" />
+                    </Grid>
+                </Border>
+
+                <!-- Error banner -->
+                <Border Background="{DynamicResource BadgeBgRed}"
+                        BorderBrush="{DynamicResource AccentRed}"
+                        BorderThickness="1"
+                        CornerRadius="10"
+                        Padding="12,8"
+                        Margin="0,0,0,8"
+                        IsVisible="{Binding HasError}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Svg Path="../Assets/Icons/circle-alert.svg"
+                             Width="13" Height="13"
+                             Css="{DynamicResource SvgRed}" />
+                        <TextBlock Text="{Binding ErrorMessage}"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource AccentRed}"
+                                   VerticalAlignment="Center"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- ── Bottom action bar ─────────────────── -->
+        <Border Grid.Row="2"
+                Background="{DynamicResource BgSurface}"
+                BorderBrush="{DynamicResource BorderSubtle}"
+                BorderThickness="0,1,0,0"
+                Padding="16,12,16,20">
+            <Grid ColumnDefinitions="*,*">
+                <Button Grid.Column="0"
+                        Classes="base"
+                        Margin="0,0,6,0"
+                        Padding="0,13"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        FontSize="14"
+                        Content="Cancel"
+                        Command="{Binding CancelCommand}" />
+                <Button Grid.Column="1"
+                        Classes="accented"
+                        Margin="6,0,0,0"
+                        Padding="0,13"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        IsEnabled="{Binding IsValid}"
+                        Command="{Binding SaveCommand}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Svg Path="../Assets/Icons/check.svg"
+                             Width="14" Height="14"
+                             Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #0D0F14; }" />
+                        <TextBlock Text="{Binding SaveButtonLabel}"
+                                   FontSize="14"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource BgBase}"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </Border>
+
+    </Grid>
+</UserControl>
