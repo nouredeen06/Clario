@@ -14,7 +14,7 @@ public partial class BudgetFormViewModel : ViewModelBase
 {
     public required ViewModelBase parentViewModel;
 
-    // ── Mode ────────────────────────────────────────────────
+    //  Mode 
     [ObservableProperty] [NotifyPropertyChangedFor(nameof(FormTitle), nameof(FormSubtitle), nameof(SaveButtonLabel))]
     private bool _isEditMode = false;
 
@@ -22,7 +22,7 @@ public partial class BudgetFormViewModel : ViewModelBase
     public string FormSubtitle => IsEditMode ? "Update the details below" : "Fill in the details below";
     public string SaveButtonLabel => IsEditMode ? "Save Changes" : "Save Budget";
 
-    // ── Fields ──────────────────────────────────────────────
+    //  Fields 
     [ObservableProperty] [NotifyPropertyChangedFor(nameof(IsMonthly), nameof(IsQuarterly), nameof(IsYearly), nameof(IsValid))]
     private string _period = "monthly";
 
@@ -43,7 +43,7 @@ public partial class BudgetFormViewModel : ViewModelBase
 
     [ObservableProperty] private bool _rollover = false;
 
-    // ── Validation ──────────────────────────────────────────
+    //  Validation 
     [ObservableProperty] [NotifyPropertyChangedFor(nameof(HasError))]
     private string? _errorMessage;
 
@@ -57,20 +57,20 @@ public partial class BudgetFormViewModel : ViewModelBase
         decimal.TryParse(LimitAmount, out var amt) && amt > 0 &&
         SelectedCategory is not null;
 
-    // ── Callbacks ───────────────────────────────────────────
+    //  Callbacks 
     public Action? OnSaved;
     public Action? OnCancelled;
     public Action? OnDeleted;
 
     [ObservableProperty] private bool _showDeleteConfirm = false;
 
-    // ── Edit mode: original budget ───────────────────────────
+    //  Edit mode: original budget 
     private Guid? _editingId;
 
-    // ── Result ──────────────────────────────────────────────
+    //  Result 
     public Budget? ResultBudget { get; set; }
 
-    // ── Commands ────────────────────────────────────────────
+    //  Commands 
 
     [RelayCommand]
     private void SetPeriod(string period)
@@ -174,7 +174,7 @@ public partial class BudgetFormViewModel : ViewModelBase
         OnCancelled?.Invoke();
     }
 
-    // ── Public setup methods ─────────────────────────────────
+    //  Public setup methods 
 
     /// <summary>Call this to open the form for adding a new budget.</summary>
     public void SetupForAdd(ObservableCollection<Category> categories)

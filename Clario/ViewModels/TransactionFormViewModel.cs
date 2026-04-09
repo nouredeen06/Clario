@@ -17,7 +17,7 @@ public partial class TransactionFormViewModel : ViewModelBase
     public required ViewModelBase parentViewModel;
     public GeneralDataRepo AppData => DataRepo.General;
 
-    // ── Mode ────────────────────────────────────────────────
+    //  Mode 
     [ObservableProperty] [NotifyPropertyChangedFor(nameof(FormTitle), nameof(FormSubtitle), nameof(SaveButtonLabel))]
     private bool _isEditMode = false;
 
@@ -25,7 +25,7 @@ public partial class TransactionFormViewModel : ViewModelBase
     public string FormSubtitle => IsEditMode ? "Update the details below" : "Fill in the details below";
     public string SaveButtonLabel => IsEditMode ? "Save Changes" : (IsTransfer ? "Save Transfer" : "Save Transaction");
 
-    // ── Fields ──────────────────────────────────────────────
+    //  Fields 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsExpense), nameof(IsIncome), nameof(IsTransfer), nameof(IsValid), nameof(FormTitle), nameof(SaveButtonLabel))]
     private string _type = "expense";
@@ -64,7 +64,7 @@ public partial class TransactionFormViewModel : ViewModelBase
     [ObservableProperty] private ObservableCollection<Category> _categories = new();
     [ObservableProperty] private ObservableCollection<Account> _accounts = new();
 
-    // ── Validation ──────────────────────────────────────────
+    //  Validation 
     [ObservableProperty] [NotifyPropertyChangedFor(nameof(HasError))]
     private string? _errorMessage;
 
@@ -80,7 +80,7 @@ public partial class TransactionFormViewModel : ViewModelBase
             ? SelectedAccount is not null && SelectedToAccount is not null && SelectedAccount.Id != SelectedToAccount.Id
             : !string.IsNullOrWhiteSpace(Description) && SelectedCategory is not null && SelectedAccount is not null);
 
-    // ── Callbacks ───────────────────────────────────────────
+    //  Callbacks 
     public Action? OnSaved;
     public Action? OnCancelled;
     public Action? OnDeleted;
@@ -89,17 +89,17 @@ public partial class TransactionFormViewModel : ViewModelBase
 
     [ObservableProperty] private bool _showDeleteConfirm = false;
 
-    // ── Edit mode: original transaction ─────────────────────
+    //  Edit mode: original transaction 
     private Transaction? _editingTransaction;
     private Guid? _editingId;
     private Guid? _transferPairId;
     private decimal _editingOriginalAmount;
     private Guid? _editingOriginalCategoryId;
 
-    // ── Result transaction ──────────────────────────────────
+    //  Result transaction 
     public Transaction? ResultTransaction { get; set; }
 
-    // ── Budget warning ──────────────────────────────────────
+    //  Budget warning 
     [ObservableProperty] [NotifyPropertyChangedFor(nameof(HasBudgetWarning), nameof(HasBudgetApproachingWarning))]
     private string? _budgetWarningMessage;
 
@@ -109,7 +109,7 @@ public partial class TransactionFormViewModel : ViewModelBase
     public bool HasBudgetWarning => !string.IsNullOrEmpty(BudgetWarningMessage);
     public bool HasBudgetApproachingWarning => HasBudgetWarning && !BudgetWarningIsOverBudget;
 
-    // ── Commands ────────────────────────────────────────────
+    //  Commands 
 
     partial void OnSelectedCategoryChanged(Category? value)
     {
@@ -414,7 +414,7 @@ public partial class TransactionFormViewModel : ViewModelBase
         OnCancelled?.Invoke();
     }
 
-    // ── Public setup methods ─────────────────────────────────
+    //  Public setup methods 
 
     /// <summary>Call this to open the form for adding a new transaction.</summary>
     public void SetupForAdd()

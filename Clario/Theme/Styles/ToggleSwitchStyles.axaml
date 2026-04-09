@@ -130,7 +130,7 @@
             <Setter Property="Background" Value="Transparent" />
         </Style>
 
-        <!--  DisabledState  -->
+        <!-- DisabledState -->
         <Style Selector="^:disabled">
             <Setter Property="Foreground" Value="{DynamicResource TextDisabled}" />
         </Style>
@@ -155,7 +155,7 @@
             <Setter Property="Opacity" Value="0.4" />
         </Style>
 
-        <!--  CheckedState  -->
+        <!-- CheckedState -->
         <Style Selector="^:checked /template/ Border#OuterBorder">
             <Setter Property="Opacity" Value="0" />
         </Style>
@@ -180,7 +180,7 @@
             <Setter Property="Opacity" Value="1" />
         </Style>
 
-        <!--  UncheckedState  -->
+        <!-- UncheckedState -->
         <Style Selector="^:unchecked /template/ Border#OuterBorder">
             <Setter Property="Opacity" Value="1" />
         </Style>

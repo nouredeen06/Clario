@@ -86,38 +86,25 @@ public partial class DashboardViewModel : ViewModelBase
 
     partial void OnSelectedChartTimePeriodChanged(string value)
     {
-        ChartTimePeriod period = value switch
-        {
-            "This Month" => ChartTimePeriod.ThisMonth,
-            "Last Month" => ChartTimePeriod.LastMonth,
-            "This Quarter" => ChartTimePeriod.ThisQuarter,
-            "This Year" => ChartTimePeriod.ThisYear,
-            _ => ChartTimePeriod.ThisMonth
-        };
+        var (_, _, subtitle) = DateRangeService.Resolve(value);
+        SelectedChartTimPeriodSubTitle = subtitle.Length > 0
+            ? char.ToUpper(subtitle[0]) + subtitle.Substring(1).ToLower()
+            : subtitle;
 
-        SelectedChartTimPeriodSubTitle = value switch
-        {
-            "This Month" => DateTime.Now.ToString("MMMM yyyy"),
-            "Last Month" => DateTime.Now.AddMonths(-1).ToString("MMMM yyyy"),
-            "This Quarter" => $"Q{(DateTime.Now.Month - 1) / 3 + 1} {DateTime.Now.Year}",
-            "This Year" => DateTime.Now.Year.ToString(),
-            _ => DateTime.Now.ToString("MMMM yyyy")
-        };
-
-        UpdateSpendingByCategoryChart(period);
+        UpdateSpendingByCategoryChart(value);
     }
 
     public DashboardViewModel()
     {
-        AppData.Transactions.CollectionChanged += (s, e) => UpdateUserOverview();
-        AppData.Accounts.CollectionChanged += (s, e) => UpdateUserOverview();
-        AppData.Categories.CollectionChanged += (s, e) => UpdateUserOverview();
-        AppData.Budgets.CollectionChanged += (s, e) => UpdateUserOverview();
+        Track(AppData.Transactions, (_, _) => UpdateUserOverview());
+        Track(AppData.Accounts,     (_, _) => UpdateUserOverview());
+        Track(AppData.Categories,   (_, _) => UpdateUserOverview());
+        Track(AppData.Budgets,      (_, _) => UpdateUserOverview());
         WeakReferenceMessenger.Default.Register<RatesRefreshed>(this, (_, _) => UpdateUserOverview());
-        initialize();
+        Initialize();
     }
 
-    public void initialize()
+    public void Initialize()
     {
         UpdateUserOverview();
     }
@@ -126,7 +113,7 @@ public partial class DashboardViewModel : ViewModelBase
     private void UpdateUserOverview()
     {
         CalculateMonthlyValues();
-        UpdateSpendingByCategoryChart();
+        UpdateSpendingByCategoryChart(SelectedChartTimePeriod);
         _ = UpdateBudgetTracker();
         UpdateRecentTransactions();
         UpdateAccountsSummary();
@@ -175,53 +162,50 @@ public partial class DashboardViewModel : ViewModelBase
     [RelayCommand]
     private void CreateTransaction()
     {
-        ((MainViewModel)parentViewModel).OpenAddTransaction();
+        if (parentViewModel is MainViewModel main) main.OpenAddTransaction();
     }
 
     [RelayCommand]
     private void NavigateToSettings()
     {
-        ((MainViewModel)parentViewModel).GoToSettingsCommand.Execute(null);
+        if (parentViewModel is MainViewModel main) main.GoToSettingsCommand.Execute(null);
     }
 
-    private void UpdateSpendingByCategoryChart(ChartTimePeriod period = ChartTimePeriod.ThisMonth)
+    [RelayCommand]
+    private void NavigateToBudget()
     {
+        if (parentViewModel is MainViewModel main) main.GoToBudgetCommand.Execute(null);
+    }
+
+    [RelayCommand]
+    private void OpenAddBudget()
+    {
+        if (parentViewModel is MainViewModel main) main.OpenAddBudgetCommand.Execute(null);
+    }
+
+    private void UpdateSpendingByCategoryChart(string period = "This Month")
+    {
+        var (start, end, _) = DateRangeService.Resolve(period);
         var tempList = new List<ColumnChartData>();
 
         foreach (var category in AppData.Categories)
         {
-            var categoryTransactions =
-                AppData.Transactions.Where(x => x.CategoryId == category.Id && x.Type.Equals("expense", StringComparison.OrdinalIgnoreCase));
+            var txns = AppData.Transactions
+                .Where(x => x.CategoryId == category.Id
+                         && x.Type.Equals("expense", StringComparison.OrdinalIgnoreCase)
+                         && (start is null || x.Date.Date >= start.Value)
+                         && (end is null   || x.Date.Date <= end.Value));
 
-            switch (period)
+            var total = txns.Sum(x => x.ConvertedAmount);
+            if (total == 0) continue;
+
+            tempList.Add(new ColumnChartData
             {
-                case ChartTimePeriod.ThisMonth:
-                    categoryTransactions = categoryTransactions.Where(x => x.Date.Month == DateTime.Now.Month);
-                    break;
-
-                case ChartTimePeriod.LastMonth:
-                    categoryTransactions = categoryTransactions.Where(x => x.Date.Month == DateTime.Now.AddMonths(-1).Month);
-                    break;
-
-                case ChartTimePeriod.ThisQuarter:
-                    categoryTransactions = categoryTransactions.Where(x =>
-                        x.Date.Month >= DateTime.Now.AddMonths(-(DateTime.Now.Month - 1) % 3).Month &&
-                        x.Date.Month <= DateTime.Now.AddMonths(-(DateTime.Now.Month - 1) % 3).AddMonths(3).Month);
-                    break;
-
-                case ChartTimePeriod.ThisYear:
-                    categoryTransactions = categoryTransactions.Where(x => x.Date.Year == DateTime.Now.Year);
-                    break;
-
-                default:
-                    categoryTransactions = categoryTransactions.Where(x => x.Date.Month == DateTime.Now.Month);
-                    break;
-            }
-
-            var balance = categoryTransactions.Sum(x => x.ConvertedAmount);
-            if (balance == 0) continue;
-            tempList.Add(new ColumnChartData()
-                { id = category.Id, Name = category.Name, Values = [(double)balance], Fill = new SolidColorPaint(SKColor.Parse(category.Color)) });
+                id = category.Id,
+                Name = category.Name,
+                Values = [(double)total],
+                Fill = new SolidColorPaint(SKColor.Parse(category.Color))
+            });
         }
 
         tempList = tempList.OrderByDescending(x => x.Values[0]).ToList();
@@ -267,13 +251,5 @@ public partial class DashboardViewModel : ViewModelBase
 
         AccountsSummaryData = new ObservableCollection<Account>(AppData.Accounts.Where(a => !a.IsArchived).OrderBy(x => x.CreatedAt));
         OnPropertyChanged(nameof(AccountsSubtitle));
-    }
-
-    private enum ChartTimePeriod
-    {
-        ThisMonth,
-        LastMonth,
-        ThisQuarter,
-        ThisYear
     }
 }

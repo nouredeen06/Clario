@@ -7,7 +7,7 @@
     </Border>
   </Design.PreviewWith>
 
-  <!-- ── FluentCalendarButton (header + prev/next) ──────── -->
+  <!-- FluentCalendarButton (header + prev/next) -->
   <Style Selector="Button.FluentCalendarButton, Button#PART_HeaderButton, Button#PART_PreviousButton, Button#PART_NextButton">
     <Setter Property="Background"         Value="Transparent"/>
     <Setter Property="BorderThickness"    Value="0"/>
@@ -24,7 +24,7 @@
     <Setter Property="Background" Value="{DynamicResource BorderSubtle}"/>
   </Style>
 
-  <!-- ── Calendar root ──────────────────────────────────── -->
+  <!-- Calendar root -->
   <Style Selector="Calendar">
     <Setter Property="CornerRadius"    Value="{DynamicResource RadiusControl}"/>
     <Setter Property="BorderBrush"     Value="{DynamicResource BgSurface}"/>
@@ -32,7 +32,7 @@
     <Setter Property="Foreground"      Value="{DynamicResource TextPrimary}"/>
   </Style>
 
-  <!-- ── CalendarItem (the main container) ─────────────── -->
+  <!-- CalendarItem (the main container) -->
   <Style Selector="CalendarItem">
     <Setter Property="Foreground"      Value="{DynamicResource TextPrimary}"/>
     <Setter Property="Background"      Value="{DynamicResource BgSurface}"/>
@@ -154,7 +154,7 @@
     </Setter>
   </Style>
 
-  <!-- ── CalendarDayButton ──────────────────────────────── -->
+  <!-- CalendarDayButton -->
   <Style Selector="CalendarDayButton">
     <Setter Property="Width"                     Value="38"/>
     <Setter Property="Height"                    Value="38"/>
@@ -243,7 +243,7 @@
     <Setter Property="Opacity" Value="0.4"/>
   </Style>
 
-  <!-- ── CalendarButton (month/year picker cells) ──────── -->
+  <!-- CalendarButton (month/year picker cells) -->
   <Style Selector="CalendarButton">
     <Setter Property="Width"                      Value="60"/>
     <Setter Property="Height"                      Value="52"/>

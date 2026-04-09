@@ -1,0 +1,147 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Clario.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="800"
+             x:Class="Clario.MobileViews.MoreViewMobile"
+             x:DataType="vm:MoreViewModel"
+             Classes="mobile">
+    <Design.DataContext>
+        <vm:MoreViewModel />
+    </Design.DataContext>
+
+    <Grid RowDefinitions="Auto,*"
+          Background="{DynamicResource BgBase}">
+
+        <!-- Top bar -->
+        <StackPanel Grid.Row="0" Margin="16,16,16,12">
+            <TextBlock Text="More"
+                       FontSize="22"
+                       FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimary}" />
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Margin="16,0,16,24" Spacing="0">
+
+                <Border Background="{DynamicResource BgSurface}"
+                        BorderBrush="{DynamicResource BorderSubtle}"
+                        BorderThickness="1,0,1,0"
+                        CornerRadius="14"
+                        ClipToBounds="True">
+                    <StackPanel Spacing="0">
+
+                        <!-- Analytics -->
+                        <Border BorderBrush="{DynamicResource BorderSubtle}"
+                                BorderThickness="0,1,0,1">
+                            <Button Classes="nav"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Stretch"
+                                    Padding="16,0"
+                                    MinHeight="58"
+                                    Command="{Binding GoToAnalyticsCommand}">
+                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                    <Border Grid.Column="0"
+                                            Background="{DynamicResource IconBgPurple}"
+                                            CornerRadius="10"
+                                            Width="36" Height="36"
+                                            Margin="0,0,14,0">
+                                        <Svg Path="../Assets/Icons/chart-no-axes-combined.svg"
+                                             Width="16" Height="16"
+                                             Css="{DynamicResource SvgPurple}" />
+                                    </Border>
+                                    <TextBlock Grid.Column="1"
+                                               Text="Analytics"
+                                               FontSize="15"
+                                               FontWeight="SemiBold"
+                                               Foreground="{DynamicResource TextPrimary}"
+                                               VerticalAlignment="Center" />
+                                    <Svg Grid.Column="2"
+                                         Path="../Assets/Icons/chevron-right.svg"
+                                         Width="14" Height="14"
+                                         Css="{DynamicResource SvgMuted}"
+                                         VerticalAlignment="Center" />
+                                </Grid>
+                            </Button>
+                        </Border>
+
+                        <!-- Budget -->
+                        <Border BorderBrush="{DynamicResource BorderSubtle}"
+                                BorderThickness="0,0,0,1">
+                            <Button Classes="nav"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Stretch"
+                                    Padding="16,0"
+                                    MinHeight="58"
+                                    Command="{Binding GoToBudgetCommand}">
+                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                    <Border Grid.Column="0"
+                                            Background="{DynamicResource IconBgGreen}"
+                                            CornerRadius="10"
+                                            Width="36" Height="36"
+                                            Margin="0,0,14,0">
+                                        <Svg Path="../Assets/Icons/wallet.svg"
+                                             Width="16" Height="16"
+                                             Css="{DynamicResource SvgGreen}" />
+                                    </Border>
+                                    <TextBlock Grid.Column="1"
+                                               Text="Budget"
+                                               FontSize="15"
+                                               FontWeight="SemiBold"
+                                               Foreground="{DynamicResource TextPrimary}"
+                                               VerticalAlignment="Center" />
+                                    <Svg Grid.Column="2"
+                                         Path="../Assets/Icons/chevron-right.svg"
+                                         Width="14" Height="14"
+                                         Css="{DynamicResource SvgMuted}"
+                                         VerticalAlignment="Center" />
+                                </Grid>
+                            </Button>
+                        </Border>
+
+                        <!-- Categories -->
+                        <Border BorderBrush="{DynamicResource BorderSubtle}"
+                                BorderThickness="0,0,0,1">
+                            <Button Classes="nav"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Stretch"
+                                    Padding="16,0"
+                                    MinHeight="58"
+                                    Command="{Binding GoToCategoriesCommand}">
+                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                    <Border Grid.Column="0"
+                                            Background="{DynamicResource IconBgBlue}"
+                                            CornerRadius="10"
+                                            Width="36" Height="36"
+                                            Margin="0,0,14,0">
+                                        <Svg Path="../Assets/Icons/list.svg"
+                                             Width="16" Height="16"
+                                             Css="{DynamicResource SvgBlue}" />
+                                    </Border>
+                                    <TextBlock Grid.Column="1"
+                                               Text="Categories"
+                                               FontSize="15"
+                                               FontWeight="SemiBold"
+                                               Foreground="{DynamicResource TextPrimary}"
+                                               VerticalAlignment="Center" />
+                                    <Svg Grid.Column="2"
+                                         Path="../Assets/Icons/chevron-right.svg"
+                                         Width="14" Height="14"
+                                         Css="{DynamicResource SvgMuted}"
+                                         VerticalAlignment="Center" />
+                                </Grid>
+                            </Button>
+                        </Border>
+
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+
+    </Grid>
+
+</UserControl>

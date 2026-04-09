@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Animation;
@@ -7,6 +7,7 @@ using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Styling;
 using Clario.Models;
+using Clario.ViewModels;
 
 namespace Clario.MobileViews;
 
@@ -28,6 +29,28 @@ public partial class AccountsViewMobile : UserControl
         {
             if (e.Source is Button { DataContext: Account }) await ShowSheet();
         }, handledEventsToo: false);
+
+        DataContextChanged += (_, _) =>
+        {
+            if (DataContext is AccountsViewModel vm)
+            {
+                vm.TryCloseSheet = () =>
+                {
+                    if (!_sheetVisible) return false;
+                    _ = HideSheet();
+                    return true;
+                };
+
+                vm.PropertyChanged += async (_, args) =>
+                {
+                    if (args.PropertyName == nameof(AccountsViewModel.ShouldCloseSheet) && vm.ShouldCloseSheet)
+                    {
+                        await HideSheet();
+                        vm.ShouldCloseSheet = false;
+                    }
+                };
+            }
+        };
     }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
@@ -84,6 +107,7 @@ public partial class AccountsViewMobile : UserControl
     public async Task HideSheet()
     {
         if (!_sheetVisible) return;
+        _sheetVisible = false;
 
         var sheetAnim = new Animation
         {
@@ -110,7 +134,6 @@ public partial class AccountsViewMobile : UserControl
 
         await Task.WhenAll(sheetAnim.RunAsync(BottomSheet), dimAnim.RunAsync(DimOverlay));
 
-        _sheetVisible = false;
         OverlayGrid.IsVisible = false;
         SheetTranslate.Y = 0;
         DimOverlay.Opacity = 1;

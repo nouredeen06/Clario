@@ -2,7 +2,7 @@
     "GeneralSettings": {
         "NetProjectPath": "Clario.Desktop.csproj",
         "ApplicationName": "Clario",
-        "Version": "0.4.0",
+        "Version": "0.6.0",
         "PackageName": {
             "$type": "msbuild",
             "property": "AssemblyName"
@@ -13,11 +13,11 @@
         }
     },
     "LinuxSettings": {
-        "AppIcon": "../Clario/Assets/Logo.png",
+        "AppIcon": "../Clario/Assets/AppIcons/logo-icon-primary-transparent.ico",
         "CreateBinSymlink": "True"
     },
     "Win32Settings": {
-        "InstallerIcon": "../Clario/Assets/Clario-Logo.svg",
+        "InstallerIcon": "../Clario/Assets/AppIcons/logo-icon-primary-transparent.ico",
         "Company": "Clario",
         "IncludeUninstaller": "True"
     },

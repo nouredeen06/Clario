@@ -17,7 +17,7 @@
                     Spacing="0"
                     MaxWidth="720">
 
-            <!-- ── Page header ─────────────────────────── -->
+            <!-- Page header  -->
             <StackPanel Margin="0,0,0,28">
                 <TextBlock Text="Settings"
                            FontSize="26"
@@ -29,7 +29,7 @@
                            Margin="0,4,0,0" />
             </StackPanel>
 
-            <!-- ── Global success / error banner ─────────── -->
+            <!-- Global success / error banner  -->
             <Border Background="{DynamicResource IconBgGreen}"
                     BorderBrush="{DynamicResource AccentGreen}"
                     BorderThickness="1"
@@ -75,9 +75,9 @@
                 </Grid>
             </Border>
 
-            <!-- ══════════════════════════════════════════════
+            <!-- 
            SECTION: Profile
-      ══════════════════════════════════════════════ -->
+       -->
             <TextBlock Text="PROFILE"
                        Classes="label"
                        Margin="0,0,0,10" />
@@ -223,9 +223,9 @@
                 </StackPanel>
             </Border>
 
-            <!-- ══════════════════════════════════════════════
+            <!-- 
            SECTION: Account Security
-      ══════════════════════════════════════════════ -->
+       -->
             <TextBlock Text="ACCOUNT &amp; SECURITY"
                        Classes="label"
                        Margin="0,0,0,10" />
@@ -238,7 +238,7 @@
                     Margin="0,0,0,24">
                 <StackPanel Spacing="0">
 
-                    <!-- ── Email row ───────────────────────────── -->
+                    <!-- Email row  -->
                     <Border BorderBrush="{DynamicResource BorderSubtle}"
                             BorderThickness="0,0,0,1"
                             Padding="20,0">
@@ -350,7 +350,7 @@
                         </Panel>
                     </Border>
 
-                    <!-- ── Password row ───────────────────────── -->
+                    <!-- Password row  -->
                     <Border Padding="20,0">
                         <!-- Normal password display -->
                         <Panel>
@@ -473,9 +473,9 @@
                 </StackPanel>
             </Border>
 
-            <!-- ══════════════════════════════════════════════
+            <!-- 
            SECTION: Danger zone
-      ══════════════════════════════════════════════ -->
+       -->
             <TextBlock Text="SESSION"
                        Classes="label"
                        Margin="0,0,0,10" />

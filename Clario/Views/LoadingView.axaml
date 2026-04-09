@@ -3,12 +3,16 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:avaloniaProgressRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
+             xmlns:vm="clr-namespace:Clario.ViewModels"
              Background="{DynamicResource BgBase}"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:DataType="vm:LoadingViewModel"
              x:Class="Clario.Views.LoadingView">
-    <Panel>
-        <avaloniaProgressRing:ProgressRing Width="100" Height="100" IsActive="True"
-                                           Foreground="{DynamicResource AccentBlue}" HorizontalAlignment="Center"
-                                           VerticalAlignment="Center" />
-    </Panel>
+    <Grid RowDefinitions="*,*,*" ColumnDefinitions="*,*,*">
+        <avaloniaProgressRing:ProgressRing Grid.Row="1" Grid.Column="1"
+                                           Width="100" Height="100"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                                           IsActive="True"
+                                           Foreground="{DynamicResource AccentBlue}" />
+    </Grid>
 </UserControl>

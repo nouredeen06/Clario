@@ -17,7 +17,7 @@
     <Grid RowDefinitions="Auto,*"
           Background="{DynamicResource BgBase}">
 
-        <!-- ── Top bar ────────────────────────────── -->
+        <!-- Top bar  -->
         <Grid Grid.Row="0"
               ColumnDefinitions="*,Auto"
               Margin="16,16,16,12">
@@ -74,13 +74,13 @@
 
         </Grid>
 
-        <!-- ── Scrollable content ────────────────── -->
+        <!-- Scrollable content  -->
         <ScrollViewer Grid.Row="1"
                       VerticalScrollBarVisibility="Auto"
                       HorizontalScrollBarVisibility="Disabled">
             <StackPanel Margin="16,0,16,24" Spacing="14">
 
-                <!-- ── Period overview strip ─────────── -->
+                <!-- Period overview strip  -->
                 <Grid ColumnDefinitions="*,*,*">
 
                     <!-- Budgeted -->
@@ -154,7 +154,7 @@
 
                 </Grid>
 
-                <!-- ── Overall progress bar ──────────── -->
+                <!-- Overall progress bar  -->
                 <Border Background="{DynamicResource BgSurface}"
                         BorderBrush="{DynamicResource BorderSubtle}"
                         BorderThickness="1"
@@ -195,7 +195,7 @@
                     </StackPanel>
                 </Border>
 
-                <!-- ── Budget cards list ─────────────── -->
+                <!-- Budget cards list  -->
                 <ItemsControl ItemsSource="{Binding VisibleBudgets}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -322,7 +322,7 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <!-- ── Spending breakdown chart ──────── -->
+                <!-- Spending breakdown chart  -->
                 <Border Background="{DynamicResource BgSurface}"
                         BorderBrush="{DynamicResource BorderSubtle}"
                         BorderThickness="1"
@@ -364,7 +364,7 @@
                     </StackPanel>
                 </Border>
 
-                <!-- ── Period progress ───────────────── -->
+                <!-- Period progress  -->
                 <Border Background="{DynamicResource BgSurface}"
                         BorderBrush="{DynamicResource BorderSubtle}"
                         BorderThickness="1"
@@ -417,7 +417,7 @@
                     </StackPanel>
                 </Border>
 
-                <!-- ── Savings goal ──────────────────── -->
+                <!-- Savings goal  -->
                 <Border Background="{DynamicResource BgSurface}"
                         BorderBrush="{DynamicResource BorderSubtle}"
                         BorderThickness="1"

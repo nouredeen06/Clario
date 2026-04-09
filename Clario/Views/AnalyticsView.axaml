@@ -15,7 +15,7 @@
 
     <Grid RowDefinitions="Auto,*" Margin="32,28,32,0">
 
-        <!-- ── Top Bar ── -->
+        <!-- Top Bar -->
         <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,24">
             <StackPanel Grid.Column="0">
                 <TextBlock Classes="muted" Text="Insights &amp; Trends" />
@@ -45,7 +45,7 @@
             </StackPanel>
         </Grid>
 
-        <!-- ── Scrollable Content ── -->
+        <!-- Scrollable Content -->
         <ScrollViewer Grid.Row="1" Name="mainScrollviewer"
                       HorizontalScrollBarVisibility="Disabled"
                       VerticalScrollBarVisibility="Auto">
@@ -60,7 +60,7 @@
                                Foreground="{DynamicResource AccentGreen}" FontSize="12" />
                 </Border>
 
-                <!-- ── Section 1: KPI Cards ── -->
+                <!-- Section 1: KPI Cards -->
                 <Grid ColumnDefinitions="*,*,*,*">
                     <Grid.Styles>
                         <Style Selector="Grid > Border">
@@ -125,7 +125,7 @@
                     </Border>
                 </Grid>
 
-                <!-- ── Section 2: Cash Flow Trend ── -->
+                <!-- Section 2: Cash Flow Trend -->
                 <Border Classes="card">
                     <StackPanel Spacing="16">
                         <StackPanel>
@@ -145,7 +145,7 @@
                     </StackPanel>
                 </Border>
 
-                <!-- ── Section 3: Net Worth ── -->
+                <!-- Section 3: Net Worth -->
                 <Border Classes="card">
                     <StackPanel Spacing="16">
                         <StackPanel>
@@ -165,7 +165,7 @@
                     </StackPanel>
                 </Border>
 
-                <!-- ── Section 4+6: Day of Week + Income Sources ── -->
+                <!-- Section 4+6: Day of Week + Income Sources -->
                 <Grid ColumnDefinitions="*,*" >
                     <!-- Day of Week -->
                     <Border Grid.Column="0" Classes="card" Margin="0,0,10,0">
@@ -213,7 +213,7 @@
                     </Border>
                 </Grid>
 
-                <!-- ── Section 5: Top Categories ── -->
+                <!-- Section 5: Top Categories -->
                 <Border Classes="card">
                     <StackPanel Spacing="16">
                         <StackPanel>

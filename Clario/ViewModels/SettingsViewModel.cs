@@ -24,29 +24,29 @@ public partial class SettingsViewModel : ViewModelBase
     public static readonly HttpClient _HttpClient = new();
 
 
-    // ── Profile fields ───────────────────────────────────────
+    //  Profile fields 
     [ObservableProperty] private string _displayName = "";
     [ObservableProperty] private string _avatarUrl = "";
     [ObservableProperty] private Bitmap? _avatarImage;
     [ObservableProperty] private string _selectedTheme = "system";
     [ObservableProperty] private string _selectedLanguage = "en";
 
-    // ── Account (auth) fields ────────────────────────────────
+    //  Account (auth) fields 
     [ObservableProperty] private string _maskedEmail = "";
     private string _fullEmail = "";
 
-    // ── Change email flow ────────────────────────────────────
+    //  Change email flow 
     [ObservableProperty] private bool _isChangingEmail = false;
     [ObservableProperty] private string _newEmail = "";
     [ObservableProperty] private string _emailConfirmPassword = "";
 
-    // ── Change password flow ─────────────────────────────────
+    //  Change password flow 
     [ObservableProperty] private bool _isChangingPassword = false;
     [ObservableProperty] private string _currentPassword = "";
     [ObservableProperty] private string _newPassword = "";
     [ObservableProperty] private string _confirmNewPassword = "";
 
-    // ── UI state ─────────────────────────────────────────────
+    //  UI state 
     [ObservableProperty] private bool _isSaving = false;
     [ObservableProperty] private bool _isUploadingAvatar = false;
 
@@ -76,7 +76,7 @@ public partial class SettingsViewModel : ViewModelBase
     public bool HasPasswordError => !string.IsNullOrEmpty(PasswordErrorMessage);
     public bool HasAvatar => !string.IsNullOrEmpty(AvatarUrl);
 
-    // ── Options ──────────────────────────────────────────────
+    //  Options 
 
     public ObservableCollection<(string Value, string Label)> Themes { get; } = new()
     {
@@ -118,7 +118,7 @@ public partial class SettingsViewModel : ViewModelBase
         SelectedLanguage = value switch { 0 => "en", 1 => "ar", _ => "en" };
     }
 
-    // ── Init ─────────────────────────────────────────────────
+    //  Init 
     public SettingsViewModel()
     {
         _ = Initialize();
@@ -155,7 +155,7 @@ public partial class SettingsViewModel : ViewModelBase
         return $"{visible}{masked}{domain}";
     }
 
-    // ── Avatar commands ───────────────────────────────────────
+    //  Avatar commands 
 
     [RelayCommand]
     private async Task UploadAvatar()
@@ -215,7 +215,7 @@ public partial class SettingsViewModel : ViewModelBase
         }
     }
 
-    // ── Save profile ─────────────────────────────────────────
+    //  Save profile 
 
     [RelayCommand]
     private async Task SaveProfile()
@@ -263,7 +263,7 @@ public partial class SettingsViewModel : ViewModelBase
         }
     }
 
-    // ── Change email ─────────────────────────────────────────
+    //  Change email 
 
     [RelayCommand]
     private void StartChangeEmail()
@@ -327,7 +327,7 @@ public partial class SettingsViewModel : ViewModelBase
         }
     }
 
-    // ── Change password ──────────────────────────────────────
+    //  Change password 
 
     [RelayCommand]
     private void StartChangePassword()
@@ -397,7 +397,7 @@ public partial class SettingsViewModel : ViewModelBase
         }
     }
 
-    // ── Sign out ─────────────────────────────────────────────
+    //  Sign out 
 
     [RelayCommand]
     private async Task SignOut()

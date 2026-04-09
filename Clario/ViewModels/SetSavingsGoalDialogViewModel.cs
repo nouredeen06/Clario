@@ -26,11 +26,11 @@ public partial class SetSavingsGoalDialogViewModel : ViewModelBase
     public bool IsValid =>
         decimal.TryParse(GoalInput, NumberStyles.Any, CultureInfo.InvariantCulture, out var v) && v >= 0;
 
-    // ── Callbacks ────────────────────────────────────────────
+    //  Callbacks 
     public Action? OnSaved;
     public Action? OnCancelled;
 
-    // ── Setup ────────────────────────────────────────────────
+    //  Setup 
     public void Setup(decimal? currentGoal)
     {
         GoalInput = currentGoal.HasValue
@@ -39,7 +39,7 @@ public partial class SetSavingsGoalDialogViewModel : ViewModelBase
         ErrorMessage = null;
     }
 
-    // ── Commands ─────────────────────────────────────────────
+    //  Commands 
 
     [RelayCommand]
     private void Cancel() => OnCancelled?.Invoke();

@@ -8,3 +8,4 @@ obj/
 publish/
 *.tar.gz
 Clario/devsettings.json
+.env

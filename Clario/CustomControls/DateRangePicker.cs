@@ -25,7 +25,6 @@ public class DateRangePicker : TemplatedControl
         set => SetValue(SelectionModeProperty, value);
     }
 
-    // FIX: Use DirectProperty to avoid shared-instance default and get proper TwoWay support
     private IList<DateTime> _selectedDates = new List<DateTime>();
 
     public static readonly DirectProperty<DateRangePicker, IList<DateTime>> SelectedDatesProperty =
@@ -41,7 +40,6 @@ public class DateRangePicker : TemplatedControl
         set => SetAndRaise(SelectedDatesProperty, ref _selectedDates, value);
     }
 
-    // FIX: Add defaultBindingMode: TwoWay so changes propagate back to the ViewModel
     public static readonly StyledProperty<DateTime?> SelectedDateProperty =
         AvaloniaProperty.Register<DateRangePicker, DateTime?>(
             nameof(SelectedDate),
@@ -116,7 +114,6 @@ public class DateRangePicker : TemplatedControl
         if (_isSyncing) return;
         if (_popup is null || !_popup.IsOpen) return;
 
-        // FIX: Ignore clicks on the nav buttons/header — only react to day cell clicks
         if (e.Source is not Control source) return;
         if (source.TemplatedParent is CalendarDayButton == false &&
             source.FindAncestorOfType<CalendarDayButton>() is null)

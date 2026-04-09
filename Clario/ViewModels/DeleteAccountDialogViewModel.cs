@@ -12,7 +12,7 @@ namespace Clario.ViewModels;
 
 public partial class DeleteAccountDialogViewModel : ViewModelBase
 {
-    // ── State machine ────────────────────────────────────────
+    //  State machine 
     public enum DialogStep
     {
         SimpleConfirm,
@@ -31,7 +31,7 @@ public partial class DeleteAccountDialogViewModel : ViewModelBase
     public bool IsHasTransactionsStep => CurrentStep == DialogStep.HasTransactions;
     public bool IsMigrateStep => CurrentStep == DialogStep.Migrate;
 
-    // ── Data ─────────────────────────────────────────────────
+    //  Data 
     [ObservableProperty] private Account? _account;
     public GeneralDataRepo AppData => DataRepo.General;
 
@@ -40,7 +40,7 @@ public partial class DeleteAccountDialogViewModel : ViewModelBase
 
     [ObservableProperty] private ObservableCollection<Account> _availableAccounts = new();
 
-    // ── Validation ───────────────────────────────────────────
+    //  Validation 
     [ObservableProperty] [NotifyPropertyChangedFor(nameof(HasError))]
     private string? _errorMessage;
 
@@ -50,11 +50,11 @@ public partial class DeleteAccountDialogViewModel : ViewModelBase
         TargetAccount is not null &&
         TargetAccount.Id != Account?.Id;
 
-    // ── Callbacks ────────────────────────────────────────────
+    //  Callbacks 
     public Action? OnDeleted;
     public Action? OnCancelled;
 
-    // ── Setup ────────────────────────────────────────────────
+    //  Setup 
 
     /// <summary>
     /// Call this to open the dialog for a specific account.
@@ -79,7 +79,7 @@ public partial class DeleteAccountDialogViewModel : ViewModelBase
             : DialogStep.SimpleConfirm;
     }
 
-    // ── Commands ─────────────────────────────────────────────
+    //  Commands 
 
     [RelayCommand]
     private void Cancel() => OnCancelled?.Invoke();

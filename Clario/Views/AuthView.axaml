@@ -9,16 +9,16 @@
              x:Class="Clario.Views.AuthView">
     <Grid>
 
-        <!--  Background  -->
+        <!-- Background -->
         <!-- <Calendar SelectionMode="SingleRange"> -->
         <!-- </Calendar> -->
 
 
         <!-- <Border Background="{DynamicResource AccentBlue}" VerticalAlignment="Top" HorizontalAlignment="Left" Height="400" Width="400" Padding="10"> -->
-        <!--   -->
+        <!-- -->
         <!-- </Border> -->
 
-        <!--  Center card  -->
+        <!-- Center card -->
         <Border HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Background="{DynamicResource BgSurface}"
@@ -30,7 +30,7 @@
                 BoxShadow="0 24 64 0 #40000000">
             <StackPanel Spacing="0">
 
-                <!--  Logo + App name  -->
+                <!-- Logo + App name -->
                 <StackPanel HorizontalAlignment="Center"
                             Spacing="0"
                             Margin="0,0,0,32">
@@ -43,10 +43,10 @@
                     <!-- REPLACE: app name -->
                     <StackPanel Spacing="4" HorizontalAlignment="Center">
                         <!-- <TextBlock Text="Clario" -->
-                        <!--            FontSize="22" -->
-                        <!--            FontWeight="Bold" -->
-                        <!--            Foreground="{DynamicResource TextPrimary}" -->
-                        <!--            HorizontalAlignment="Center" /> -->
+                        <!--           FontSize="22" -->
+                        <!--           FontWeight="Bold" -->
+                        <!--           Foreground="{DynamicResource TextPrimary}" -->
+                        <!--           HorizontalAlignment="Center" /> -->
                         <TextBlock Text="Your personal finance tracker"
                                    FontSize="12"
                                    Foreground="{DynamicResource TextMuted}"
@@ -54,13 +54,14 @@
                     </StackPanel>
                 </StackPanel>
 
-                <!--  Tab switcher  -->
+                <!-- Tab switcher -->
                 <Border Background="{DynamicResource BgBase}"
                         BorderBrush="{DynamicResource BorderSubtle}"
                         BorderThickness="1"
                         CornerRadius="{DynamicResource RadiusControl}"
                         Padding="3"
-                        Margin="0,0,0,26">
+                        Margin="0,0,0,26"
+                        IsVisible="{Binding ShowTabs}">
                     <Grid ColumnDefinitions="*,*">
                         <!-- REPLACE: active state driven by IsLoginMode -->
                         <!-- Sign In — active -->
@@ -178,13 +179,13 @@
                     </Border>
 
                     <!-- Forgot password -->
-                    <!-- REPLACE: Command="{Binding ForgotPasswordCommand}" -->
                     <Button Background="Transparent"
                             BorderThickness="0"
                             Padding="0"
                             Cursor="Hand"
                             HorizontalAlignment="Right"
-                            Margin="0,0,0,24">
+                            Margin="0,0,0,24"
+                            Command="{Binding SetOperationCommand}" CommandParameter="forgotPassword">
                         <TextBlock Text="Forgot password?"
                                    FontSize="12"
                                    Foreground="{DynamicResource AccentBlue}" />
@@ -230,10 +231,129 @@
 
                 </StackPanel>
 
-                <!-- ══════════════════════════════════
+                <!-- FORGOT PASSWORD PANEL -->
+                <StackPanel Spacing="0" IsVisible="{Binding isForgotPassword}">
+
+                    <!-- Back button + heading -->
+                    <Button Background="Transparent"
+                            BorderThickness="0"
+                            Padding="0"
+                            Cursor="Hand"
+                            HorizontalAlignment="Left"
+                            Margin="0,0,0,20"
+                            Command="{Binding SetOperationCommand}" CommandParameter="login">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <Svg Path="../Assets/Icons/arrow-left.svg"
+                                 Width="14" Height="14"
+                                 Css="{DynamicResource SvgMuted}" />
+                            <TextBlock Text="Back to Sign In"
+                                       FontSize="12"
+                                       Foreground="{DynamicResource TextMuted}" />
+                        </StackPanel>
+                    </Button>
+
+                    <TextBlock Text="Reset your password"
+                               FontSize="16" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimary}"
+                               Margin="0,0,0,6" />
+                    <TextBlock Text="Enter your email and we'll send you a reset link."
+                               FontSize="12"
+                               Foreground="{DynamicResource TextMuted}"
+                               TextWrapping="Wrap"
+                               Margin="0,0,0,20" />
+
+                    <!-- Success state -->
+                    <Border Background="{DynamicResource IconBgGreen}"
+                            BorderBrush="{DynamicResource AccentGreen}"
+                            BorderThickness="1"
+                            CornerRadius="10"
+                            Padding="12,10"
+                            Margin="0,0,0,16"
+                            IsVisible="{Binding ResetEmailSent}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Svg Path="../Assets/Icons/circle-check.svg"
+                                 Width="14" Height="14"
+                                 Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #2ECC8A; }" />
+                            <TextBlock Text="Check your email for a reset link."
+                                       FontSize="12"
+                                       Foreground="{DynamicResource AccentGreen}"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Email -->
+                    <TextBlock Text="EMAIL" Classes="label" Margin="0,0,0,6"
+                               IsVisible="{Binding !ResetEmailSent}" />
+                    <Border Background="{DynamicResource BgBase}"
+                            BorderBrush="{DynamicResource BorderSubtle}"
+                            BorderThickness="1"
+                            CornerRadius="{DynamicResource RadiusControl}"
+                            Padding="0"
+                            Margin="0,0,0,14"
+                            IsVisible="{Binding !ResetEmailSent}">
+                        <Grid ColumnDefinitions="Auto,*">
+                            <Svg Grid.Column="0"
+                                 Path="../Assets/Icons/mail.svg"
+                                 Width="15" Height="15"
+                                 Css="{DynamicResource SvgMuted}"
+                                 VerticalAlignment="Center"
+                                 Margin="12,0,10,0" />
+                            <TextBox Grid.Column="1" Classes="ghost"
+                                     Watermark="you@example.com"
+                                     Text="{Binding Email}"
+                                     BorderThickness="0"
+                                     FontSize="13"
+                                     Foreground="{DynamicResource TextPrimary}"
+                                     Height="42"
+                                     Padding="0"
+                                     VerticalContentAlignment="Center" />
+                        </Grid>
+                    </Border>
+
+                    <!-- Error message -->
+                    <Border Background="{DynamicResource BadgeBgRed}"
+                            BorderBrush="{DynamicResource AccentRed}"
+                            BorderThickness="1"
+                            CornerRadius="10"
+                            Padding="12,10"
+                            Margin="0,0,0,16"
+                            IsVisible="{Binding HasError}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Svg Path="../Assets/Icons/circle-alert.svg"
+                                 Width="14" Height="14"
+                                 Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #FF5E5E; }" />
+                            <TextBlock Text="{Binding ErrorMessage}"
+                                       FontSize="12"
+                                       Foreground="{DynamicResource AccentRed}"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Send Reset Link button -->
+                    <Button Classes="accented"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Center"
+                            Padding="0,12"
+                            Margin="0,0,0,20"
+                            IsVisible="{Binding !ResetEmailSent}"
+                            Command="{Binding SendResetLinkCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Svg Path="../Assets/Icons/mail.svg"
+                                 Width="15" Height="15"
+                                 Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #0D0F14; }" />
+                            <TextBlock Text="Send Reset Link"
+                                       FontSize="14" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource BgBase}"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+
+                </StackPanel>
+
+                <!--
              SIGN UP PANEL
              REPLACE: IsVisible="{Binding !IsLoginMode}"
-        ══════════════════════════════════ -->
+         -->
                 <StackPanel Spacing="0" IsVisible="{Binding isCreateAccount}">
 
                     <!-- Name row -->
@@ -430,7 +550,7 @@
 
                 </StackPanel>
 
-                <!--  Footer  -->
+                <!-- Footer -->
                 <Separator Margin="0,0,0,16" />
                 <TextBlock Text="Your data is encrypted and synced securely."
                            FontSize="11"

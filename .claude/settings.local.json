@@ -3,7 +3,11 @@
     "allow": [
       "WebFetch(domain:raw.githubusercontent.com)",
       "Bash(chmod +x \"/c/Users/Nouredeen/.claude/scripts/context-bar.sh\")",
-      "Bash(dotnet build:*)"
+      "Bash(dotnet build:*)",
+      "WebFetch(domain:git.nouredeen.dev)",
+      "WebFetch(domain:supabase.com)",
+      "Bash(grep:*)",
+      "Bash(cmd:*)"
     ]
   },
   "spinnerTipsEnabled": true

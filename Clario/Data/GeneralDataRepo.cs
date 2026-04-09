@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Media.Imaging;
+using Avalonia.Threading;
 using Clario.Models;
 using Clario.Models.GeneralModels;
 using Clario.Services;
@@ -15,6 +16,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using Clario.Messages;
 using CommunityToolkit.Mvvm.Messaging;
 using Supabase.Postgrest;
+using Supabase.Realtime.PostgresChanges;
+using Constants = Supabase.Realtime.Constants;
 using FileOptions = Supabase.Storage.FileOptions;
 
 namespace Clario.Data;
@@ -174,12 +177,14 @@ public partial class GeneralDataRepo : ObservableObject
                 LinkTransactionAccounts(enriched);
                 Transactions.Add(enriched);
             }
+
             if (inResult.Models.Count >= 1)
             {
                 var enriched = LinkTransactionCategories(inResult.Models[0]);
                 LinkTransactionAccounts(enriched);
                 Transactions.Add(enriched);
             }
+
             // Re-enrich both so AccountDisplayText can reference the counterpart (from/to)
             LinkTransactionAccounts();
         }
@@ -215,6 +220,7 @@ public partial class GeneralDataRepo : ObservableObject
                     Transactions[index] = enriched;
                 }
             }
+
             LinkTransactionAccounts();
         }
         catch (Exception e)
@@ -306,7 +312,7 @@ public partial class GeneralDataRepo : ObservableObject
         if (Accounts.Count != 0 && !forceRefresh) return Accounts.ToList();
         var accounts = await SupabaseService.Client.From<Account>().Get();
         Accounts = new ObservableCollection<Account>(accounts.Models);
-        return accounts.Models.OrderBy(x=>x.IsPrimary).ThenBy(x=>x.CreatedAt).ToList();
+        return accounts.Models.OrderBy(x => x.IsPrimary).ThenBy(x => x.CreatedAt).ToList();
     }
 
     public async Task<List<Budget>> FetchBudgets(bool forceRefresh = false)
@@ -718,5 +724,187 @@ public partial class GeneralDataRepo : ObservableObject
         // If already a full URL (from storage or external), return as-is
         if (avatarUrl.StartsWith("http")) return avatarUrl;
         return $"{PublicBaseUrl}/{avatarUrl}";
+    }
+
+    public void StartRealtimeSync()
+    {
+        if (SupabaseService.Client.Auth.CurrentUser?.Id is null) return;
+        DebugLogger.Log("[Realtime] StartRealtimeSync: registering listeners");
+
+        //  Transactions 
+        _ = SupabaseService.Client.From<Transaction>().On(PostgresChangesOptions.ListenType.Inserts, (_, c) =>
+        {
+            var insertedTransaction = c.Model<Transaction>();
+            if (insertedTransaction is null) { DebugLogger.Log("[Realtime] Transaction INSERT: model was null"); return; }
+            DebugLogger.Log($"[Realtime] Transaction INSERT: {insertedTransaction.Id} ({insertedTransaction.Description})");
+            Dispatcher.UIThread.Post(() =>
+            {
+                if (Transactions.Any(x => x.Id == insertedTransaction.Id)) { DebugLogger.Log($"[Realtime] Transaction INSERT: skipped duplicate {insertedTransaction.Id}"); return; }
+                LinkTransactionCategories(insertedTransaction);
+                LinkTransactionAccounts(insertedTransaction);
+                Transactions.Add(insertedTransaction);
+                DebugLogger.Log($"[Realtime] Transaction INSERT: added to collection");
+            });
+        });
+
+        _ = SupabaseService.Client.From<Transaction>().On(PostgresChangesOptions.ListenType.Updates, (_, c) =>
+        {
+            var updatedTransaction = c.Model<Transaction>();
+            if (updatedTransaction is null) { DebugLogger.Log("[Realtime] Transaction UPDATE: model was null"); return; }
+            DebugLogger.Log($"[Realtime] Transaction UPDATE: {updatedTransaction.Id} ({updatedTransaction.Description})");
+            Dispatcher.UIThread.Post(() =>
+            {
+                var idx = Transactions.ToList().FindIndex(x => x.Id == updatedTransaction.Id);
+                if (idx == -1) { DebugLogger.Log($"[Realtime] Transaction UPDATE: id {updatedTransaction.Id} not found in collection"); return; }
+                LinkTransactionCategories(updatedTransaction);
+                LinkTransactionAccounts(updatedTransaction);
+                Transactions[idx] = updatedTransaction;
+                DebugLogger.Log($"[Realtime] Transaction UPDATE: replaced at index {idx}");
+            });
+        });
+
+        _ = SupabaseService.Client.From<Transaction>().On(PostgresChangesOptions.ListenType.Deletes, (_, c) =>
+        {
+            var deletedTransaction = c.OldModel<Transaction>();
+            if (deletedTransaction is null) { DebugLogger.Log("[Realtime] Transaction DELETE: old model was null"); return; }
+            DebugLogger.Log($"[Realtime] Transaction DELETE: {deletedTransaction.Id}");
+            Dispatcher.UIThread.Post(() =>
+            {
+                var item = Transactions.FirstOrDefault(x => x.Id == deletedTransaction.Id);
+                if (item is not null) { Transactions.Remove(item); DebugLogger.Log($"[Realtime] Transaction DELETE: removed {deletedTransaction.Id}"); }
+                else DebugLogger.Log($"[Realtime] Transaction DELETE: id {deletedTransaction.Id} not found (already removed locally)");
+            });
+        });
+
+        //  Accounts 
+        _ = SupabaseService.Client.From<Account>().On(PostgresChangesOptions.ListenType.Inserts, (_, c) =>
+        {
+            var insertedAccount = c.Model<Account>();
+            if (insertedAccount is null) { DebugLogger.Log("[Realtime] Account INSERT: model was null"); return; }
+            DebugLogger.Log($"[Realtime] Account INSERT: {insertedAccount.Id} ({insertedAccount.Name})");
+            Dispatcher.UIThread.Post(() =>
+            {
+                if (Accounts.Any(x => x.Id == insertedAccount.Id)) { DebugLogger.Log($"[Realtime] Account INSERT: skipped duplicate {insertedAccount.Id}"); return; }
+                Accounts.Add(insertedAccount);
+                DebugLogger.Log($"[Realtime] Account INSERT: added to collection");
+            });
+        });
+
+        _ = SupabaseService.Client.From<Account>().On(PostgresChangesOptions.ListenType.Updates, (_, c) =>
+        {
+            var updatedAccount = c.Model<Account>();
+            if (updatedAccount is null) { DebugLogger.Log("[Realtime] Account UPDATE: model was null"); return; }
+            DebugLogger.Log($"[Realtime] Account UPDATE: {updatedAccount.Id} ({updatedAccount.Name})");
+            Dispatcher.UIThread.Post(() =>
+            {
+                var idx = Accounts.ToList().FindIndex(x => x.Id == updatedAccount.Id);
+                if (idx != -1) { Accounts[idx] = updatedAccount; DebugLogger.Log($"[Realtime] Account UPDATE: replaced at index {idx}"); }
+                else DebugLogger.Log($"[Realtime] Account UPDATE: id {updatedAccount.Id} not found in collection");
+            });
+        });
+
+        _ = SupabaseService.Client.From<Account>().On(PostgresChangesOptions.ListenType.Deletes, (_, c) =>
+        {
+            var deletedAccount = c.OldModel<Account>();
+            if (deletedAccount is null) { DebugLogger.Log("[Realtime] Account DELETE: old model was null"); return; }
+            DebugLogger.Log($"[Realtime] Account DELETE: {deletedAccount.Id}");
+            Dispatcher.UIThread.Post(() =>
+            {
+                var item = Accounts.FirstOrDefault(x => x.Id == deletedAccount.Id);
+                if (item is not null) { Accounts.Remove(item); DebugLogger.Log($"[Realtime] Account DELETE: removed {deletedAccount.Id}"); }
+                else DebugLogger.Log($"[Realtime] Account DELETE: id {deletedAccount.Id} not found (already removed locally)");
+            });
+        });
+
+        //  Budgets 
+        _ = SupabaseService.Client.From<Budget>().On(PostgresChangesOptions.ListenType.Inserts, (_, c) =>
+        {
+            var insertedBudget = c.Model<Budget>();
+            if (insertedBudget is null) { DebugLogger.Log("[Realtime] Budget INSERT: model was null"); return; }
+            DebugLogger.Log($"[Realtime] Budget INSERT: {insertedBudget.Id}");
+            Dispatcher.UIThread.Post(() =>
+            {
+                if (Budgets.Any(x => x.Id == insertedBudget.Id)) { DebugLogger.Log($"[Realtime] Budget INSERT: skipped duplicate {insertedBudget.Id}"); return; }
+                Budgets.Add(insertedBudget);
+                DebugLogger.Log($"[Realtime] Budget INSERT: added to collection");
+            });
+        });
+
+        _ = SupabaseService.Client.From<Budget>().On(PostgresChangesOptions.ListenType.Updates, (_, c) =>
+        {
+            var updatedBudget = c.Model<Budget>();
+            if (updatedBudget is null) { DebugLogger.Log("[Realtime] Budget UPDATE: model was null"); return; }
+            DebugLogger.Log($"[Realtime] Budget UPDATE: {updatedBudget.Id}");
+            Dispatcher.UIThread.Post(() =>
+            {
+                var idx = Budgets.ToList().FindIndex(x => x.Id == updatedBudget.Id);
+                if (idx != -1) { Budgets[idx] = updatedBudget; DebugLogger.Log($"[Realtime] Budget UPDATE: replaced at index {idx}"); }
+                else DebugLogger.Log($"[Realtime] Budget UPDATE: id {updatedBudget.Id} not found in collection");
+            });
+        });
+
+        _ = SupabaseService.Client.From<Budget>().On(PostgresChangesOptions.ListenType.Deletes, (_, c) =>
+        {
+            var deletedBudget = c.OldModel<Budget>();
+            if (deletedBudget is null) { DebugLogger.Log("[Realtime] Budget DELETE: old model was null"); return; }
+            DebugLogger.Log($"[Realtime] Budget DELETE: {deletedBudget.Id}");
+            Dispatcher.UIThread.Post(() =>
+            {
+                var item = Budgets.FirstOrDefault(x => x.Id == deletedBudget.Id);
+                if (item is not null) { Budgets.Remove(item); DebugLogger.Log($"[Realtime] Budget DELETE: removed {deletedBudget.Id}"); }
+                else DebugLogger.Log($"[Realtime] Budget DELETE: id {deletedBudget.Id} not found (already removed locally)");
+            });
+        });
+
+        //  Categories 
+        _ = SupabaseService.Client.From<Category>().On(PostgresChangesOptions.ListenType.Inserts, (_, c) =>
+        {
+            var insertedCategory = c.Model<Category>();
+            if (insertedCategory is null) { DebugLogger.Log("[Realtime] Category INSERT: model was null"); return; }
+            DebugLogger.Log($"[Realtime] Category INSERT: {insertedCategory.Id} ({insertedCategory.Name})");
+            Dispatcher.UIThread.Post(() =>
+            {
+                if (Categories.Any(x => x.Id == insertedCategory.Id)) { DebugLogger.Log($"[Realtime] Category INSERT: skipped duplicate {insertedCategory.Id}"); return; }
+                Categories.Add(insertedCategory);
+                DebugLogger.Log($"[Realtime] Category INSERT: added to collection");
+            });
+        });
+
+        _ = SupabaseService.Client.From<Category>().On(PostgresChangesOptions.ListenType.Updates, (_, c) =>
+        {
+            var UpdatedCategory = c.Model<Category>();
+            if (UpdatedCategory is null) { DebugLogger.Log("[Realtime] Category UPDATE: model was null"); return; }
+            DebugLogger.Log($"[Realtime] Category UPDATE: {UpdatedCategory.Id} ({UpdatedCategory.Name})");
+            Dispatcher.UIThread.Post(() =>
+            {
+                var idx = Categories.ToList().FindIndex(x => x.Id == UpdatedCategory.Id);
+                if (idx != -1) { Categories[idx] = UpdatedCategory; DebugLogger.Log($"[Realtime] Category UPDATE: replaced at index {idx}"); }
+                else DebugLogger.Log($"[Realtime] Category UPDATE: id {UpdatedCategory.Id} not found in collection");
+            });
+        });
+
+        _ = SupabaseService.Client.From<Category>().On(PostgresChangesOptions.ListenType.Deletes, (_, c) =>
+        {
+            var deletedCategory = c.OldModel<Category>();
+            if (deletedCategory is null) { DebugLogger.Log("[Realtime] Category DELETE: old model was null"); return; }
+            DebugLogger.Log($"[Realtime] Category DELETE: {deletedCategory.Id}");
+            Dispatcher.UIThread.Post(() =>
+            {
+                var item = Categories.FirstOrDefault(x => x.Id == deletedCategory.Id);
+                if (item is not null) { Categories.Remove(item); DebugLogger.Log($"[Realtime] Category DELETE: removed {deletedCategory.Id}"); }
+                else DebugLogger.Log($"[Realtime] Category DELETE: id {deletedCategory.Id} not found (already removed locally)");
+            });
+        });
+
+        //  Profile 
+        _ = SupabaseService.Client.From<Profile>().On(PostgresChangesOptions.ListenType.Updates, (_, c) =>
+        {
+            var updatedProfile = c.Model<Profile>();
+            if (updatedProfile is null) { DebugLogger.Log("[Realtime] Profile UPDATE: model was null"); return; }
+            DebugLogger.Log($"[Realtime] Profile UPDATE: {updatedProfile.Id} ({updatedProfile.DisplayName})");
+            Dispatcher.UIThread.Post(() => Profile = updatedProfile);
+        });
+
+        DebugLogger.Log("[Realtime] all listeners registered");
     }
 }

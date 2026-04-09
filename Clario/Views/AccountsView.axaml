@@ -13,7 +13,7 @@
         <vm:AccountsViewModel />
     </Design.DataContext>
     <Grid RowDefinitions="Auto,*" Margin="32,28,32,0">
-        <!--  TOP BAR  -->
+        <!-- TOP BAR  -->
         <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto" Margin="0,0,0,24">
             <StackPanel Grid.Column="0">
                 <TextBlock Text="{Binding ActiveAccountCount, StringFormat='{}{0} accounts'}" FontSize="12" Foreground="{DynamicResource TextMuted}" />
@@ -35,9 +35,9 @@
                 </StackPanel>
             </Button>
         </Grid>
-        <!--  MAIN CONTENT Left  *    — account cards list Right 340  — selected account detail panel  -->
+        <!-- MAIN CONTENT Left  *    — account cards list Right 340  — selected account detail panel  -->
         <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
-            <!--  LEFT — Account Cards  -->
+            <!-- LEFT — Account Cards  -->
             <Grid Grid.Column="0" RowDefinitions="*,Auto">
                 <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="0,0,20,0" Padding="8 0">
                     <StackPanel Spacing="12" Margin="0 0 0 28">
@@ -179,7 +179,7 @@
             <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Width="340" Padding="8 0"
                           IsVisible="{Binding SelectedAccount, Converter={x:Static ObjectConverters.IsNotNull}}">
                 <StackPanel Spacing="14" Margin="0 0 0 28">
-                    <!--  Account detail card  -->
+                    <!-- Account detail card  -->
                     <Border Background="{DynamicResource BgSurface}" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1" CornerRadius="16"
                             Padding="22">
                         <StackPanel Spacing="18">
@@ -263,7 +263,7 @@
                             </Grid>
                         </StackPanel>
                     </Border>
-                    <!--  Monthly Flow  -->
+                    <!-- Monthly Flow  -->
                     <Border Background="{DynamicResource BgSurface}" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1" CornerRadius="16"
                             Padding="22">
                         <StackPanel Spacing="14">
@@ -308,7 +308,7 @@
                             </Grid>
                         </StackPanel>
                     </Border>
-                    <!--  Recent Transactions  -->
+                    <!-- Recent Transactions  -->
                     <Border Background="{DynamicResource BgSurface}" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1" CornerRadius="16"
                             Padding="22">
                         <StackPanel Spacing="14">
@@ -375,7 +375,7 @@
                             </ItemsControl>
                         </StackPanel>
                     </Border>
-                    <!--  Net Worth Contribution  -->
+                    <!-- Net Worth Contribution  -->
                     <Border Background="{DynamicResource BgSurface}" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1" CornerRadius="16"
                             Padding="22">
                         <StackPanel Spacing="12">
@@ -410,7 +410,7 @@
                             </Grid>
                         </StackPanel>
                     </Border>
-                    <!--  Manage Account  -->
+                    <!-- Manage Account  -->
                     <Border Background="{DynamicResource BgSurface}" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1" CornerRadius="16"
                             Padding="22">
                         <StackPanel Spacing="10">

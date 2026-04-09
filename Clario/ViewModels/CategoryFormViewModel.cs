@@ -13,7 +13,7 @@ public partial class CategoryFormViewModel : ViewModelBase
 {
     public required ViewModelBase parentViewModel;
 
-    // ── Mode ────────────────────────────────────────────────
+    //  Mode 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(FormTitle), nameof(FormSubtitle), nameof(SaveButtonLabel), nameof(CanDelete))]
     private bool _isEditMode = false;
@@ -22,7 +22,7 @@ public partial class CategoryFormViewModel : ViewModelBase
     public string FormSubtitle => IsEditMode ? "Update the details below" : "Fill in the details below";
     public string SaveButtonLabel => IsEditMode ? "Save Changes" : "Save Category";
 
-    // ── Fields ──────────────────────────────────────────────
+    //  Fields 
     [ObservableProperty] [NotifyPropertyChangedFor(nameof(IsValid))]
     private string _name = "";
 
@@ -33,7 +33,7 @@ public partial class CategoryFormViewModel : ViewModelBase
 
     [ObservableProperty] private string _selectedColor = "#7B9CFF";
 
-    // ── Icon options ─────────────────────────────────────────
+    //  Icon options 
     public List<string> CategoryIcons { get; } = new()
     {
         // Food & Dining
@@ -59,7 +59,7 @@ public partial class CategoryFormViewModel : ViewModelBase
         "receipt", "receipt-text", "smartphone", "volume-2", "refresh-cw",
     };
 
-    // ── Validation ──────────────────────────────────────────
+    //  Validation 
     [ObservableProperty] [NotifyPropertyChangedFor(nameof(HasError))]
     private string? _errorMessage;
 
@@ -69,18 +69,18 @@ public partial class CategoryFormViewModel : ViewModelBase
     public bool IsValid => !string.IsNullOrWhiteSpace(Name);
     public bool CanDelete => IsEditMode && DataRepo.General.Categories.Count > 4;
 
-    // ── Delete confirm sub-modal ────────────────────────────
+    //  Delete confirm sub-modal 
     [ObservableProperty] private bool _showDeleteConfirm = false;
 
-    // ── Callbacks ───────────────────────────────────────────
+    //  Callbacks 
     public Action? OnSaved;
     public Action? OnCancelled;
     public Action? OnDeleted;
 
-    // ── Edit mode: original category ────────────────────────
+    //  Edit mode: original category 
     private Guid? _editingId;
 
-    // ── Commands ────────────────────────────────────────────
+    //  Commands 
 
     [RelayCommand]
     private void SetType(string type) => Type = type;
@@ -163,7 +163,7 @@ public partial class CategoryFormViewModel : ViewModelBase
         }
     }
 
-    // ── Public setup methods ─────────────────────────────────
+    //  Public setup methods 
 
     public void SetupForAdd()
     {

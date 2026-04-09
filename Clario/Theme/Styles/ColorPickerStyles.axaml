@@ -8,11 +8,11 @@
     </Border>
   </Design.PreviewWith>
 
-  <!-- ═══════════════════════════════════════════════════════════
+  <!-- 
        RESOURCE OVERRIDES
        These override the Fluent resource keys used internally
        by the ColorPicker flyout template.
-  ═══════════════════════════════════════════════════════════════ -->
+   -->
   <Styles.Resources>
     <!-- Tab strip background (top 48px bar) -->
     <SolidColorBrush x:Key="SystemControlBackgroundBaseLowBrush" Color="#13161E"/>
@@ -56,9 +56,9 @@
     <SolidColorBrush x:Key="ColorViewPreviewBorderBrush"          Color="#1E2330"/>
   </Styles.Resources>
 
-  <!-- ═══════════════════════════════════════════════════════════
+  <!-- 
        ColorPicker — the drop-down button itself
-  ═══════════════════════════════════════════════════════════════ -->
+   -->
   <Style Selector="ColorPicker">
     <Setter Property="CornerRadius"    Value="{DynamicResource RadiusControl}"/>
     <Setter Property="BorderBrush"     Value="{DynamicResource BorderSubtle}"/>
@@ -86,9 +86,9 @@
     <Setter Property="Foreground" Value="{DynamicResource TextMuted}"/>
   </Style>
 
-  <!-- ═══════════════════════════════════════════════════════════
+  <!-- 
        Flyout popup wrapper
-  ═══════════════════════════════════════════════════════════════ -->
+   -->
   <Style Selector="FlyoutPresenter.nopadding">
     <Setter Property="Padding"         Value="0"/>
     <Setter Property="Background"      Value="{DynamicResource BgSurface}"/>
@@ -98,9 +98,9 @@
     <!-- <Setter Property="BoxShadow"       Value="0 8 32 0 #3C000000"/> -->
   </Style>
 
-  <!-- ═══════════════════════════════════════════════════════════
+  <!-- 
        Tab strip inside the flyout
-  ═══════════════════════════════════════════════════════════════ -->
+   -->
   <Style Selector="ColorPicker /template/ DropDownButton /template/ Popup TabControl">
     <Setter Property="Background" Value="{DynamicResource BgSurface}"/>
   </Style>
@@ -129,9 +129,9 @@
     <Setter Property="Foreground" Value="{DynamicResource AccentBlue}"/>
   </Style>
 
-  <!-- ═══════════════════════════════════════════════════════════
+  <!-- 
        Hex input TextBox
-  ═══════════════════════════════════════════════════════════════ -->
+   -->
   <Style Selector="ColorPicker /template/ DropDownButton /template/ Popup TextBox">
     <Setter Property="Background"      Value="{DynamicResource BgBase}"/>
     <Setter Property="Foreground"      Value="{DynamicResource TextPrimary}"/>
@@ -147,9 +147,9 @@
     <Setter Property="BorderBrush" Value="{DynamicResource BorderAccent}"/>
   </Style>
 
-  <!-- ═══════════════════════════════════════════════════════════
+  <!-- 
        NumericUpDown (RGB/HSV component value inputs)
-  ═══════════════════════════════════════════════════════════════ -->
+   -->
   <Style Selector="ColorPicker /template/ DropDownButton /template/ Popup NumericUpDown">
     <Setter Property="Background"      Value="{DynamicResource BgBase}"/>
     <Setter Property="Foreground"      Value="{DynamicResource TextPrimary}"/>
@@ -161,9 +161,9 @@
     <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtle}"/>
   </Style>
 
-  <!-- ═══════════════════════════════════════════════════════════
+  <!-- 
        ColorSlider (hue, saturation, value sliders)
-  ═══════════════════════════════════════════════════════════════ -->
+   -->
   <Style Selector="primitives|ColorSlider">
     <Setter Property="CornerRadius"    Value="4"/>
     <Setter Property="Height"          Value="16"/>
@@ -193,9 +193,9 @@
     <Setter Property="Height" Value="NaN"/>
   </Style>
 
-  <!-- ═══════════════════════════════════════════════════════════
+  <!-- 
        ColorPreviewer (accent color swatches at the bottom)
-  ═══════════════════════════════════════════════════════════════ -->
+   -->
   <Style Selector="primitives|ColorPreviewer">
     <Setter Property="Background" Value="{DynamicResource BgSurface}"/>
   </Style>

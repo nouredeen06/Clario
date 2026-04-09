@@ -12,11 +12,11 @@
         <vm:TransactionFormViewModel />
     </Design.DataContext>
 
-    <!-- ── Dim overlay ───────────────────────── -->
+    <!-- Dim overlay -->
     <Grid>
         <Border Background="#70000000" />
 
-        <!-- ── Modal card ────────────────────────── -->
+        <!-- Modal card -->
         <Border HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Background="{DynamicResource BgSurface}"
@@ -28,7 +28,7 @@
                 BoxShadow="0 24 72 0 #60000000">
             <StackPanel Spacing="0">
 
-                <!-- ── Header ──────────────────────── -->
+                <!-- Header -->
                 <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,0,0,24">
                     <Border Grid.Column="0"
                             CornerRadius="10"
@@ -66,7 +66,7 @@
                     </Button>
                 </Grid>
 
-                <!-- ── Type toggle ─────────────────── -->
+                <!-- Type toggle -->
                 <TextBlock Text="TYPE" Classes="label" Margin="0,0,0,6" />
                 <Border Background="{DynamicResource BgBase}"
                         BorderBrush="{DynamicResource BorderSubtle}"
@@ -136,7 +136,7 @@
                     </Grid>
                 </Border>
 
-                <!-- ── Amount ──────────────────────── -->
+                <!-- Amount -->
                 <TextBlock Text="AMOUNT" Classes="label" Margin="0,0,0,6" />
                 <Border Background="{DynamicResource BgBase}"
                         BorderBrush="{DynamicResource BorderSubtle}"
@@ -174,7 +174,7 @@
                     </Grid>
                 </Border>
 
-                <!-- ── Description (hidden for transfers) ─── -->
+                <!-- Description (hidden for transfers) -->
                 <TextBlock Text="DESCRIPTION" Classes="label" Margin="0,0,0,6"
                            IsVisible="{Binding !IsTransfer}" />
                 <TextBox Text="{Binding Description, Mode=TwoWay}"
@@ -186,7 +186,7 @@
                          Margin="0,0,0,16"
                          IsVisible="{Binding !IsTransfer}" />
 
-                <!-- ── Category + Account (income/expense) ── -->
+                <!-- Category + Account (income/expense) -->
                 <Grid ColumnDefinitions="*,14,*" Margin="0,0,0,16"
                       IsVisible="{Binding !IsTransfer}">
 
@@ -282,7 +282,7 @@
 
                 </Grid>
 
-                <!-- ── From + To accounts (transfer) ── -->
+                <!-- From + To accounts (transfer) -->
                 <Grid ColumnDefinitions="*,Auto,*" Margin="0,0,0,16"
                       IsVisible="{Binding IsTransfer}">
 
@@ -366,7 +366,7 @@
 
                 </Grid>
 
-                <!-- ── Exchange Rate (shown for foreign-currency accounts) ── -->
+                <!-- Exchange Rate (shown for foreign-currency accounts) -->
                 <Border IsVisible="{Binding ShowExchangeRateField}"
                         Background="{DynamicResource BgBase}"
                         BorderBrush="{DynamicResource BorderSubtle}"
@@ -427,7 +427,7 @@
                     </StackPanel>
                 </Border>
 
-                <!-- ── Date ────────────────────────── -->
+                <!-- Date -->
                 <TextBlock Text="DATE" Classes="label" Margin="0,0,0,6" />
                 <Border Background="{DynamicResource BgBase}"
                         BorderBrush="{DynamicResource BorderSubtle}"
@@ -456,7 +456,7 @@
                     </Grid>
                 </Border>
 
-                <!-- ── Note ────────────────────────── -->
+                <!-- Note -->
                 <TextBlock Text="NOTE  (OPTIONAL)" Classes="label" Margin="0,0,0,6" />
                 <TextBox Text="{Binding Note, Mode=TwoWay}"
                          Watermark="Add a note..."
@@ -466,7 +466,7 @@
                          VerticalContentAlignment="Center"
                          Margin="0,0,0,8" />
 
-                <!-- ── Budget approaching warning ─────── -->
+                <!-- Budget approaching warning -->
                 <Border Background="{DynamicResource BadgeBgYellow}"
                         BorderBrush="{DynamicResource AccentYellow}"
                         BorderThickness="1"
@@ -486,7 +486,7 @@
                     </StackPanel>
                 </Border>
 
-                <!-- ── Budget over-limit warning ──────── -->
+                <!-- Budget over-limit warning -->
                 <Border Background="{DynamicResource BadgeBgRed}"
                         BorderBrush="{DynamicResource AccentRed}"
                         BorderThickness="1"
@@ -506,7 +506,7 @@
                     </StackPanel>
                 </Border>
 
-                <!-- ── Validation error ─────────────── -->
+                <!-- Validation error -->
                 <Border Background="{DynamicResource BadgeBgRed}"
                         BorderBrush="{DynamicResource AccentRed}"
                         BorderThickness="1"
@@ -525,7 +525,7 @@
                     </StackPanel>
                 </Border>
 
-                <!-- ── Delete button (edit mode only) ── -->
+                <!-- Delete button (edit mode only) -->
                 <Button Classes="danger"
                         HorizontalAlignment="Stretch"
                         HorizontalContentAlignment="Center"
@@ -539,7 +539,7 @@
                     </StackPanel>
                 </Button>
 
-                <!-- ── Actions ──────────────────────── -->
+                <!-- Actions -->
                 <UniformGrid Rows="1">
                     <Button Classes="base"
                             Margin="0,0,6,0"
@@ -573,7 +573,7 @@
         </Border>
 
         <!-- DELETE CONFIRM MODAL -->
-        <!-- ── Delete confirm modal ──────────────── -->
+        <!-- Delete confirm modal -->
         <Grid IsVisible="{Binding ShowDeleteConfirm}">
             <Border Background="#50000000" />
             <Border HorizontalAlignment="Center"
@@ -588,7 +588,7 @@
                 <StackPanel Spacing="0">
 
                     <!-- Icon -->
-                    <Border Background="#2A0D0D"
+                    <Border Background="{DynamicResource IconBgRed}"
                             CornerRadius="14"
                             Width="52" Height="52"
                             HorizontalAlignment="Center"
@@ -629,7 +629,7 @@
                                 Padding="0,11"
                                 HorizontalAlignment="Stretch"
                                 HorizontalContentAlignment="Center"
-                                Background="#FF5E5E"
+                                Background="{DynamicResource AccentRed}"
                                 BorderThickness="0"
                                 CornerRadius="{DynamicResource RadiusControl}"
                                 Command="{Binding ConfirmDeleteCommand}">
@@ -640,7 +640,7 @@
                                 <TextBlock Text="Delete"
                                            FontSize="13"
                                            FontWeight="SemiBold"
-                                           Foreground="#FFFFFF"
+                                           Foreground="{DynamicResource BgBase}"
                                            VerticalAlignment="Center" />
                             </StackPanel>
                         </Button>

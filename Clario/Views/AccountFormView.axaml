@@ -13,11 +13,11 @@
         <vm:AccountFormViewModel />
     </Design.DataContext>
 
-    <!-- ── Dim overlay ───────────────────────── -->
+    <!-- Dim overlay -->
     <Grid>
         <Border Background="#70000000" />
 
-        <!-- ── Modal card ────────────────────────── -->
+        <!-- Modal card -->
         <Border HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Background="{DynamicResource BgSurface}"
@@ -29,7 +29,7 @@
                 BoxShadow="0 24 72 0 #60000000">
             <StackPanel Spacing="0">
 
-                <!-- ── Header ──────────────────────── -->
+                <!-- Header -->
                 <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,0,0,24">
                     <Border Grid.Column="0"
                             CornerRadius="10"
@@ -66,7 +66,7 @@
                     </Button>
                 </Grid>
 
-                <!-- ── Name ──────────────────────── -->
+                <!-- Name -->
                 <TextBlock Text="NAME" Classes="label" Margin="0,0,0,6" />
                 <TextBox Text="{Binding Name, Mode=TwoWay}"
                          Watermark="e.g. Main Checking"
@@ -76,7 +76,7 @@
                          VerticalContentAlignment="Center"
                          Margin="0,0,0,16" />
 
-                <!-- ── Type ─────────────────────────── -->
+                <!-- Type -->
                 <TextBlock Text="TYPE" Classes="label" Margin="0,0,0,6" />
                 <Border Background="{DynamicResource BgBase}"
                         BorderBrush="{DynamicResource BorderSubtle}"
@@ -92,7 +92,7 @@
                               HorizontalAlignment="Stretch" />
                 </Border>
 
-                <!-- ── Institution + Mask ──────────── -->
+                <!-- Institution + Mask -->
                 <Grid ColumnDefinitions="*,14,*" Margin="0,0,0,16">
                     <!-- Institution -->
                     <StackPanel Grid.Column="0" Spacing="6">
@@ -122,7 +122,7 @@
                     </StackPanel>
                 </Grid>
 
-                <!-- ── Opening Balance + Currency ──────────── -->
+                <!-- Opening Balance + Currency -->
                 <Grid ColumnDefinitions="*,14,*" Margin="0,0,0,16">
                     <!-- Opening Balance -->
                     <StackPanel Grid.Column="0" Spacing="6">
@@ -204,7 +204,7 @@
                     </StackPanel>
                 </Grid>
 
-                <!-- ── Credit Limit (if type is credit) ──────────── -->
+                <!-- Credit Limit (if type is credit) -->
                 <StackPanel Spacing="6" Margin="0,0,0,16" IsVisible="{Binding IsCredit}">
                     <TextBlock Text="CREDIT LIMIT  (OPTIONAL)" Classes="label" />
                     <Border Background="{DynamicResource BgBase}"
@@ -236,7 +236,7 @@
                     </Border>
                 </StackPanel>
 
-                <!-- ── Opened At ──────────────────────── -->
+                <!-- Opened At -->
                 <TextBlock Text="OPENED ON  (OPTIONAL)" Classes="label" Margin="0,0,0,6" />
                 <Border Background="{DynamicResource BgBase}"
                         BorderBrush="{DynamicResource BorderSubtle}"
@@ -250,7 +250,7 @@
                                         Padding="12,10" />
                 </Border>
 
-                <!-- ── Icon + Color ──────────── -->
+                <!-- Icon + Color -->
                 <Grid ColumnDefinitions="*,14,*" Margin="0,0,0,16">
                     <!-- Icon -->
                     <StackPanel Grid.Column="0" Spacing="6">
@@ -304,7 +304,7 @@
                     </StackPanel>
                 </Grid>
 
-                <!-- ── Primary account toggle ──────────── -->
+                <!-- Primary account toggle -->
                 <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,16">
                     <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="2">
                         <TextBlock Text="PRIMARY ACCOUNT" Classes="label" />
@@ -320,7 +320,7 @@
                                   VerticalAlignment="Center" />
                 </Grid>
 
-                <!-- ── Validation error ─────────────── -->
+                <!-- Validation error -->
                 <Border Background="{DynamicResource BadgeBgRed}"
                         BorderBrush="{DynamicResource AccentRed}"
                         BorderThickness="1"
@@ -339,7 +339,7 @@
                     </StackPanel>
                 </Border>
 
-                <!-- ── Actions ──────────────────────── -->
+                <!-- Actions -->
                 <UniformGrid Rows="1">
                     <Button Classes="base"
                             Margin="0,0,6,0"

@@ -9,10 +9,13 @@
              x:DataType="vm:TransactionsViewModel"
              x:Name="transactionsRoot"
              Classes="mobile">
+    <Design.DataContext>
+        <vm:TransactionsViewModel />
+    </Design.DataContext>
     <Grid RowDefinitions="Auto,Auto,*,Auto"
           Background="{DynamicResource BgBase}">
 
-        <!-- ── Top Bar ───────────────────────────── -->
+        <!-- Top Bar -->
         <Grid Grid.Row="0"
               ColumnDefinitions="*,Auto"
               Margin="16,16,16,0">
@@ -169,7 +172,8 @@
                                             Padding="0,10"
                                             HorizontalAlignment="Stretch"
                                             HorizontalContentAlignment="Center"
-                                            Command="{Binding ApplyFiltersCommand}">
+                                            Command="{Binding LoadPageStrCommand}"
+                                            CommandParameter="1">
                                         <TextBlock Text="Apply"
                                                    FontSize="13"
                                                    FontWeight="SemiBold"
@@ -188,7 +192,7 @@
             </Button>
         </Grid>
 
-        <!-- ── Summary strip ─────────────────────── -->
+        <!-- Summary strip -->
         <Grid Grid.Row="1"
               ColumnDefinitions="*,*,*"
               Margin="16,12,16,0">
@@ -271,13 +275,13 @@
 
         </Grid>
 
-        <!-- ── Transaction list ──────────────────── -->
+        <!-- Transaction list -->
         <ScrollViewer Grid.Row="2"
                       Margin="0,12,0,0"
                       VerticalScrollBarVisibility="Auto"
                       HorizontalScrollBarVisibility="Disabled">
             <StackPanel>
-                <ItemsControl ItemsSource="{Binding FilteredTransactions}">
+                <ItemsControl ItemsSource="{Binding PagedTransactions}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <VirtualizingStackPanel />
@@ -391,6 +395,22 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
+
+                <!-- Load More button -->
+                <Button Classes="base"
+                        Margin="16,16,16,16"
+                        Padding="0,12"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        FontSize="13"
+                        IsVisible="{Binding HasNextPage}"
+                        Command="{Binding LoadMoreCommand}">
+                    <TextBlock Text="Load More"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimary}"
+                               HorizontalAlignment="Center" />
+                </Button>
+
                 <!-- Empty state -->
                 <StackPanel HorizontalAlignment="Center"
                             Spacing="12"

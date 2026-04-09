@@ -25,7 +25,7 @@ public class Budget : BaseModel
 
     [Column("created_at")] public DateTime CreatedAt { get; set; }
 
-    // ── not in DB ──────────────────────────────────────
+    //  not in DB 
 
     [JsonIgnore] public Category? Category { get; set; }
     [JsonIgnore] public int TransactionsCount { get; set; }

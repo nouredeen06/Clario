@@ -12,6 +12,7 @@ using CommunityToolkit.Mvvm.Input;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
+using SkiaSharp;
 using SKColor = SkiaSharp.SKColor;
 
 namespace Clario.ViewModels;
@@ -21,7 +22,9 @@ public partial class AnalyticsViewModel : ViewModelBase
     public required ViewModelBase parentViewModel;
     public GeneralDataRepo AppData => DataRepo.General;
 
-    // ── Period ───────────────────────────────────────────
+    private static readonly SKTypeface _interTypeface = SKTypeface.FromFamilyName("Inter");
+
+    //  Period 
     public List<string> PeriodOptions { get; } = new()
     {
         "Last 30 Days", "Last 3 Months", "Last 6 Months", "Last 12 Months", "This Year"
@@ -31,7 +34,7 @@ public partial class AnalyticsViewModel : ViewModelBase
 
     partial void OnSelectedPeriodChanged(string value) => Initialize();
 
-    // ── KPI cards ────────────────────────────────────────
+    //  KPI cards 
     [ObservableProperty] private string _totalIncomeFormatted = "—";
     [ObservableProperty] private string _totalExpensesFormatted = "—";
     [ObservableProperty] private string _netSavingsFormatted = "—";
@@ -40,38 +43,38 @@ public partial class AnalyticsViewModel : ViewModelBase
 
     public string PrimarySymbol => CurrencyService.GetSymbol(AppData.PrimaryAccount?.Currency ?? AppData.Profile?.Currency ?? "USD");
 
-    // ── Cash Flow chart ──────────────────────────────────
+    //  Cash Flow chart 
     [ObservableProperty] private ISeries[] _cashFlowSeries = [];
     [ObservableProperty] private Axis[] _cashFlowXAxes = [];
     [ObservableProperty] private Axis[] _cashFlowYAxes = [];
 
-    // ── Net Worth chart ──────────────────────────────────
+    //  Net Worth chart 
     [ObservableProperty] private ISeries[] _netWorthSeries = [];
     [ObservableProperty] private Axis[] _netWorthXAxes = [];
     [ObservableProperty] private Axis[] _netWorthYAxes = [];
 
-    // ── Day-of-week chart ────────────────────────────────
+    //  Day-of-week chart 
     [ObservableProperty] private ISeries[] _dayOfWeekSeries = [];
     [ObservableProperty] private Axis[] _dayOfWeekXAxes = [];
 
-    // ── Top categories ───────────────────────────────────
+    //  Top categories 
     [ObservableProperty] private ObservableCollection<CategorySpendRow> _topCategories = new();
     [ObservableProperty] private bool _hasTopCategories;
 
-    // ── Income sources donut ─────────────────────────────
+    //  Income sources donut 
     [ObservableProperty] private ISeries[] _incomeSourcesSeries = [];
     [ObservableProperty] private bool _hasIncomeSources;
 
-    // ── State ────────────────────────────────────────────
+    //  State 
     [ObservableProperty] private bool _isExporting;
     [ObservableProperty] private string? _exportStatusMessage;
 
-    // ─────────────────────────────────────────────────────
+    // 
 
     public AnalyticsViewModel()
     {
-        AppData.Transactions.CollectionChanged += (_, _) => Initialize();
-        AppData.Accounts.CollectionChanged += (_, _) => Initialize();
+        Track(AppData.Transactions, (_, _) => Initialize());
+        Track(AppData.Accounts,     (_, _) => Initialize());
         Initialize();
     }
 
@@ -101,7 +104,7 @@ public partial class AnalyticsViewModel : ViewModelBase
         }
     }
 
-    // ── Date range ────────────────────────────────────────
+    //  Date range 
 
     private (DateTime start, DateTime end) GetDateRange()
     {
@@ -132,7 +135,7 @@ public partial class AnalyticsViewModel : ViewModelBase
         return buckets;
     }
 
-    // ── Section 1: KPIs ───────────────────────────────────
+    //  Section 1: KPIs 
 
     private void ComputeKpis(List<Transaction> income, List<Transaction> expenses)
     {
@@ -150,7 +153,7 @@ public partial class AnalyticsViewModel : ViewModelBase
             : "—";
     }
 
-    // ── Section 2: Cash Flow ──────────────────────────────
+    //  Section 2: Cash Flow 
 
     private void BuildCashFlowChart(DateTime start, DateTime end)
     {
@@ -202,7 +205,7 @@ public partial class AnalyticsViewModel : ViewModelBase
             new Axis
             {
                 Labels = labels,
-                LabelsPaint = new SolidColorPaint(SKColor.Parse("#7A8090")),
+                LabelsPaint = new SolidColorPaint(SKColor.Parse("#7A8090")) { SKTypeface = _interTypeface },
                 SeparatorsPaint = new SolidColorPaint(new SKColor(30, 35, 48)),
                 TicksPaint = null,
                 TextSize = 11
@@ -214,7 +217,7 @@ public partial class AnalyticsViewModel : ViewModelBase
         [
             new Axis
             {
-                LabelsPaint = new SolidColorPaint(SKColor.Parse("#7A8090")),
+                LabelsPaint = new SolidColorPaint(SKColor.Parse("#7A8090")) { SKTypeface = _interTypeface },
                 SeparatorsPaint = new SolidColorPaint(new SKColor(30, 35, 48)),
                 TicksPaint = null,
                 TextSize = 10,
@@ -223,7 +226,7 @@ public partial class AnalyticsViewModel : ViewModelBase
         ];
     }
 
-    // ── Section 3: Net Worth ──────────────────────────────
+    //  Section 3: Net Worth 
 
     private void BuildNetWorthChart(DateTime start, DateTime end)
     {
@@ -266,7 +269,7 @@ public partial class AnalyticsViewModel : ViewModelBase
             new Axis
             {
                 Labels = labels,
-                LabelsPaint = new SolidColorPaint(SKColor.Parse("#7A8090")),
+                LabelsPaint = new SolidColorPaint(SKColor.Parse("#7A8090")) { SKTypeface = _interTypeface },
                 SeparatorsPaint = new SolidColorPaint(new SKColor(30, 35, 48)),
                 TicksPaint = null,
                 TextSize = 11
@@ -278,7 +281,7 @@ public partial class AnalyticsViewModel : ViewModelBase
         [
             new Axis
             {
-                LabelsPaint = new SolidColorPaint(SKColor.Parse("#7A8090")),
+                LabelsPaint = new SolidColorPaint(SKColor.Parse("#7A8090")) { SKTypeface = _interTypeface },
                 SeparatorsPaint = new SolidColorPaint(new SKColor(30, 35, 48)),
                 TicksPaint = null,
                 TextSize = 10,
@@ -287,7 +290,7 @@ public partial class AnalyticsViewModel : ViewModelBase
         ];
     }
 
-    // ── Section 4: Day of Week ────────────────────────────
+    //  Section 4: Day of Week 
 
     private void BuildDayOfWeekChart(List<Transaction> expenses, DateTime start, DateTime end)
     {
@@ -331,7 +334,7 @@ public partial class AnalyticsViewModel : ViewModelBase
             new Axis
             {
                 Labels = dayLabels,
-                LabelsPaint = new SolidColorPaint(SKColor.Parse("#7A8090")),
+                LabelsPaint = new SolidColorPaint(SKColor.Parse("#7A8090")) { SKTypeface = _interTypeface },
                 SeparatorsPaint = null,
                 TicksPaint = null,
                 TextSize = 11
@@ -339,7 +342,7 @@ public partial class AnalyticsViewModel : ViewModelBase
         ];
     }
 
-    // ── Section 5: Top Categories ─────────────────────────
+    //  Section 5: Top Categories 
 
     private void BuildTopCategories(List<Transaction> expenses)
     {
@@ -372,7 +375,7 @@ public partial class AnalyticsViewModel : ViewModelBase
         HasTopCategories = grouped.Count > 0;
     }
 
-    // ── Section 6: Income Sources ─────────────────────────
+    //  Section 6: Income Sources 
 
     private void BuildIncomeSourcesChart(List<Transaction> income)
     {
@@ -403,7 +406,7 @@ public partial class AnalyticsViewModel : ViewModelBase
         HasIncomeSources = true;
     }
 
-    // ── PDF Export ────────────────────────────────────────
+    //  PDF Export 
 
     [RelayCommand]
     private async Task ExportPdf()

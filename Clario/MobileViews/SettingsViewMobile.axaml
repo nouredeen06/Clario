@@ -14,7 +14,7 @@
 
     <Grid RowDefinitions="Auto,*">
 
-        <!-- ── Top bar ────────────────────────────── -->
+        <!-- Top bar -->
         <Grid Grid.Row="0"
               ColumnDefinitions="*,Auto"
               Margin="16,16,16,12">
@@ -26,13 +26,13 @@
             </StackPanel>
         </Grid>
 
-        <!-- ── Scrollable content ────────────────── -->
+        <!-- Scrollable content -->
         <ScrollViewer Grid.Row="1"
                       VerticalScrollBarVisibility="Auto"
                       HorizontalScrollBarVisibility="Disabled">
             <StackPanel Margin="16,0,16,32" Spacing="0">
 
-                <!-- ── Global success / error banners ── -->
+                <!-- Global success / error banners -->
                 <Border Background="{DynamicResource IconBgGreen}"
                         BorderBrush="{DynamicResource AccentGreen}"
                         BorderThickness="1"
@@ -78,9 +78,9 @@
                     </Grid>
                 </Border>
 
-                <!-- ══════════════════════════════════════
+                <!-- 
                      SECTION: Profile
-                ══════════════════════════════════════ -->
+                 -->
                 <TextBlock Text="PROFILE" Classes="label" Margin="0,0,0,10" />
                 <Border Background="{DynamicResource BgSurface}"
                         BorderBrush="{DynamicResource BorderSubtle}"
@@ -201,9 +201,9 @@
                     </StackPanel>
                 </Border>
 
-                <!-- ══════════════════════════════════════
+                <!-- 
                      SECTION: Account & Security
-                ══════════════════════════════════════ -->
+                 -->
                 <TextBlock Text="ACCOUNT &amp; SECURITY" Classes="label" Margin="0,0,0,10" />
                 <Border Background="{DynamicResource BgSurface}"
                         BorderBrush="{DynamicResource BorderSubtle}"
@@ -213,7 +213,7 @@
                         Margin="0,0,0,20">
                     <StackPanel Spacing="0">
 
-                        <!-- ── Email row ──────────────────────── -->
+                        <!-- Email row -->
                         <Border BorderBrush="{DynamicResource BorderSubtle}"
                                 BorderThickness="0,0,0,1"
                                 Padding="16,0">
@@ -323,7 +323,7 @@
                             </Panel>
                         </Border>
 
-                        <!-- ── Password row ───────────────────── -->
+                        <!-- Password row -->
                         <Border Padding="16,0">
                             <Panel>
                                 <!-- Display row -->
@@ -445,9 +445,9 @@
                     </StackPanel>
                 </Border>
 
-                <!-- ══════════════════════════════════════
+                <!-- 
                      SECTION: Session
-                ══════════════════════════════════════ -->
+                 -->
                 <TextBlock Text="SESSION" Classes="label" Margin="0,0,0,10" />
                 <Border Background="{DynamicResource BgSurface}"
                         BorderBrush="{DynamicResource BorderSubtle}"

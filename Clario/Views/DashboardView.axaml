@@ -16,7 +16,7 @@
     <Grid ColumnDefinitions="*">
         <ScrollViewer Grid.Column="0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Name="mainScrollviewer">
             <StackPanel Spacing="24" Margin="32,28,32,32">
-                <!--  Top Bar  -->
+                <!-- Top Bar  -->
                 <Grid ColumnDefinitions="*,Auto">
                     <StackPanel Grid.Column="0">
                         <!-- <TextBlock Classes="muted" Text="Friday, March 6, 2026" /> -->
@@ -30,7 +30,7 @@
                                 Cursor="Hand" Content="+ Add Transaction" Command="{Binding CreateTransactionCommand}" />
                     </StackPanel>
                 </Grid>
-                <!--  KPI Cards Row  -->
+                <!-- KPI Cards Row  -->
                 <Grid ColumnDefinitions="*,*,*" HorizontalAlignment="Stretch" MaxHeight="160">
                     <Grid.Styles>
                         <Style Selector="Grid > Border">
@@ -109,7 +109,7 @@
                         </StackPanel>
                     </Border>
                 </Grid>
-                <!--  Mid Row: Spending Chart + Budget  -->
+                <!-- Mid Row: Spending Chart + Budget  -->
 
                 <Grid ColumnDefinitions="*,340" MaxHeight="470">
                     <!-- Spending Breakdown -->
@@ -258,7 +258,7 @@
                         </ScrollViewer>
                     </Border>
                 </Grid>
-                <!--  Bottom Row: Recent Transactions + Accounts  -->
+                <!-- Bottom Row: Recent Transactions + Accounts  -->
 
                 <Grid ColumnDefinitions="*,300" MaxHeight="500">
                     <!-- Recent Transactions -->

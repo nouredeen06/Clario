@@ -1,0 +1,168 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Clario.ViewModels"
+             xmlns:model="clr-namespace:Clario.Models"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="800"
+             x:Class="Clario.MobileViews.CategoriesViewMobile"
+             x:DataType="vm:CategoriesViewModel"
+             x:Name="CategoriesPage"
+             Classes="mobile">
+    <Design.DataContext>
+        <vm:CategoriesViewModel />
+    </Design.DataContext>
+
+    <Grid RowDefinitions="Auto,*"
+          Background="{DynamicResource BgBase}">
+
+        <!-- Top bar -->
+        <Grid Grid.Row="0"
+              ColumnDefinitions="*,Auto"
+              Margin="16,16,16,12">
+            <StackPanel Grid.Column="0">
+                <TextBlock Text="Categories"
+                           FontSize="22"
+                           FontWeight="Bold"
+                           Foreground="{DynamicResource TextPrimary}" />
+            </StackPanel>
+            <Button Grid.Column="1"
+                    Classes="accented"
+                    Padding="12,8"
+                    Command="{Binding AddCategoryCommand}">
+                <Svg Path="../Assets/Icons/plus.svg"
+                     Width="16" Height="16"
+                     Css="path, circle, rect, ellipse, line, polyline, polygon, text, use { stroke: #0D0F14; }" />
+            </Button>
+        </Grid>
+
+        <!-- Content -->
+        <ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Margin="16,0,16,24" Spacing="20">
+
+                <!-- Expense section -->
+                <StackPanel IsVisible="{Binding HasExpenseCategories}" Spacing="8">
+                    <TextBlock Text="EXPENSES" Classes="label" />
+                    <Border Background="{DynamicResource BgSurface}"
+                            BorderBrush="{DynamicResource BorderSubtle}"
+                            BorderThickness="1,0.25"
+                            CornerRadius="14"
+                            ClipToBounds="True">
+                        <ItemsControl ItemsSource="{Binding ExpenseCategories}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Spacing="0" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="model:Category">
+                                    <Border BorderBrush="{DynamicResource BorderSubtle}"
+                                            BorderThickness="0,0.75">
+                                        <Button Classes="nav"
+                                                HorizontalAlignment="Stretch"
+                                                HorizontalContentAlignment="Stretch"
+                                                Background="{DynamicResource BgSurface}"
+                                                Padding="14,12"
+                                                Command="{Binding DataContext.EditCategoryCommand, ElementName=CategoriesPage}"
+                                                CommandParameter="{Binding .}">
+                                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                                <Border Grid.Column="0"
+                                                        CornerRadius="10"
+                                                        Width="36" Height="36"
+                                                        Margin="0,0,12,0">
+                                                    <Border.Background>
+                                                        <SolidColorBrush
+                                                            Color="{Binding Color, Converter={StaticResource HexToColorConverter}, ConverterParameter=color}"
+                                                            Opacity="0.15" />
+                                                    </Border.Background>
+                                                    <Svg Path="{Binding Icon, Converter={StaticResource SvgPathFromName}}"
+                                                         Width="17" Height="17"
+                                                         Css="{Binding Color, Converter={StaticResource HexToColorConverter}, ConverterParameter=css}" />
+                                                </Border>
+                                                <TextBlock Grid.Column="1"
+                                                           Text="{Binding Name}"
+                                                           FontSize="14"
+                                                           FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource TextPrimary}"
+                                                           VerticalAlignment="Center" />
+                                                <Svg Grid.Column="2"
+                                                     Path="../Assets/Icons/chevron-right.svg"
+                                                     Width="14" Height="14"
+                                                     Css="{DynamicResource SvgMuted}"
+                                                     VerticalAlignment="Center" />
+                                            </Grid>
+                                        </Button>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Border>
+                </StackPanel>
+
+                <!-- Income section -->
+                <StackPanel IsVisible="{Binding HasIncomeCategories}" Spacing="8">
+                    <TextBlock Text="INCOME" Classes="label" />
+                    <Border Background="{DynamicResource BgSurface}"
+                            BorderBrush="{DynamicResource BorderSubtle}"
+                            BorderThickness="1,0.25"
+                            CornerRadius="14"
+                            ClipToBounds="True">
+                        <ItemsControl ItemsSource="{Binding IncomeCategories}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Spacing="0" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="model:Category">
+                                    <Border BorderBrush="{DynamicResource BorderSubtle}"
+                                            BorderThickness="0,0.75">
+                                        <Button Classes="nav"
+                                                HorizontalAlignment="Stretch"
+                                                HorizontalContentAlignment="Stretch"
+                                                Background="{DynamicResource BgSurface}"
+                                                Padding="14,12"
+                                                Command="{Binding DataContext.EditCategoryCommand, ElementName=CategoriesPage}"
+                                                CommandParameter="{Binding .}">
+                                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                                <Border Grid.Column="0"
+                                                        CornerRadius="10"
+                                                        Width="36" Height="36"
+                                                        Margin="0,0,12,0">
+                                                    <Border.Background>
+                                                        <SolidColorBrush
+                                                            Color="{Binding Color, Converter={StaticResource HexToColorConverter}, ConverterParameter=color}"
+                                                            Opacity="0.15" />
+                                                    </Border.Background>
+                                                    <Svg Path="{Binding Icon, Converter={StaticResource SvgPathFromName}}"
+                                                         Width="17" Height="17"
+                                                         Css="{Binding Color, Converter={StaticResource HexToColorConverter}, ConverterParameter=css}" />
+                                                </Border>
+                                                <TextBlock Grid.Column="1"
+                                                           Text="{Binding Name}"
+                                                           FontSize="14"
+                                                           FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource TextPrimary}"
+                                                           VerticalAlignment="Center" />
+                                                <Svg Grid.Column="2"
+                                                     Path="../Assets/Icons/chevron-right.svg"
+                                                     Width="14" Height="14"
+                                                     Css="{DynamicResource SvgMuted}"
+                                                     VerticalAlignment="Center" />
+                                            </Grid>
+                                        </Button>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Border>
+                </StackPanel>
+
+            </StackPanel>
+        </ScrollViewer>
+
+    </Grid>
+
+</UserControl>

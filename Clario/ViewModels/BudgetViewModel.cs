@@ -69,15 +69,18 @@ public partial class BudgetViewModel : ViewModelBase
 
     public BudgetViewModel()
     {
-        AppData.Budgets.CollectionChanged += async (_, _) => { await Initialize(); };
-        AppData.Transactions.CollectionChanged += async (_, _) => { await Initialize(); };
-        AppData.PropertyChanged += (_, e) =>
-        {
-            if (e.PropertyName == nameof(AppData.Profile))
-                NotifyComputedPropertiesOnChanged();
-        };
+        Track(AppData.Budgets,      async (_, _) => await Initialize());
+        Track(AppData.Transactions, async (_, _) => await Initialize());
+        AppData.PropertyChanged += OnProfileChanged;
+        OnDispose(() => AppData.PropertyChanged -= OnProfileChanged);
         WeakReferenceMessenger.Default.Register<RatesRefreshed>(this, async (_, _) => await Initialize());
         _ = Initialize();
+    }
+
+    private void OnProfileChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(AppData.Profile))
+            NotifyComputedPropertiesOnChanged();
     }
 
     private async Task Initialize()
@@ -98,19 +101,19 @@ public partial class BudgetViewModel : ViewModelBase
     [RelayCommand]
     private void CreateBudget()
     {
-        ((MainViewModel)parentViewModel).OpenAddBudgetCommand.Execute(null);
+        if (parentViewModel is MainViewModel main) main.OpenAddBudgetCommand.Execute(null);
     }
 
     [RelayCommand]
     private void EditBudget(Budget budget)
     {
-        ((MainViewModel)parentViewModel).OpenEditBudgetCommand.Execute(budget);
+        if (parentViewModel is MainViewModel main) main.OpenEditBudgetCommand.Execute(budget);
     }
 
     [RelayCommand]
     private void EditSavingsGoal()
     {
-        ((MainViewModel)parentViewModel).OpenEditSavingsGoalCommand.Execute(null);
+        if (parentViewModel is MainViewModel main) main.OpenEditSavingsGoalCommand.Execute(null);
     }
 
     private void ProcessChartData()

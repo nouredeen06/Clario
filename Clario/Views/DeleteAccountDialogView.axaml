@@ -14,9 +14,9 @@
     <!-- Dim overlay -->
     <Border Background="#70000000"/>
 
-    <!-- ═══════════════════════════════════════
+    <!-- 
          STEP 1 — Simple confirm (no transactions)
-    ═══════════════════════════════════════ -->
+     -->
     <Border IsVisible="{Binding IsSimpleConfirmStep}"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
@@ -30,7 +30,7 @@
       <StackPanel Spacing="0">
 
         <!-- Icon -->
-        <Border Background="#2A0D0D"
+        <Border Background="{DynamicResource IconBgRed}"
                 CornerRadius="14"
                 Width="54" Height="54"
                 HorizontalAlignment="Center"
@@ -99,7 +99,7 @@
                   Padding="0,11"
                   HorizontalAlignment="Stretch"
                   HorizontalContentAlignment="Center"
-                  Background="#FF5E5E"
+                  Background="{DynamicResource AccentRed}"
                   BorderThickness="0"
                   CornerRadius="{DynamicResource RadiusControl}"
                   Command="{Binding ConfirmDeleteCommand}">
@@ -110,7 +110,7 @@
               <TextBlock Text="Delete Account"
                          FontSize="13"
                          FontWeight="SemiBold"
-                         Foreground="#FFFFFF"
+                         Foreground="{DynamicResource BgBase}"
                          VerticalAlignment="Center"/>
             </StackPanel>
           </Button>
@@ -119,9 +119,9 @@
       </StackPanel>
     </Border>
 
-    <!-- ═══════════════════════════════════════
+    <!-- 
          STEP 1B — Has transactions warning
-    ═══════════════════════════════════════ -->
+     -->
     <Border IsVisible="{Binding IsHasTransactionsStep}"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
@@ -236,9 +236,9 @@
       </StackPanel>
     </Border>
 
-    <!-- ═══════════════════════════════════════
+    <!-- 
          STEP 2 — Pick target account + confirm
-    ═══════════════════════════════════════ -->
+     -->
     <Border IsVisible="{Binding IsMigrateStep}"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
@@ -470,7 +470,7 @@
                   Padding="0,11"
                   HorizontalAlignment="Stretch"
                   HorizontalContentAlignment="Center"
-                  Background="#FF5E5E"
+                  Background="{DynamicResource AccentRed}"
                   BorderThickness="0"
                   CornerRadius="{DynamicResource RadiusControl}"
                   IsEnabled="{Binding CanMigrateAndDelete}"
@@ -482,7 +482,7 @@
               <TextBlock Text="Migrate &amp; Delete"
                          FontSize="13"
                          FontWeight="SemiBold"
-                         Foreground="#FFFFFF"
+                         Foreground="{DynamicResource BgBase}"
                          VerticalAlignment="Center"/>
             </StackPanel>
           </Button>

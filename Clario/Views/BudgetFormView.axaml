@@ -11,11 +11,11 @@
         <vm:BudgetFormViewModel />
     </Design.DataContext>
 
-    <!-- ── Dim overlay ───────────────────────── -->
+    <!-- Dim overlay -->
     <Grid>
         <Border Background="#70000000" />
 
-        <!-- ── Modal card ────────────────────────── -->
+        <!-- Modal card -->
         <Border HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Background="{DynamicResource BgSurface}"
@@ -27,7 +27,7 @@
                 BoxShadow="0 24 72 0 #60000000">
             <StackPanel Spacing="0">
 
-                <!-- ── Header ──────────────────────── -->
+                <!-- Header -->
                 <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,0,0,24">
                     <Border Grid.Column="0"
                             Background="{DynamicResource BgSurface}"
@@ -62,7 +62,7 @@
                     </Button>
                 </Grid>
 
-                <!-- ── Category ───────────────────── -->
+                <!-- Category -->
                 <TextBlock Text="CATEGORY" Classes="label" Margin="0,0,0,6" />
                 <Border Background="{DynamicResource BgBase}"
                         BorderBrush="{DynamicResource BorderSubtle}"
@@ -96,7 +96,7 @@
                     </Grid>
                 </Border>
 
-                <!-- ── Limit Amount ────────────────── -->
+                <!-- Limit Amount -->
                 <TextBlock Text="LIMIT AMOUNT" Classes="label" Margin="0,0,0,6" />
                 <Border Background="{DynamicResource BgBase}"
                         BorderBrush="{DynamicResource BorderSubtle}"
@@ -129,7 +129,7 @@
                     </Grid>
                 </Border>
 
-                <!-- ── Period ─────────────────────── -->
+                <!-- Period -->
                 <TextBlock Text="PERIOD" Classes="label" Margin="0,0,0,6" />
                 <Border Background="{DynamicResource BgBase}"
                         BorderBrush="{DynamicResource BorderSubtle}"
@@ -187,7 +187,7 @@
                     </Grid>
                 </Border>
 
-                <!-- ── Alert Threshold ────────────── -->
+                <!-- Alert Threshold -->
                 <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,6">
                     <TextBlock Grid.Column="0" Text="ALERT THRESHOLD" Classes="label" />
                     <TextBlock Grid.Column="1"
@@ -223,7 +223,7 @@
                     </StackPanel>
                 </Border>
 
-                <!-- ── Rollover ───────────────────── -->
+                <!-- Rollover -->
                 <Border Background="{DynamicResource BgBase}"
                         BorderBrush="{DynamicResource BorderSubtle}"
                         BorderThickness="1"
@@ -257,7 +257,7 @@
                     </Grid>
                 </Border>
 
-                <!-- ── Validation error ─────────────── -->
+                <!-- Validation error -->
                 <Border Background="{DynamicResource BadgeBgRed}"
                         BorderBrush="{DynamicResource AccentRed}"
                         BorderThickness="1"
@@ -276,7 +276,7 @@
                     </StackPanel>
                 </Border>
 
-                <!-- ── Delete button (edit mode only) ── -->
+                <!-- Delete button (edit mode only) -->
                 <Button Classes="danger"
                         HorizontalAlignment="Stretch"
                         HorizontalContentAlignment="Center"
@@ -290,7 +290,7 @@
                     </StackPanel>
                 </Button>
 
-                <!-- ── Actions ──────────────────────── -->
+                <!-- Actions -->
                 <UniformGrid Rows="1">
                     <Button Classes="base"
                             Margin="0,0,6,0"
@@ -323,7 +323,7 @@
             </StackPanel>
         </Border>
 
-        <!-- ── Delete confirm sub-modal ──────────────── -->
+        <!-- Delete confirm sub-modal -->
         <Grid IsVisible="{Binding ShowDeleteConfirm}">
             <Border Background="#50000000" />
             <Border HorizontalAlignment="Center"
@@ -338,7 +338,7 @@
                 <StackPanel Spacing="0">
 
                     <!-- Icon -->
-                    <Border Background="#2A0D0D"
+                    <Border Background="{DynamicResource IconBgRed}"
                             CornerRadius="14"
                             Width="52" Height="52"
                             HorizontalAlignment="Center"
@@ -379,7 +379,7 @@
                                 Padding="0,11"
                                 HorizontalAlignment="Stretch"
                                 HorizontalContentAlignment="Center"
-                                Background="#FF5E5E"
+                                Background="{DynamicResource AccentRed}"
                                 BorderThickness="0"
                                 CornerRadius="{DynamicResource RadiusControl}"
                                 Command="{Binding ConfirmDeleteCommand}">
@@ -390,7 +390,7 @@
                                 <TextBlock Text="Delete"
                                            FontSize="13"
                                            FontWeight="SemiBold"
-                                           Foreground="#FFFFFF"
+                                           Foreground="{DynamicResource BgBase}"
                                            VerticalAlignment="Center" />
                             </StackPanel>
                         </Button>

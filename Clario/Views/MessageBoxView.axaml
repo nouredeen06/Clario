@@ -1,0 +1,92 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:Clario.ViewModels"
+             x:Class="Clario.Views.MessageBoxView"
+             x:DataType="vm:MessageBoxViewModel">
+    <Grid>
+        <!-- Dim overlay -->
+        <Border Background="#70000000" />
+
+        <!-- Card -->
+        <Border Background="{DynamicResource BgSurface}"
+                BorderBrush="{DynamicResource BorderSubtle}"
+                BorderThickness="1"
+                CornerRadius="{StaticResource RadiusCard}"
+                Padding="28,24"
+                MaxWidth="400"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center">
+            <StackPanel Spacing="20">
+
+                <!-- Icon + Title row -->
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    <!-- Error icon -->
+                    <Border Grid.Column="0"
+                            Background="{DynamicResource IconBgRed}"
+                            CornerRadius="{StaticResource RadiusIcon}"
+                            Width="40" Height="40" Margin="0,0,14,0"
+                            IsVisible="{Binding IsError}">
+                        <Svg Path="../Assets/Icons/circle-alert.svg" Width="18" Height="18" Css="{DynamicResource SvgRed}" />
+                    </Border>
+                    <!-- Warning icon -->
+                    <Border Grid.Column="0"
+                            Background="{DynamicResource IconBgOrange}"
+                            CornerRadius="{StaticResource RadiusIcon}"
+                            Width="40" Height="40" Margin="0,0,14,0"
+                            IsVisible="{Binding IsWarning}">
+                        <Svg Path="../Assets/Icons/triangle-alert.svg" Width="18" Height="18" Css="{DynamicResource SvgYellow}" />
+                    </Border>
+                    <!-- Success icon -->
+                    <Border Grid.Column="0"
+                            Background="{DynamicResource IconBgGreen}"
+                            CornerRadius="{StaticResource RadiusIcon}"
+                            Width="40" Height="40" Margin="0,0,14,0"
+                            IsVisible="{Binding IsSuccess}">
+                        <Svg Path="../Assets/Icons/circle-check.svg" Width="18" Height="18" Css="{DynamicResource SvgGreen}" />
+                    </Border>
+                    <!-- Info icon -->
+                    <Border Grid.Column="0"
+                            Background="{DynamicResource IconBgBlue}"
+                            CornerRadius="{StaticResource RadiusIcon}"
+                            Width="40" Height="40" Margin="0,0,14,0"
+                            IsVisible="{Binding IsInfo}">
+                        <Svg Path="../Assets/Icons/info.svg" Width="18" Height="18" Css="{DynamicResource SvgBlue}" />
+                    </Border>
+
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding Title}"
+                               FontSize="15"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimary}"
+                               VerticalAlignment="Center"
+                               TextWrapping="Wrap" />
+
+                    <Button Grid.Column="2"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Padding="6"
+                            VerticalAlignment="Top"
+                            Cursor="Hand"
+                            Command="{Binding CloseCommand}">
+                        <Svg Path="../Assets/Icons/x.svg" Width="14" Height="14" Css="{DynamicResource SvgMuted}" />
+                    </Button>
+                </Grid>
+
+                <!-- Message text -->
+                <TextBlock Text="{Binding Message}"
+                           FontSize="13"
+                           Foreground="{DynamicResource TextSecondary}"
+                           TextWrapping="Wrap"
+                           LineHeight="20" />
+
+                <!-- OK button -->
+                <Button Classes="accented"
+                        HorizontalAlignment="Right"
+                        Padding="20,9"
+                        Command="{Binding CloseCommand}"
+                        Content="OK" />
+
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

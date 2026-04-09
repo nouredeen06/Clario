@@ -11,11 +11,11 @@
         <vm:CategoryFormViewModel />
     </Design.DataContext>
 
-    <!-- ── Dim overlay ───────────────────────── -->
+    <!-- Dim overlay -->
     <Grid>
         <Border Background="#70000000" />
 
-        <!-- ── Modal card ────────────────────────── -->
+        <!-- Modal card -->
         <Border HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Background="{DynamicResource BgSurface}"
@@ -27,7 +27,7 @@
                 BoxShadow="0 24 72 0 #60000000">
             <StackPanel Spacing="0">
 
-                <!-- ── Header ──────────────────────── -->
+                <!-- Header -->
                 <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,0,0,24">
                     <Border Grid.Column="0"
                             CornerRadius="10"
@@ -64,7 +64,7 @@
                     </Button>
                 </Grid>
 
-                <!-- ── Name ──────────────────────── -->
+                <!-- Name -->
                 <TextBlock Text="NAME" Classes="label" Margin="0,0,0,6" />
                 <TextBox Text="{Binding Name, Mode=TwoWay}"
                          Watermark="e.g. Groceries"
@@ -74,7 +74,7 @@
                          VerticalContentAlignment="Center"
                          Margin="0,0,0,16" />
 
-                <!-- ── Type toggle ─────────────────── -->
+                <!-- Type toggle -->
                 <TextBlock Text="TYPE" Classes="label" Margin="0,0,0,6" />
                 <Border Background="{DynamicResource BgBase}"
                         BorderBrush="{DynamicResource BorderSubtle}"
@@ -116,7 +116,7 @@
                     </Grid>
                 </Border>
 
-                <!-- ── Icon picker ─────────────────── -->
+                <!-- Icon picker -->
                 <TextBlock Text="ICON" Classes="label" Margin="0,0,0,6" />
                 <Border Background="{DynamicResource BgBase}"
                         BorderBrush="{DynamicResource BorderSubtle}"
@@ -161,7 +161,7 @@
                     </ScrollViewer>
                 </Border>
 
-                <!-- ── Color ──────────────────────── -->
+                <!-- Color -->
                 <TextBlock Text="COLOR" Classes="label" Margin="0,0,0,6" />
                 <Border Background="{DynamicResource BgBase}"
                         BorderBrush="{DynamicResource BorderSubtle}"
@@ -180,7 +180,7 @@
                         IsAccentColorsVisible="False" />
                 </Border>
 
-                <!-- ── Validation error ─────────────── -->
+                <!-- Validation error -->
                 <Border Background="{DynamicResource BadgeBgRed}"
                         BorderBrush="{DynamicResource AccentRed}"
                         BorderThickness="1"
@@ -199,7 +199,7 @@
                     </StackPanel>
                 </Border>
 
-                <!-- ── Delete button (edit mode only) ── -->
+                <!-- Delete button (edit mode only) -->
                 <Button Classes="danger"
                         HorizontalAlignment="Stretch"
                         HorizontalContentAlignment="Center"
@@ -215,7 +215,7 @@
                     </StackPanel>
                 </Button>
 
-                <!-- ── Actions ──────────────────────── -->
+                <!-- Actions -->
                 <UniformGrid Rows="1">
                     <Button Classes="base"
                             Margin="0,0,6,0"
@@ -248,7 +248,7 @@
             </StackPanel>
         </Border>
 
-        <!-- ── Delete confirm sub-modal ──────────────── -->
+        <!-- Delete confirm sub-modal -->
         <Grid IsVisible="{Binding ShowDeleteConfirm}">
             <Border Background="#50000000" />
             <Border HorizontalAlignment="Center"
@@ -262,7 +262,7 @@
                     BoxShadow="0 24 72 0 #60000000">
                 <StackPanel Spacing="0">
 
-                    <Border Background="#2A0D0D"
+                    <Border Background="{DynamicResource IconBgRed}"
                             CornerRadius="14"
                             Width="52" Height="52"
                             HorizontalAlignment="Center"
@@ -300,7 +300,7 @@
                                 Padding="0,11"
                                 HorizontalAlignment="Stretch"
                                 HorizontalContentAlignment="Center"
-                                Background="#FF5E5E"
+                                Background="{DynamicResource AccentRed}"
                                 BorderThickness="0"
                                 CornerRadius="{DynamicResource RadiusControl}"
                                 Command="{Binding ConfirmDeleteCommand}">
@@ -311,7 +311,7 @@
                                 <TextBlock Text="Delete"
                                            FontSize="13"
                                            FontWeight="SemiBold"
-                                           Foreground="#FFFFFF"
+                                           Foreground="{DynamicResource BgBase}"
                                            VerticalAlignment="Center" />
                             </StackPanel>
                         </Button>

@@ -17,7 +17,7 @@
     <!-- Root grid — content + overlay stacked -->
     <Grid>
 
-        <!-- ── Main content ───────────────────────── -->
+        <!-- Main content -->
         <Grid RowDefinitions="Auto,*"
               Background="{DynamicResource BgBase}">
 
@@ -212,7 +212,7 @@
             </ScrollViewer>
         </Grid>
 
-        <!-- ── Bottom sheet overlay ───────────────── -->
+        <!-- Bottom sheet overlay -->
         <Grid IsVisible="False"
               x:Name="OverlayGrid">
 
@@ -526,7 +526,7 @@
 
         </Grid>
 
-        <!-- ── Dialog overlays ───────────────────── -->
+        <!-- Dialog overlays -->
         <mobileViews:DeleteAccountDialogViewMobile IsVisible="{Binding DataContext.IsDeleteDialogVisible, ElementName=AccountsPage}"
                                                    DataContext="{Binding DeleteDialog}" />
         <mobileViews:ArchiveAccountDialogViewMobile IsVisible="{Binding IsArchiveDialogVisible}" />

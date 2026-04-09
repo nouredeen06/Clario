@@ -12,15 +12,15 @@
     <Design.DataContext>
         <vm:BudgetViewModel />
     </Design.DataContext>
-    <!-- ═══════════════════════════════════════════════════
+    <!-- 
        ROOT
-  ═══════════════════════════════════════════════════ -->
+   -->
     <Grid RowDefinitions="Auto,*"
           Margin="32,28,32,0">
 
-        <!-- ══════════════════════════════════════════
+        <!-- 
          TOP BAR
-    ══════════════════════════════════════════ -->
+     -->
         <Grid Grid.Row="0"
               ColumnDefinitions="*,Auto"
               Margin="0,0,0,24">
@@ -100,16 +100,16 @@
             </StackPanel>
         </Grid>
 
-        <!-- ══════════════════════════════════════════
+        <!-- 
          MAIN CONTENT
          Left  *    — budget categories
          Right 320  — monthly overview panel
-    ══════════════════════════════════════════ -->
+     -->
         <Grid Grid.Row="1" ColumnDefinitions="*,320">
 
-            <!-- ─────────────────────────────────────
+            <!-- 
            LEFT — Budget Categories
-      ───────────────────────────────────── -->
+      -->
             <ScrollViewer Grid.Column="0"
                           VerticalScrollBarVisibility="Auto"
                           HorizontalScrollBarVisibility="Disabled"
@@ -241,15 +241,15 @@
                 </ItemsControl>
             </ScrollViewer>
 
-            <!-- ─────────────────────────────────────
+            <!-- 
            RIGHT — Overview Panel
-      ───────────────────────────────────── -->
+      -->
             <ScrollViewer Grid.Column="1"
                           VerticalScrollBarVisibility="Auto"
                           HorizontalScrollBarVisibility="Disabled" Margin="0,0,0,0" Padding="0 0 8 0">
                 <StackPanel Spacing="14" Margin="0 0 0 28">
 
-                    <!-- ── Period Overview ───────────────── -->
+                    <!-- Period Overview -->
                     <Border Background="{DynamicResource BgSurface}"
                             BorderBrush="{DynamicResource BorderSubtle}"
                             BorderThickness="1"
@@ -363,7 +363,7 @@
                         </StackPanel>
                     </Border>
 
-                    <!-- ── Days remaining in period ───────── -->
+                    <!-- Days remaining in period -->
                     <Border Background="{DynamicResource BgSurface}"
                             BorderBrush="{DynamicResource BorderSubtle}"
                             BorderThickness="1"
@@ -421,7 +421,7 @@
                         </StackPanel>
                     </Border>
 
-                    <!-- ── Spending Breakdown ─────────────── -->
+                    <!-- Spending Breakdown -->
                     <Border Background="{DynamicResource BgSurface}"
                             BorderBrush="{DynamicResource BorderSubtle}"
                             BorderThickness="1"
@@ -459,84 +459,84 @@
 
                             <!-- Row: Food -->
                             <!-- <Grid ColumnDefinitions="Auto,*,Auto"> -->
-                            <!--     <Border Grid.Column="0" Background="{DynamicResource IconBgGreen}" CornerRadius="6" Width="10" Height="10" Margin="0,0,10,0" -->
-                            <!--             VerticalAlignment="Center" /> -->
-                            <!--     <TextBlock Grid.Column="1" Text="Food &amp; Dining" FontSize="12" Foreground="{DynamicResource TextSecondary}" -->
-                            <!--                VerticalAlignment="Center" /> -->
-                            <!--     <StackPanel Grid.Column="2" HorizontalAlignment="Right" Spacing="1"> -->
-                            <!--         <TextBlock Text="$340" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" -->
-                            <!--                    HorizontalAlignment="Right" /> -->
-                            <!--         <TextBlock Text="21%" FontSize="10" Foreground="{DynamicResource TextMuted}" HorizontalAlignment="Right" /> -->
-                            <!--     </StackPanel> -->
+                            <!--    <Border Grid.Column="0" Background="{DynamicResource IconBgGreen}" CornerRadius="6" Width="10" Height="10" Margin="0,0,10,0" -->
+                            <!--            VerticalAlignment="Center" /> -->
+                            <!--    <TextBlock Grid.Column="1" Text="Food &amp; Dining" FontSize="12" Foreground="{DynamicResource TextSecondary}" -->
+                            <!--               VerticalAlignment="Center" /> -->
+                            <!--    <StackPanel Grid.Column="2" HorizontalAlignment="Right" Spacing="1"> -->
+                            <!--        <TextBlock Text="$340" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" -->
+                            <!--                   HorizontalAlignment="Right" /> -->
+                            <!--        <TextBlock Text="21%" FontSize="10" Foreground="{DynamicResource TextMuted}" HorizontalAlignment="Right" /> -->
+                            <!--    </StackPanel> -->
                             <!-- </Grid> -->
 
                             <!-- Row: Housing -->
                             <!-- <Grid ColumnDefinitions="Auto,*,Auto"> -->
-                            <!--     <Border Grid.Column="0" Background="{DynamicResource AccentOrange}" CornerRadius="6" Width="10" Height="10" Margin="0,0,10,0" -->
-                            <!--             VerticalAlignment="Center" /> -->
-                            <!--     <TextBlock Grid.Column="1" Text="Housing" FontSize="12" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" /> -->
-                            <!--     <StackPanel Grid.Column="2" HorizontalAlignment="Right" Spacing="1"> -->
-                            <!--         <TextBlock Text="$540" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" -->
-                            <!--                    HorizontalAlignment="Right" /> -->
-                            <!--         <TextBlock Text="34%" FontSize="10" Foreground="{DynamicResource TextMuted}" HorizontalAlignment="Right" /> -->
-                            <!--     </StackPanel> -->
+                            <!--    <Border Grid.Column="0" Background="{DynamicResource AccentOrange}" CornerRadius="6" Width="10" Height="10" Margin="0,0,10,0" -->
+                            <!--            VerticalAlignment="Center" /> -->
+                            <!--    <TextBlock Grid.Column="1" Text="Housing" FontSize="12" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" /> -->
+                            <!--    <StackPanel Grid.Column="2" HorizontalAlignment="Right" Spacing="1"> -->
+                            <!--        <TextBlock Text="$540" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" -->
+                            <!--                   HorizontalAlignment="Right" /> -->
+                            <!--        <TextBlock Text="34%" FontSize="10" Foreground="{DynamicResource TextMuted}" HorizontalAlignment="Right" /> -->
+                            <!--    </StackPanel> -->
                             <!-- </Grid> -->
 
                             <!-- Row: Transport -->
                             <!-- <Grid ColumnDefinitions="Auto,*,Auto"> -->
-                            <!--     <Border Grid.Column="0" Background="{DynamicResource AccentBlue}" CornerRadius="6" Width="10" Height="10" Margin="0,0,10,0" -->
-                            <!--             VerticalAlignment="Center" /> -->
-                            <!--     <TextBlock Grid.Column="1" Text="Transport" FontSize="12" Foreground="{DynamicResource TextSecondary}" -->
-                            <!--                VerticalAlignment="Center" /> -->
-                            <!--     <StackPanel Grid.Column="2" HorizontalAlignment="Right" Spacing="1"> -->
-                            <!--         <TextBlock Text="$110" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" -->
-                            <!--                    HorizontalAlignment="Right" /> -->
-                            <!--         <TextBlock Text="7%" FontSize="10" Foreground="{DynamicResource TextMuted}" HorizontalAlignment="Right" /> -->
-                            <!--     </StackPanel> -->
+                            <!--    <Border Grid.Column="0" Background="{DynamicResource AccentBlue}" CornerRadius="6" Width="10" Height="10" Margin="0,0,10,0" -->
+                            <!--            VerticalAlignment="Center" /> -->
+                            <!--    <TextBlock Grid.Column="1" Text="Transport" FontSize="12" Foreground="{DynamicResource TextSecondary}" -->
+                            <!--               VerticalAlignment="Center" /> -->
+                            <!--    <StackPanel Grid.Column="2" HorizontalAlignment="Right" Spacing="1"> -->
+                            <!--        <TextBlock Text="$110" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" -->
+                            <!--                   HorizontalAlignment="Right" /> -->
+                            <!--        <TextBlock Text="7%" FontSize="10" Foreground="{DynamicResource TextMuted}" HorizontalAlignment="Right" /> -->
+                            <!--    </StackPanel> -->
                             <!-- </Grid> -->
 
                             <!-- Row: Shopping (over) -->
                             <!-- <Grid ColumnDefinitions="Auto,*,Auto"> -->
-                            <!--     <Border Grid.Column="0" Background="{DynamicResource AccentRed}" CornerRadius="6" Width="10" Height="10" Margin="0,0,10,0" -->
-                            <!--             VerticalAlignment="Center" /> -->
-                            <!--     <TextBlock Grid.Column="1" Text="Shopping" FontSize="12" Foreground="{DynamicResource TextSecondary}" -->
-                            <!--                VerticalAlignment="Center" /> -->
-                            <!--     <StackPanel Grid.Column="2" HorizontalAlignment="Right" Spacing="1"> -->
-                            <!--         <TextBlock Text="$380" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource AccentRed}" -->
-                            <!--                    HorizontalAlignment="Right" /> -->
-                            <!--         <TextBlock Text="24%" FontSize="10" Foreground="{DynamicResource TextMuted}" HorizontalAlignment="Right" /> -->
-                            <!--     </StackPanel> -->
+                            <!--    <Border Grid.Column="0" Background="{DynamicResource AccentRed}" CornerRadius="6" Width="10" Height="10" Margin="0,0,10,0" -->
+                            <!--            VerticalAlignment="Center" /> -->
+                            <!--    <TextBlock Grid.Column="1" Text="Shopping" FontSize="12" Foreground="{DynamicResource TextSecondary}" -->
+                            <!--               VerticalAlignment="Center" /> -->
+                            <!--    <StackPanel Grid.Column="2" HorizontalAlignment="Right" Spacing="1"> -->
+                            <!--        <TextBlock Text="$380" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource AccentRed}" -->
+                            <!--                   HorizontalAlignment="Right" /> -->
+                            <!--        <TextBlock Text="24%" FontSize="10" Foreground="{DynamicResource TextMuted}" HorizontalAlignment="Right" /> -->
+                            <!--    </StackPanel> -->
                             <!-- </Grid> -->
 
                             <!-- Row: Leisure -->
                             <!-- <Grid ColumnDefinitions="Auto,*,Auto"> -->
-                            <!--     <Border Grid.Column="0" Background="{DynamicResource AccentPurple}" CornerRadius="6" Width="10" Height="10" Margin="0,0,10,0" -->
-                            <!--             VerticalAlignment="Center" /> -->
-                            <!--     <TextBlock Grid.Column="1" Text="Entertainment" FontSize="12" Foreground="{DynamicResource TextSecondary}" -->
-                            <!--                VerticalAlignment="Center" /> -->
-                            <!--     <StackPanel Grid.Column="2" HorizontalAlignment="Right" Spacing="1"> -->
-                            <!--         <TextBlock Text="$170" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" -->
-                            <!--                    HorizontalAlignment="Right" /> -->
-                            <!--         <TextBlock Text="11%" FontSize="10" Foreground="{DynamicResource TextMuted}" HorizontalAlignment="Right" /> -->
-                            <!--     </StackPanel> -->
+                            <!--    <Border Grid.Column="0" Background="{DynamicResource AccentPurple}" CornerRadius="6" Width="10" Height="10" Margin="0,0,10,0" -->
+                            <!--            VerticalAlignment="Center" /> -->
+                            <!--    <TextBlock Grid.Column="1" Text="Entertainment" FontSize="12" Foreground="{DynamicResource TextSecondary}" -->
+                            <!--               VerticalAlignment="Center" /> -->
+                            <!--    <StackPanel Grid.Column="2" HorizontalAlignment="Right" Spacing="1"> -->
+                            <!--        <TextBlock Text="$170" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" -->
+                            <!--                   HorizontalAlignment="Right" /> -->
+                            <!--        <TextBlock Text="11%" FontSize="10" Foreground="{DynamicResource TextMuted}" HorizontalAlignment="Right" /> -->
+                            <!--    </StackPanel> -->
                             <!-- </Grid> -->
 
                             <!-- Row: Health -->
                             <!-- <Grid ColumnDefinitions="Auto,*,Auto"> -->
-                            <!--     <Border Grid.Column="0" Background="{DynamicResource AccentPink}" CornerRadius="6" Width="10" Height="10" Margin="0,0,10,0" -->
-                            <!--             VerticalAlignment="Center" /> -->
-                            <!--     <TextBlock Grid.Column="1" Text="Health" FontSize="12" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" /> -->
-                            <!--     <StackPanel Grid.Column="2" HorizontalAlignment="Right" Spacing="1"> -->
-                            <!--         <TextBlock Text="$69" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" -->
-                            <!--                    HorizontalAlignment="Right" /> -->
-                            <!--         <TextBlock Text="4%" FontSize="10" Foreground="{DynamicResource TextMuted}" HorizontalAlignment="Right" /> -->
-                            <!--     </StackPanel> -->
+                            <!--    <Border Grid.Column="0" Background="{DynamicResource AccentPink}" CornerRadius="6" Width="10" Height="10" Margin="0,0,10,0" -->
+                            <!--            VerticalAlignment="Center" /> -->
+                            <!--    <TextBlock Grid.Column="1" Text="Health" FontSize="12" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" /> -->
+                            <!--    <StackPanel Grid.Column="2" HorizontalAlignment="Right" Spacing="1"> -->
+                            <!--        <TextBlock Text="$69" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" -->
+                            <!--                   HorizontalAlignment="Right" /> -->
+                            <!--        <TextBlock Text="4%" FontSize="10" Foreground="{DynamicResource TextMuted}" HorizontalAlignment="Right" /> -->
+                            <!--    </StackPanel> -->
                             <!-- </Grid> -->
 
                         </StackPanel>
                     </Border>
 
-                    <!-- ── Savings Goal ───────────────────── -->
+                    <!-- Savings Goal -->
                     <Border Background="{DynamicResource BgSurface}"
                             BorderBrush="{DynamicResource BorderSubtle}"
                             BorderThickness="1"

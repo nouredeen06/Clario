@@ -13,7 +13,7 @@
         <vm:MainViewModel />
     </Design.DataContext>
     <Grid ColumnDefinitions="220,*">
-        <!-- ───────────────────────────────────── SIDEBAR ───────────────────────────────────── -->
+        <!-- SIDEBAR  -->
         <Border Grid.Column="0" Background="{DynamicResource BgSidebar}" BorderBrush="{DynamicResource BorderSubtle}"
                 BorderThickness="0,0,1,0" Padding="16,28,16,24" IsEnabled="{Binding !IsTransactionFormVisible}">
             <DockPanel>
@@ -49,9 +49,9 @@
                                        Foreground="{DynamicResource TextSecondary}" />
                         </Grid>
                         <!-- <Button Grid.Column="1" Classes="base" Width="24" Height="24" Padding="2" Command="{Binding SignOutCommand}"> -->
-                        <!--     <ToolTip.Tip> -->
-                        <!--         signout -->
-                        <!--     </ToolTip.Tip> -->
+                        <!--    <ToolTip.Tip> -->
+                        <!--        signout -->
+                        <!--    </ToolTip.Tip> -->
                         <!-- </Button> -->
                     </Grid>
                 </Border>
@@ -122,7 +122,9 @@
             <views:CategoryFormView
                 DataContext="{Binding CategoryFormViewModel}"
                 IsVisible="{Binding DataContext.IsCategoryFormVisible, ElementName=MainControl}" />
-
+            <views:MessageBoxView
+                DataContext="{Binding MessageBoxViewModel}"
+                IsVisible="{Binding DataContext.IsMessageBoxVisible, ElementName=MainControl}" />
         </Grid>
     </Grid>
 

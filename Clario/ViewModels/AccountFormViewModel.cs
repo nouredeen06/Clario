@@ -14,7 +14,7 @@ public partial class AccountFormViewModel : ViewModelBase
 {
     public required ViewModelBase parentViewModel;
 
-    // ── Mode ────────────────────────────────────────────────
+    //  Mode 
     [ObservableProperty] [NotifyPropertyChangedFor(nameof(FormTitle), nameof(FormSubtitle), nameof(SaveButtonLabel))]
     private bool _isEditMode = false;
 
@@ -22,7 +22,7 @@ public partial class AccountFormViewModel : ViewModelBase
     public string FormSubtitle => IsEditMode ? "Update the details below" : "Fill in the details below";
     public string SaveButtonLabel => IsEditMode ? "Save Changes" : "Save Account";
 
-    // ── Fields ──────────────────────────────────────────────
+    //  Fields 
     [ObservableProperty] [NotifyPropertyChangedFor(nameof(IsValid))]
     private string _name = "";
 
@@ -78,12 +78,12 @@ public partial class AccountFormViewModel : ViewModelBase
 
     [ObservableProperty] private string _selectedColor = "#3B82F6";
 
-    // ── Options ─────────────────────────────────────────────
+    //  Options 
     [ObservableProperty] private List<string> _accountTypes = new() { "Cash", "Checking", "Savings", "Credit", "Investment", "Other" };
 
     [ObservableProperty] private List<string> _icons = new() { "wallet", "credit-card", "banknote", "landmark", "piggy-bank", "dollar-sign" };
 
-    // ── Validation ──────────────────────────────────────────
+    //  Validation 
     [ObservableProperty] [NotifyPropertyChangedFor(nameof(HasError))]
     private string? _errorMessage;
 
@@ -95,17 +95,17 @@ public partial class AccountFormViewModel : ViewModelBase
 
     public bool IsCredit => SelectedType == "Credit";
 
-    // ── Callbacks ───────────────────────────────────────────
+    //  Callbacks 
     public Action? OnSaved;
     public Action? OnCancelled;
 
-    // ── Edit mode: original account ─────────────────────────
+    //  Edit mode: original account 
     private Guid? _editingId;
 
-    // ── Result account ──────────────────────────────────────
+    //  Result account 
     public Account? ResultAccount { get; set; }
 
-    // ── Commands ────────────────────────────────────────────
+    //  Commands 
 
     partial void OnSelectedTypeChanged(string value)
     {
@@ -220,7 +220,7 @@ public partial class AccountFormViewModel : ViewModelBase
         OnCancelled?.Invoke();
     }
 
-    // ── Public setup methods ─────────────────────────────────
+    //  Public setup methods 
 
     /// <summary>Call this to open the form for adding a new account.</summary>
     public void SetupForAdd()

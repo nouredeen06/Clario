@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Globalization;
 using System.Linq;
 using Clario.Data;
 using Clario.Messages;
@@ -11,60 +10,98 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 
-// ReSharper disable PossibleMultipleEnumeration
-
 namespace Clario.ViewModels;
 
 public partial class TransactionsViewModel : ViewModelBase
 {
     public required ViewModelBase parentViewModel;
-    public GeneralDataRepo AppData => DataRepo.General;
+    private GeneralDataRepo AppData => DataRepo.General;
+
+    // ── Filter dropdowns ────────────────────────────────────────────────────
 
     [ObservableProperty] private ObservableCollection<Category> _categories = new();
     [ObservableProperty] private ObservableCollection<Account> _accounts = new();
 
-    [ObservableProperty] [NotifyPropertyChangedFor(nameof(FilteredTransactionCount))]
+    private static readonly IReadOnlyList<string> _sortOptions = new[]
+    {
+        "Date — Newest first", "Date — Oldest first",
+        "Amount — High to low", "Amount — Low to high",
+        "Category A → Z"
+    };
+
+    private static readonly IReadOnlyList<string> _dateRangeOptions = new[]
+    {
+        "All Time", "Today", "This Week", "This Month",
+        "Last Month", "This Quarter", "This Year", "Custom Range"
+    };
+
+    public IReadOnlyList<string> SortOptions => _sortOptions;
+    public IReadOnlyList<string> DateRangeOptions => _dateRangeOptions;
+
+    // ── Active filter values ─────────────────────────────────────────────────
+
+    [ObservableProperty] private string _searchText = "";
+    [ObservableProperty] private Category _selectedCategory;
+    [ObservableProperty] private Account _selectedAccount;
+    [ObservableProperty] private string _selectedSortOption = _sortOptions[0];
+    [ObservableProperty] private string _selectedDateRangeOption = _dateRangeOptions[0];
+
+    [ObservableProperty] private List<DateTime>? _selectedDates = new()
+    {
+        new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1),
+        new DateTime(DateTime.Now.Year, DateTime.Now.Month,
+            DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month))
+    };
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(FilterTypeAll), nameof(FilterTypeIncome),
+                              nameof(FilterTypeExpense), nameof(FilterTypeTransfer))]
+    private string _transactionType = "all";
+
+    public bool FilterTypeAll     => TransactionType == "all";
+    public bool FilterTypeIncome  => TransactionType == "income";
+    public bool FilterTypeExpense => TransactionType == "expense";
+    public bool FilterTypeTransfer => TransactionType == "transfer";
+
+    // ── Filtered / paged data ────────────────────────────────────────────────
+
+    private List<Transaction> _filteredAll = new();
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(FilteredTransactionCount))]
     private List<Transaction> _filteredTransactions = new();
 
     public int FilteredTransactionCount => _filteredTransactions.Count;
+    [ObservableProperty] private ObservableCollection<Transaction> _pagedTransactions = new();
+
+    // ── Desktop pagination ───────────────────────────────────────────────────
 
     private int _pageSize = 25;
     [ObservableProperty] private int _pageSizeIndex;
 
-    [ObservableProperty] [NotifyPropertyChangedFor(nameof(TotalPages))] [NotifyCanExecuteChangedFor(nameof(NextPageCommand), nameof(PreviousPageCommand))]
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TotalPages))]
+    [NotifyCanExecuteChangedFor(nameof(NextPageCommand), nameof(PreviousPageCommand))]
     private int _currentPage = 1;
 
-    [ObservableProperty] private string _paginationSummaryText;
-
-    [ObservableProperty] private ObservableCollection<Transaction> _pagedTransactions = new();
-
-    [ObservableProperty] private ObservableCollection<string> _sortOptions = new()
-    {
-        "Date — Newest first",
-        "Date — Oldest first",
-        "Amount — High to low",
-        "Amount — Low to high",
-        "Category A → Z"
-    };
-
-    [ObservableProperty] private ObservableCollection<string> _DateRangeOptions = new()
-    {
-        "All Time",
-        "Today",
-        "This Week",
-        "This Month",
-        "Last Month",
-        "This Quarter",
-        "This Year",
-        "Custom Range"
-    };
-
-    public List<int> PageNumbers { get; set; }
+    [ObservableProperty] private string _paginationSummaryText = "";
     [ObservableProperty] private ObservableCollection<int> _visiblePageNumbers = new();
-    public int TotalPages => (int)Math.Ceiling(FilteredTransactions.Count / (double)_pageSize);
-    public bool HasNoTransactions => FilteredTransactions.Count == 0;
-    public bool HasNextPage => CurrentPage < TotalPages;
-    public bool HasPreviousPage => CurrentPage > 1;
+
+    public int TotalPages      => (int)Math.Ceiling(_filteredAll.Count / (double)_pageSize);
+    public bool HasNoTransactions => _filteredAll.Count == 0;
+    public bool HasPreviousPage   => CurrentPage > 1;
+
+    // HasNextPage differs by platform
+    public bool HasNextPage => App.IsMobile
+        ? _mobileDisplayCount < _filteredAll.Count
+        : CurrentPage < TotalPages;
+
+    // ── Mobile infinite scroll ───────────────────────────────────────────────
+
+    /// How many real (non-header) items are currently rendered in PagedTransactions.
+    private int _mobileDisplayCount;
+
+    // ── Summary stats ────────────────────────────────────────────────────────
 
     [ObservableProperty] private double _totalExpenses;
     [ObservableProperty] private double _totalIncome;
@@ -75,261 +112,23 @@ public partial class TransactionsViewModel : ViewModelBase
     public string PrimaryCurrencySymbol =>
         CurrencyService.GetSymbol(AppData.PrimaryAccount?.Currency ?? AppData.Profile?.Currency ?? "USD");
 
-    [ObservableProperty] private string _searchText = "";
-    [ObservableProperty] private Category _selectedCategory;
-    [ObservableProperty] private Account _selectedAccount;
-    [ObservableProperty] private string _selectedSortOption;
-    [ObservableProperty] private string _selectedDateRangeOption;
-
-    [ObservableProperty] private List<DateTime>? _selectedDates = new()
-    {
-        new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1),
-        new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month))
-    };
-
-    [ObservableProperty] [NotifyPropertyChangedFor(nameof(FilterTypeAll), nameof(FilterTypeIncome), nameof(FilterTypeExpense), nameof(FilterTypeTransfer))]
-    private string _transactionType = "all";
-
+    // ── Constructor ──────────────────────────────────────────────────────────
 
     public TransactionsViewModel()
     {
-        AppData.Transactions.CollectionChanged += (_, _) =>
+        Track(AppData.Transactions, (_, _) =>
         {
             InitializeCategories();
             InitializeAccounts();
-            LoadPage(1);
-        };
-        WeakReferenceMessenger.Default.Register<RatesRefreshed>(this, (_, _) => LoadPage(CurrentPage));
+            Refresh();
+        });
+
+        WeakReferenceMessenger.Default.Register<RatesRefreshed>(this, (_, _) => Refresh());
+
         Initialize();
     }
 
-    partial void OnPageSizeIndexChanged(int value)
-    {
-        _pageSize = value switch
-        {
-            0 => 25,
-            1 => 50,
-            2 => 100,
-            _ => 25
-        };
-
-
-        LoadPage(1);
-        OnPropertyChanged(nameof(HasNextPage));
-        OnPropertyChanged(nameof(HasPreviousPage));
-    }
-
-
-    partial void OnCurrentPageChanged(int value)
-    {
-        LoadPage(value);
-        OnPropertyChanged(nameof(HasNextPage));
-        OnPropertyChanged(nameof(HasPreviousPage));
-    }
-
-    [RelayCommand]
-    private void LoadPageStr(string page)
-    {
-        LoadPage(int.Parse(page));
-    }
-
-    [RelayCommand]
-    private void LoadPage(int page)
-    {
-        ApplyFilters();
-        if (CurrentPage != page) CurrentPage = page;
-        var items = FilteredTransactions.Skip((page - 1) * _pageSize)
-            .Take(_pageSize);
-
-        OnPropertyChanged(nameof(HasNoTransactions));
-        PagedTransactions.Clear();
-        foreach (var item in items)
-            PagedTransactions.Add(item);
-        PaginationSummaryText =
-            $"Showing {((page - 1) * _pageSize) + 1}-{(Math.Min(page * _pageSize, FilteredTransactions.Count))} of {FilteredTransactions.Count} transactions";
-        PageNumbers = Enumerable.Range(1, Math.Min(TotalPages, 5)).ToList();
-        var numbers = GetSurrounding(PageNumbers, page);
-        VisiblePageNumbers.Clear();
-        foreach (var number in numbers)
-            VisiblePageNumbers.Add(number);
-        WeakReferenceMessenger.Default.Send(new TransactionsScrollToTop());
-        GroupTransactions();
-    }
-
-    [RelayCommand]
-    private void ApplyFilters()
-    {
-        var filtered = AppData.Transactions.Where(x =>
-            x.Type != "transfer_in" &&
-            (x.Description.Contains(SearchText, StringComparison.OrdinalIgnoreCase)
-            || x.Note!.Contains(SearchText, StringComparison.OrdinalIgnoreCase)));
-
-        var culture = new CultureInfo("en-US");
-
-        switch (SelectedDateRangeOption)
-        {
-            case "All Time":
-                DateRangeLabel = "ALL TIME";
-                break;
-            case "Today":
-                filtered = filtered.Where(x => x.Date == DateTime.Now.Date);
-                DateRangeLabel = DateTime.Now.ToString("MMM d, yyyy", culture).ToUpper();
-                break;
-            case "This Week":
-                var startOfWeek = DateTime.Now.Date.AddDays(-(int)DateTime.Now.DayOfWeek);
-                var endOfWeek = startOfWeek.AddDays(6);
-                filtered = filtered.Where(x => x.Date.Date >= startOfWeek && x.Date.Date <= endOfWeek);
-                DateRangeLabel = "THIS WEEK";
-                break;
-            case "This Month":
-                filtered = filtered.Where(x => x.Date.Month == DateTime.Now.Month);
-                DateRangeLabel = DateTime.Now.ToString("MMMM yyyy", culture).ToUpper();
-                break;
-            case "Last Month":
-                var lastMonth = DateTime.Now.AddMonths(-1);
-                filtered = filtered.Where(x => x.Date.Month == lastMonth.Month && x.Date.Year == lastMonth.Year);
-                DateRangeLabel = lastMonth.ToString("MMMM yyyy", culture).ToUpper();
-                break;
-            case "This Quarter":
-                var startOfQuarter = DateTime.Now.AddMonths(-(DateTime.Now.Month - 1) % 3);
-                var endOfQuarter = startOfQuarter.AddMonths(3);
-                filtered = filtered.Where(x => x.Date >= startOfQuarter && x.Date <= endOfQuarter);
-                DateRangeLabel = $"Q{(DateTime.Now.Month - 1) / 3 + 1} {DateTime.Now.Year}";
-                break;
-            case "This Year":
-                filtered = filtered.Where(x => x.Date.Year == DateTime.Now.Year);
-                DateRangeLabel = DateTime.Now.Year.ToString();
-                break;
-            case "Custom Range":
-                if (SelectedDates is not null && SelectedDates.Count > 0)
-                {
-                    var ordered = SelectedDates
-                        .Select(d => d.Date)
-                        .Distinct()
-                        .OrderBy(d => d)
-                        .ToList();
-
-                    var start = ordered.First();
-                    var end = ordered.Last();
-                    
-                    if (SelectedDates.Count == 1)
-                    {
-                        filtered = filtered.Where(x => x.Date.Date == start);
-                        DateRangeLabel = start.ToString("MMM dd, yyyy", culture).ToUpper();
-                    }
-                    else
-                    {
-                        filtered = filtered.Where(x => x.Date.Date >= start && x.Date.Date <= end);
-                        DateRangeLabel = $"{start.ToString("MMM dd", culture)} - {end.ToString("MMM dd, yyyy", culture)}".ToUpper();
-                    }
-                }
-
-                break;
-        }
-
-
-        // Calculate totals based on date-filtered transactions (transfers excluded)
-        TotalExpenses = filtered.Where(x => x.Type == "expense").Sum(x => Convert.ToDouble(x.ConvertedAmount));
-        TotalIncome = filtered.Where(x => x.Type == "income").Sum(x => Convert.ToDouble(x.ConvertedAmount));
-
-        if (SelectedCategory.Name != "All Categories")
-            filtered = filtered.Where(x => x.CategoryId == SelectedCategory.Id);
-
-        if (SelectedAccount.Name != "All Accounts")
-            filtered = filtered.Where(x => x.AccountId == SelectedAccount.Id);
-
-        if (TransactionType == "income")
-            filtered = filtered.Where(x => x.Type == "income");
-        else if (TransactionType == "expense")
-            filtered = filtered.Where(x => x.Type == "expense");
-        else if (TransactionType == "transfer")
-            filtered = filtered.Where(x => x.IsTransfer);
-
-        switch (SelectedSortOption)
-        {
-            case "Date — Newest first":
-                filtered = filtered.OrderByDescending(x => x.Date);
-                break;
-            case "Date — Oldest first":
-                filtered = filtered.OrderBy(x => x.Date);
-                break;
-            case "Amount — High to low":
-                filtered = filtered.OrderByDescending(x => x.Amount);
-                break;
-            case "Amount — Low to high":
-                filtered = filtered.OrderBy(x => x.Amount);
-                break;
-            case "Category A → Z":
-                filtered = filtered.OrderBy(x => x.Category?.Name);
-                break;
-        }
-
-
-        FilteredTransactions = filtered.ToList();
-    }
-
-    [RelayCommand]
-    private void ResetFilters()
-    {
-        SearchText = "";
-        SelectedCategory = Categories.First();
-        SelectedAccount = Accounts.First();
-        TransactionType = "all";
-        SelectedSortOption = SortOptions.First();
-        SelectedDateRangeOption = DateRangeOptions.First();
-        LoadPage(1);
-    }
-
-    [RelayCommand]
-    private void SetTransactionType(string type)
-    {
-        TransactionType = type;
-    }
-
-    public bool FilterTypeAll => TransactionType == "all";
-    public bool FilterTypeIncome => TransactionType == "income";
-    public bool FilterTypeExpense => TransactionType == "expense";
-    public bool FilterTypeTransfer => TransactionType == "transfer";
-
-    [RelayCommand(CanExecute = nameof(HasNextPage))]
-    private void NextPage()
-    {
-        if (CurrentPage < TotalPages) CurrentPage++;
-    }
-
-    [RelayCommand(CanExecute = nameof(HasPreviousPage))]
-    private void PreviousPage()
-    {
-        if (CurrentPage > 1) CurrentPage--;
-    }
-
-    private void GroupTransactions()
-    {
-        var ToRemove = PagedTransactions.Where(x => x.GroupHeader).ToList();
-        foreach (var item in ToRemove)
-        {
-            PagedTransactions.Remove(item);
-        }
-
-        var dates = PagedTransactions
-            .Where(x => !x.GroupHeader)
-            .Select(x => x.Date.Date) // strip time
-            .Distinct()
-            .ToList();
-
-        foreach (var date in dates)
-        {
-            var index = PagedTransactions.IndexOf(PagedTransactions.First(x => x.Date.Date == date && !x.GroupHeader));
-            string label;
-            var culture = new CultureInfo("en-US");
-            if (date.Date == DateTime.Now.Date) label = "Today - " + date.ToString("MMM dd", culture);
-            else if (date.Date == DateTime.Now.AddDays(-1).Date) label = "Yesterday - " + date.ToString("MMM dd", culture);
-            else label = date.ToString("MMM dd, yyyy", culture);
-            var header = new Transaction { Description = label, Date = date, GroupHeader = true };
-
-            PagedTransactions.Insert(index, header);
-        }
-    }
+    // ── Initialization ───────────────────────────────────────────────────────
 
     public void Initialize()
     {
@@ -337,9 +136,7 @@ public partial class TransactionsViewModel : ViewModelBase
         {
             InitializeCategories();
             InitializeAccounts();
-
             CalculateMonthlyFinancials();
-
             CurrentPage = 1;
             OnPropertyChanged(nameof(TotalPages));
             ResetFilters();
@@ -354,59 +151,274 @@ public partial class TransactionsViewModel : ViewModelBase
     private void InitializeCategories()
     {
         Categories.Clear();
-        Categories.Insert(0, new Category() { Name = "All Categories" });
-        foreach (var appDataCategory in AppData.Categories)
-        {
-            Categories.Add(appDataCategory);
-        }
-
+        Categories.Insert(0, new Category { Name = "All Categories" });
+        foreach (var cat in AppData.Categories)
+            Categories.Add(cat);
         SelectedCategory = Categories.First();
     }
 
     private void InitializeAccounts()
     {
         Accounts.Clear();
-        Accounts.Insert(0, new Account() { Name = "All Accounts" });
-        foreach (var appDataAccount in AppData.Accounts)
-        {
-            Accounts.Add(appDataAccount);
-        }
-
+        Accounts.Insert(0, new Account { Name = "All Accounts" });
+        foreach (var acc in AppData.Accounts)
+            Accounts.Add(acc);
         SelectedAccount = Accounts.First();
     }
 
     private void CalculateMonthlyFinancials()
     {
-        TotalExpenses = AppData.Transactions.Where(x => x.Type == "expense" && x.Date.Month == DateTime.Now.Month).Sum(x => Convert.ToDouble(x.ConvertedAmount));
-        TotalIncome = AppData.Transactions.Where(x => x.Type == "income" && x.Date.Month == DateTime.Now.Month).Sum(x => Convert.ToDouble(x.ConvertedAmount));
-        ExpensesCount = AppData.Transactions.Count(x => x.Type == "expense" && x.Date.Month == DateTime.Now.Month);
-        IncomeCount = AppData.Transactions.Count(x => x.Type == "income" && x.Date.Month == DateTime.Now.Month);
+        var now = DateTime.Now;
+        var monthly = AppData.Transactions
+            .Where(x => x.Date.Month == now.Month && x.Date.Year == now.Year);
+        TotalExpenses = monthly.Where(x => x.Type == "expense").Sum(x => Convert.ToDouble(x.ConvertedAmount));
+        TotalIncome   = monthly.Where(x => x.Type == "income").Sum(x => Convert.ToDouble(x.ConvertedAmount));
+        ExpensesCount = monthly.Count(x => x.Type == "expense");
+        IncomeCount   = monthly.Count(x => x.Type == "income");
     }
 
-    public static List<T> GetSurrounding<T>(List<T> list, T item, int count = 5)
+    // ── Filter pipeline ──────────────────────────────────────────────────────
+
+    [RelayCommand]
+    private void ApplyFilters()
+    {
+        var filteringByAccount = SelectedAccount?.Name != "All Accounts";
+
+        // 1. Search + transfer-in visibility
+        IEnumerable<Transaction> source = AppData.Transactions.Where(x =>
+            (filteringByAccount || x.Type != "transfer_in") &&
+            (x.Description.Contains(SearchText, StringComparison.OrdinalIgnoreCase)
+             || (x.Note?.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ?? false)));
+
+        // 2. Date range
+        source = ApplyDateFilter(source, out var label);
+        DateRangeLabel = label;
+
+        // 3. Totals use the date-scoped set (before category/type filters)
+        CalculateTotalsFromSource(source);
+
+        // 4. Remaining filters
+        source = ApplyCategoryFilter(source);
+        source = ApplyAccountFilter(source);
+        source = ApplyTypeFilter(source);
+        source = ApplySortFilter(source);
+
+        _filteredAll = source.ToList();
+        FilteredTransactions = _filteredAll;
+    }
+
+    private IEnumerable<Transaction> ApplyDateFilter(IEnumerable<Transaction> source, out string label)
+    {
+        var (start, end, lbl) = DateRangeService.Resolve(SelectedDateRangeOption, SelectedDates);
+        label = lbl;
+        if (start is null || end is null) return source;
+        return source.Where(x => x.Date.Date >= start.Value && x.Date.Date <= end.Value);
+    }
+
+    private void CalculateTotalsFromSource(IEnumerable<Transaction> source)
+    {
+        var list = source.ToList();
+        TotalExpenses = list.Where(x => x.Type == "expense").Sum(x => Convert.ToDouble(x.ConvertedAmount));
+        TotalIncome   = list.Where(x => x.Type == "income").Sum(x => Convert.ToDouble(x.ConvertedAmount));
+    }
+
+    private IEnumerable<Transaction> ApplyCategoryFilter(IEnumerable<Transaction> source)
+    {
+        if (SelectedCategory?.Name == "All Categories") return source;
+        return source.Where(x => x.CategoryId == SelectedCategory?.Id);
+    }
+
+    private IEnumerable<Transaction> ApplyAccountFilter(IEnumerable<Transaction> source)
+    {
+        if (SelectedAccount?.Name == "All Accounts") return source;
+        return source.Where(x => x.AccountId == SelectedAccount?.Id);
+    }
+
+    private IEnumerable<Transaction> ApplyTypeFilter(IEnumerable<Transaction> source) =>
+        TransactionType switch
+        {
+            "income"   => source.Where(x => x.Type == "income"),
+            "expense"  => source.Where(x => x.Type == "expense"),
+            "transfer" => source.Where(x => x.IsTransfer),
+            _          => source
+        };
+
+    private IEnumerable<Transaction> ApplySortFilter(IEnumerable<Transaction> source) =>
+        SelectedSortOption switch
+        {
+            "Date — Oldest first"  => source.OrderBy(x => x.Date),
+            "Amount — High to low" => source.OrderByDescending(x => x.Amount),
+            "Amount — Low to high" => source.OrderBy(x => x.Amount),
+            "Category A → Z"       => source.OrderBy(x => x.Category?.Name),
+            _                      => source.OrderByDescending(x => x.Date) // default: newest first
+        };
+
+    // ── Desktop pagination ───────────────────────────────────────────────────
+
+    partial void OnPageSizeIndexChanged(int value)
+    {
+        _pageSize = value switch { 1 => 50, 2 => 100, _ => 25 };
+        LoadPage(1);
+        OnPropertyChanged(nameof(HasNextPage));
+        OnPropertyChanged(nameof(HasPreviousPage));
+    }
+
+    partial void OnCurrentPageChanged(int value)
+    {
+        if (App.IsMobile) return;
+        LoadPage(value);
+        OnPropertyChanged(nameof(HasNextPage));
+        OnPropertyChanged(nameof(HasPreviousPage));
+    }
+
+    [RelayCommand]
+    private void LoadPageStr(string page) => LoadPage(int.Parse(page));
+
+    [RelayCommand]
+    private void LoadPage(int page)
+    {
+        ApplyFilters();
+        if (CurrentPage != page) CurrentPage = page;
+
+        var items = _filteredAll.Skip((page - 1) * _pageSize).Take(_pageSize).ToList();
+
+        PagedTransactions.Clear();
+        foreach (var item in items) PagedTransactions.Add(item);
+
+        OnPropertyChanged(nameof(HasNoTransactions));
+        OnPropertyChanged(nameof(HasNextPage));
+        OnPropertyChanged(nameof(HasPreviousPage));
+
+        PaginationSummaryText = _filteredAll.Count == 0
+            ? "No transactions"
+            : $"Showing {(page - 1) * _pageSize + 1}–{Math.Min(page * _pageSize, _filteredAll.Count)} of {_filteredAll.Count}";
+
+        var allPages = Enumerable.Range(1, Math.Max(TotalPages, 1)).ToList();
+        VisiblePageNumbers.Clear();
+        foreach (var n in GetSurrounding(allPages, page)) VisiblePageNumbers.Add(n);
+
+        WeakReferenceMessenger.Default.Send(new TransactionsScrollToTop());
+        GroupTransactions();
+    }
+
+    [RelayCommand(CanExecute = nameof(HasNextPage))]
+    private void NextPage() { if (CurrentPage < TotalPages) CurrentPage++; }
+
+    [RelayCommand(CanExecute = nameof(HasPreviousPage))]
+    private void PreviousPage() { if (CurrentPage > 1) CurrentPage--; }
+
+    // ── Mobile infinite scroll ───────────────────────────────────────────────
+
+    private void RefreshMobile()
+    {
+        _mobileDisplayCount = 0;
+        PagedTransactions.Clear();
+        AppendMobileItems(_pageSize * 3);
+        OnPropertyChanged(nameof(HasNoTransactions));
+        OnPropertyChanged(nameof(HasNextPage));
+    }
+
+    private void AppendMobileItems(int count)
+    {
+        var batch = _filteredAll.Skip(_mobileDisplayCount).Take(count).ToList();
+
+        foreach (var item in batch)
+        {
+            var needsHeader = _mobileDisplayCount == 0
+                || item.Date.Date != _filteredAll[_mobileDisplayCount - 1].Date.Date;
+
+            if (needsHeader)
+            {
+                PagedTransactions.Add(new Transaction
+                {
+                    Description = DateRangeService.FormatGroupHeader(item.Date),
+                    Date = item.Date,
+                    GroupHeader = true
+                });
+            }
+
+            PagedTransactions.Add(item);
+            _mobileDisplayCount++;
+        }
+
+        OnPropertyChanged(nameof(HasNextPage));
+    }
+
+    /// Adds 3 pages of items at once. Shown behind "Load More" button.
+    [RelayCommand(CanExecute = nameof(HasNextPage))]
+    private void LoadMore()
+    {
+        if (_mobileDisplayCount >= _filteredAll.Count) return;
+        AppendMobileItems(_pageSize * 3);
+    }
+
+    // ── Shared helpers ───────────────────────────────────────────────────────
+
+    private void Refresh()
+    {
+        CalculateMonthlyFinancials();
+        if (App.IsMobile) { ApplyFilters(); RefreshMobile(); }
+        else LoadPage(CurrentPage);
+    }
+
+    [RelayCommand]
+    private void ResetFilters()
+    {
+        SearchText = "";
+        SelectedCategory = Categories.FirstOrDefault() ?? new Category { Name = "All Categories" };
+        SelectedAccount = Accounts.FirstOrDefault() ?? new Account { Name = "All Accounts" };
+        TransactionType = "all";
+        SelectedSortOption = SortOptions[0];
+        SelectedDateRangeOption = DateRangeOptions[0];
+
+        if (App.IsMobile) { ApplyFilters(); RefreshMobile(); }
+        else LoadPage(1);
+    }
+
+    [RelayCommand]
+    private void SetTransactionType(string type) => TransactionType = type;
+
+    /// Desktop: inserts date group headers into PagedTransactions.
+    private void GroupTransactions()
+    {
+        // Remove all existing headers
+        foreach (var h in PagedTransactions.Where(x => x.GroupHeader).ToList())
+            PagedTransactions.Remove(h);
+
+        // Insert a header before the first item of each date group
+        var dates = PagedTransactions.Select(x => x.Date.Date).Distinct().ToList();
+        foreach (var date in dates)
+        {
+            var firstItem = PagedTransactions.FirstOrDefault(x => !x.GroupHeader && x.Date.Date == date);
+            if (firstItem is null) continue;
+            PagedTransactions.Insert(PagedTransactions.IndexOf(firstItem), new Transaction
+            {
+                Description = DateRangeService.FormatGroupHeader(date),
+                Date = date,
+                GroupHeader = true
+            });
+        }
+    }
+
+    private static List<T> GetSurrounding<T>(List<T> list, T item, int count = 5)
     {
         var index = list.IndexOf(item);
         if (index == -1) return new List<T>();
-
-        var half = count / 2;
-        var start = Math.Max(0, index - half);
-        var end = Math.Min(list.Count, start + count);
-
-        // shift start back if end hit the boundary
-        start = Math.Max(0, end - count);
-
-        return list.GetRange(start, end - start);
+        var start = Math.Max(0, Math.Min(index - count / 2, list.Count - count));
+        return list.GetRange(start, Math.Min(count, list.Count - start));
     }
+
+    // ── Navigation ───────────────────────────────────────────────────────────
 
     [RelayCommand]
     private void CreateTransaction()
     {
-        ((MainViewModel)parentViewModel).OpenAddTransaction();
+        if (parentViewModel is MainViewModel main) main.OpenAddTransaction();
     }
 
     [RelayCommand]
     private void EditTransaction(Transaction transaction)
     {
-        ((MainViewModel)parentViewModel).OpenEditTransaction(transaction);
+        if (parentViewModel is MainViewModel main) main.OpenEditTransaction(transaction);
     }
 }

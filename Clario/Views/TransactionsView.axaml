@@ -14,9 +14,7 @@
     </Design.DataContext>
     <Grid ColumnDefinitions="Auto,*">
 
-        <!-- ═══════════════════════════════════════════════════
-         LEFT PANEL — Summary + Filters
-    ═══════════════════════════════════════════════════ -->
+        <!-- LEFT PANEL — Summary + Filters -->
         <Border Grid.Column="0"
                 Width="260"
                 Background="{DynamicResource BgSurface}"
@@ -28,7 +26,7 @@
                           Padding="16,0,16,0">
                 <StackPanel Spacing="0" Margin="0 28 0 28">
 
-                    <!-- Period header ─
+                    <!-- Period header 
                REPLACE: bind TextBlock texts to SelectedPeriodLabel
           -->
                     <TextBlock Text="{Binding DateRangeLabel}"
@@ -40,7 +38,7 @@
                                Foreground="{DynamicResource TextPrimary}"
                                Margin="0,0,0,16" />
 
-                    <!-- Summary stats — left accent bar style ──
+                    <!-- Summary stats — left accent bar style 
                REPLACE: bind each amount + count Text
           -->
                     <StackPanel Spacing="2">
@@ -145,7 +143,7 @@
                     <!-- Divider  -->
                     <Separator Margin="0,20,0,20" />
 
-                    <!-- Filters header + Reset link ──
+                    <!-- Filters header + Reset link 
                REPLACE: Command="{Binding ResetFiltersCommand}" on the Button
           -->
                     <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,16">
@@ -165,7 +163,7 @@
                                 Command="{Binding ResetFiltersCommand}" />
                     </Grid>
 
-                    <!-- Search ──
+                    <!-- Search 
                REPLACE: Text="{Binding SearchQuery, Mode=TwoWay}"
           -->
                     <TextBox Watermark="Search transactions..."
@@ -176,7 +174,7 @@
                              VerticalContentAlignment="Center"
                              Margin="0,0,0,14" />
 
-                    <!-- Date range ─
+                    <!-- Date range 
                REPLACE: SelectedIndex="{Binding SelectedDateRangeIndex}"
           -->
                     <TextBlock Classes="label" Text="DATE RANGE" Margin="0,0,0,6" />
@@ -276,7 +274,7 @@
                               Margin="0,0,0,14">
                     </ComboBox>
 
-                    <!-- Account ─
+                    <!-- Account 
                REPLACE: ItemsSource="{Binding Accounts}" SelectedItem="{Binding SelectedAccount}"
           -->
                     <TextBlock Classes="label" Text="ACCOUNT" Margin="0,0,0,6" />
@@ -319,9 +317,9 @@
             </ScrollViewer>
         </Border>
 
-        <!-- ═══════════════════════════════════════════════════
+        <!-- 
          RIGHT PANEL — Transaction List
-    ═══════════════════════════════════════════════════ -->
+     -->
         <Grid Grid.Column="1" RowDefinitions="Auto,*">
 
             <!-- Top Bar -->
@@ -352,7 +350,7 @@
                                    FontSize="13"
                                    FontWeight="SemiBold"
                                    Foreground="{DynamicResource BgBase}"
-                                   VerticalAlignment="Center"/>
+                                   VerticalAlignment="Center" />
                     </StackPanel>
                 </Button>
             </Grid>
@@ -488,7 +486,7 @@
                                                                 <Border CornerRadius="6" Padding="6,3">
                                                                     <Border.Background>
                                                                         <SolidColorBrush Opacity="0.15"
-                                                                            Color="{Binding Category.Color, Converter={StaticResource HexToColorConverter}, ConverterParameter=color}" />
+                                                                                         Color="{Binding Category.Color, Converter={StaticResource HexToColorConverter}, ConverterParameter=color}" />
                                                                     </Border.Background>
                                                                     <StackPanel Orientation="Horizontal" Spacing="5">
                                                                         <Svg Path="{Binding Category.Icon, Converter={StaticResource SvgPathFromName}}"
@@ -517,7 +515,7 @@
                                                             </Border>
                                                         </Panel>
 
-                                                                                        <TextBlock Grid.Column="3"
+                                                        <TextBlock Grid.Column="3"
                                                                    Text="{Binding AccountDisplayText}"
                                                                    FontSize="12"
                                                                    Foreground="{DynamicResource TextMuted}"

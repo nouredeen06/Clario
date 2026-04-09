@@ -16,7 +16,7 @@
 
     <Grid RowDefinitions="Auto,*" Background="{DynamicResource BgBase}">
 
-        <!-- ── Top bar ────────────────────────────── -->
+        <!-- Top bar -->
         <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto" Margin="16,16,16,12">
             <StackPanel Grid.Column="0">
                 <TextBlock Text="Financial Overview"
@@ -47,13 +47,13 @@
             </Button>
         </Grid>
 
-        <!-- ── Scrollable content ────────────────── -->
+        <!-- Scrollable content -->
         <ScrollViewer Grid.Row="1"
                       VerticalScrollBarVisibility="Auto"
                       HorizontalScrollBarVisibility="Disabled">
             <StackPanel Margin="16,0,16,24" Spacing="14">
 
-                <!-- ── KPI cards ──────────────────────── -->
+                <!-- KPI cards -->
                 <Grid ColumnDefinitions="*,*">
 
                     <!-- Income -->
@@ -164,7 +164,7 @@
                     </StackPanel>
                 </Border>
 
-                <!-- ── Spending by category chart ────── -->
+                <!-- Spending by category chart -->
                 <Border Background="{DynamicResource BgSurface}"
                         BorderBrush="{DynamicResource BorderSubtle}"
                         BorderThickness="1"
@@ -271,7 +271,7 @@
                     </StackPanel>
                 </Border>
 
-                <!-- ── Recent transactions ───────────── -->
+                <!-- Recent transactions -->
                 <Border Background="{DynamicResource BgSurface}"
                         BorderBrush="{DynamicResource BorderSubtle}"
                         BorderThickness="1"
@@ -370,19 +370,30 @@
                     </StackPanel>
                 </Border>
 
-                <!-- ── Budget tracker ────────────────── -->
+                <!-- Budget tracker -->
                 <Border Background="{DynamicResource BgSurface}"
                         BorderBrush="{DynamicResource BorderSubtle}"
                         BorderThickness="1"
                         CornerRadius="14"
                         Padding="14,14">
                     <StackPanel Spacing="14">
-                        <StackPanel>
-                            <TextBlock Text="Budget Tracker"
-                                       FontSize="14" FontWeight="SemiBold"
-                                       Foreground="{DynamicResource TextPrimary}" />
-                            <TextBlock Classes="muted" Text="Monthly limits" FontSize="11" />
-                        </StackPanel>
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Budget Tracker"
+                                           FontSize="14" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource TextPrimary}" />
+                                <TextBlock Classes="muted" Text="Monthly limits" FontSize="11" />
+                            </StackPanel>
+                            <Button Grid.Column="1"
+                                    Classes="nav"
+                                    VerticalAlignment="Center"
+                                    Command="{Binding NavigateToBudgetCommand}"
+                                    IsVisible="{Binding HasBudgetData}"
+                                    Padding="8,4">
+                                <TextBlock Text="View all" FontSize="12"
+                                           Foreground="{DynamicResource AccentBlue}" />
+                            </Button>
+                        </Grid>
 
                         <Panel>
                             <ItemsControl ItemsSource="{Binding BudgetsTrackerData}"
@@ -434,24 +445,29 @@
 
                             <!-- Empty state -->
                             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
-                                        Spacing="10" Margin="0,32"
+                                        Spacing="10" Margin="0,20"
                                         IsVisible="{Binding !HasBudgetData}">
                                 <Svg Path="../Assets/Icons/wallet.svg" Css="{DynamicResource SvgDisabled}"
-                                     Height="36" Width="36" HorizontalAlignment="Center" />
+                                     Height="32" Width="32" HorizontalAlignment="Center" />
                                 <TextBlock Text="No budgets set"
-                                           FontSize="14" FontWeight="SemiBold"
+                                           FontSize="13" FontWeight="SemiBold"
                                            Foreground="{DynamicResource TextDisabled}"
                                            HorizontalAlignment="Center" />
-                                <TextBlock Text="Create budgets to track your spending limits."
-                                           FontSize="12" Foreground="{DynamicResource TextDisabled}"
-                                           HorizontalAlignment="Center" TextWrapping="Wrap"
-                                           TextAlignment="Center" MaxWidth="200" />
+                                <Button Classes="accented"
+                                        HorizontalAlignment="Center"
+                                        Padding="20,8"
+                                        CornerRadius="10"
+                                        Command="{Binding OpenAddBudgetCommand}">
+                                    <TextBlock Text="Create Budget"
+                                               FontSize="13" FontWeight="SemiBold"
+                                               Foreground="{DynamicResource BgBase}" />
+                                </Button>
                             </StackPanel>
                         </Panel>
                     </StackPanel>
                 </Border>
 
-                <!-- ── Accounts summary ──────────────── -->
+                <!-- Accounts summary -->
                 <Border Background="{DynamicResource BgSurface}"
                         BorderBrush="{DynamicResource BorderSubtle}"
                         BorderThickness="1"

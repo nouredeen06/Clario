@@ -1,0 +1,304 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="1180" d:DesignHeight="800"
+             MinWidth="780" MinHeight="600"
+             x:CompileBindings="False"
+             x:Class="Clario.Views.DashboardSkeletonView">
+    <UserControl.Styles>
+        <Style Selector="Border.skeleton">
+            <Setter Property="Background" Value="{DynamicResource BgHover}" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Style.Animations>
+                <Animation Duration="0:0:0.85" IterationCount="INFINITE" PlaybackDirection="Alternate" FillMode="Both">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="1" />
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="0.35" />
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+    </UserControl.Styles>
+
+    <Grid ColumnDefinitions="*">
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+            <StackPanel Spacing="24" Margin="32,28,32,32">
+
+                <!-- Top Bar -->
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel Grid.Column="0" Spacing="8">
+                        <Border Classes="skeleton" Height="13" Width="155" HorizontalAlignment="Left" />
+                        <Border Classes="skeleton" Height="26" Width="210" HorizontalAlignment="Left" CornerRadius="8" />
+                    </StackPanel>
+                    <Border Grid.Column="1" Classes="skeleton" Width="142" Height="36"
+                            CornerRadius="{StaticResource RadiusControl}" VerticalAlignment="Center" />
+                </Grid>
+
+                <!-- KPI Cards Row -->
+                <Grid ColumnDefinitions="*,*,*" MaxHeight="160">
+                    <Grid.Styles>
+                        <Style Selector="Grid > Border.card">
+                            <Setter Property="Margin" Value="0,0,16,0" />
+                        </Style>
+                    </Grid.Styles>
+
+                    <!-- Monthly Income -->
+                    <Border Grid.Column="0" Classes="card">
+                        <StackPanel Spacing="12">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Border Classes="skeleton" Width="28" Height="28" CornerRadius="{StaticResource RadiusIcon}" />
+                                <Border Classes="skeleton" Height="11" Width="105" VerticalAlignment="Center" />
+                            </StackPanel>
+                            <Border Classes="skeleton" Height="30" Width="130" CornerRadius="8" />
+                            <Border Classes="skeleton" Height="22" Width="80" CornerRadius="20" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Monthly Expenses -->
+                    <Border Grid.Column="1" Classes="card">
+                        <StackPanel Spacing="12">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Border Classes="skeleton" Width="28" Height="28" CornerRadius="{StaticResource RadiusIcon}" />
+                                <Border Classes="skeleton" Height="11" Width="125" VerticalAlignment="Center" />
+                            </StackPanel>
+                            <Border Classes="skeleton" Height="30" Width="115" CornerRadius="8" />
+                            <Border Classes="skeleton" Height="22" Width="80" CornerRadius="20" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Savings Rate -->
+                    <Border Grid.Column="2" Classes="card" Margin="0">
+                        <StackPanel Spacing="12">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Border Classes="skeleton" Width="28" Height="28" CornerRadius="{StaticResource RadiusIcon}" />
+                                <Border Classes="skeleton" Height="11" Width="90" VerticalAlignment="Center" />
+                            </StackPanel>
+                            <Border Classes="skeleton" Height="30" Width="80" CornerRadius="8" />
+                            <Border Classes="skeleton" Height="7" HorizontalAlignment="Stretch" CornerRadius="4" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- Mid Row: Chart + Budget -->
+                <Grid ColumnDefinitions="*,340" MaxHeight="470">
+
+                    <!-- Spending Chart -->
+                    <Border Grid.Column="0" Classes="card" Margin="0,0,16,0">
+                        <StackPanel Spacing="20">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <StackPanel Grid.Column="0" Spacing="7">
+                                    <Border Classes="skeleton" Height="15" Width="175" />
+                                    <Border Classes="skeleton" Height="12" Width="120" />
+                                </StackPanel>
+                                <Border Grid.Column="1" Classes="skeleton" Width="105" Height="32"
+                                        CornerRadius="{StaticResource RadiusIcon}" VerticalAlignment="Center" />
+                            </Grid>
+                            <!-- Chart area -->
+                            <Border Classes="skeleton" Height="250" HorizontalAlignment="Stretch" CornerRadius="8" />
+                            <!-- Category labels row -->
+                            <Grid ColumnDefinitions="*,*,*,*,*" Margin="0,-10,0,0">
+                                <Border Grid.Column="0" Classes="skeleton" Height="12" Margin="6,0" HorizontalAlignment="Stretch" />
+                                <Border Grid.Column="1" Classes="skeleton" Height="12" Margin="6,0" HorizontalAlignment="Stretch" />
+                                <Border Grid.Column="2" Classes="skeleton" Height="12" Margin="6,0" HorizontalAlignment="Stretch" />
+                                <Border Grid.Column="3" Classes="skeleton" Height="12" Margin="6,0" HorizontalAlignment="Stretch" />
+                                <Border Grid.Column="4" Classes="skeleton" Height="12" Margin="6,0" HorizontalAlignment="Stretch" />
+                            </Grid>
+                            <!-- Amount labels row -->
+                            <Grid ColumnDefinitions="*,*,*,*,*" Margin="0,-8,0,0">
+                                <Border Grid.Column="0" Classes="skeleton" Height="13" Width="36" HorizontalAlignment="Center" />
+                                <Border Grid.Column="1" Classes="skeleton" Height="13" Width="40" HorizontalAlignment="Center" />
+                                <Border Grid.Column="2" Classes="skeleton" Height="13" Width="32" HorizontalAlignment="Center" />
+                                <Border Grid.Column="3" Classes="skeleton" Height="13" Width="38" HorizontalAlignment="Center" />
+                                <Border Grid.Column="4" Classes="skeleton" Height="13" Width="34" HorizontalAlignment="Center" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Budget Tracker -->
+                    <Border Grid.Column="1" Classes="card">
+                        <StackPanel Spacing="20">
+                            <StackPanel Spacing="7">
+                                <Border Classes="skeleton" Height="15" Width="115" />
+                                <Border Classes="skeleton" Height="12" Width="85" />
+                            </StackPanel>
+                            <!-- Budget items -->
+                            <StackPanel Spacing="22">
+                                <StackPanel Spacing="8">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <Border Grid.Column="0" Classes="skeleton" Height="13" Width="95" />
+                                        <Border Grid.Column="1" Classes="skeleton" Height="12" Width="70" />
+                                    </Grid>
+                                    <Border Classes="skeleton" Height="6" HorizontalAlignment="Stretch" CornerRadius="3" />
+                                    <Separator Margin="-8,4" />
+                                </StackPanel>
+                                <StackPanel Spacing="8">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <Border Grid.Column="0" Classes="skeleton" Height="13" Width="72" />
+                                        <Border Grid.Column="1" Classes="skeleton" Height="12" Width="62" />
+                                    </Grid>
+                                    <Border Classes="skeleton" Height="6" HorizontalAlignment="Stretch" CornerRadius="3" />
+                                    <Separator Margin="-8,4" />
+                                </StackPanel>
+                                <StackPanel Spacing="8">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <Border Grid.Column="0" Classes="skeleton" Height="13" Width="105" />
+                                        <Border Grid.Column="1" Classes="skeleton" Height="12" Width="67" />
+                                    </Grid>
+                                    <Border Classes="skeleton" Height="6" HorizontalAlignment="Stretch" CornerRadius="3" />
+                                    <Separator Margin="-8,4" />
+                                </StackPanel>
+                                <StackPanel Spacing="8">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <Border Grid.Column="0" Classes="skeleton" Height="13" Width="82" />
+                                        <Border Grid.Column="1" Classes="skeleton" Height="12" Width="74" />
+                                    </Grid>
+                                    <Border Classes="skeleton" Height="6" HorizontalAlignment="Stretch" CornerRadius="3" />
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- Bottom Row: Transactions + Accounts -->
+                <Grid ColumnDefinitions="*,300" MaxHeight="500">
+
+                    <!-- Recent Transactions -->
+                    <Border Grid.Column="0" Classes="card" Margin="0,0,16,0">
+                        <StackPanel Spacing="18">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <StackPanel Grid.Column="0" Spacing="7">
+                                    <Border Classes="skeleton" Height="15" Width="160" />
+                                    <Border Classes="skeleton" Height="12" Width="115" />
+                                </StackPanel>
+                                <Border Grid.Column="1" Classes="skeleton" Width="58" Height="13" VerticalAlignment="Center" />
+                            </Grid>
+                            <!-- Transaction rows -->
+                            <StackPanel Spacing="18">
+                                <StackPanel Spacing="0">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,4,0,0">
+                                        <Border Grid.Column="0" Classes="skeleton" Width="42" Height="42"
+                                                CornerRadius="{StaticResource RadiusControl}" Margin="0,0,14,0" />
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="7">
+                                            <Border Classes="skeleton" Height="13" Width="145" />
+                                            <Border Classes="skeleton" Height="11" Width="105" />
+                                        </StackPanel>
+                                        <Border Grid.Column="2" Classes="skeleton" Width="62" Height="14" VerticalAlignment="Center" />
+                                    </Grid>
+                                    <Separator />
+                                </StackPanel>
+                                <StackPanel Spacing="0">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,4,0,0">
+                                        <Border Grid.Column="0" Classes="skeleton" Width="42" Height="42"
+                                                CornerRadius="{StaticResource RadiusControl}" Margin="0,0,14,0" />
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="7">
+                                            <Border Classes="skeleton" Height="13" Width="180" />
+                                            <Border Classes="skeleton" Height="11" Width="125" />
+                                        </StackPanel>
+                                        <Border Grid.Column="2" Classes="skeleton" Width="55" Height="14" VerticalAlignment="Center" />
+                                    </Grid>
+                                    <Separator />
+                                </StackPanel>
+                                <StackPanel Spacing="0">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,4,0,0">
+                                        <Border Grid.Column="0" Classes="skeleton" Width="42" Height="42"
+                                                CornerRadius="{StaticResource RadiusControl}" Margin="0,0,14,0" />
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="7">
+                                            <Border Classes="skeleton" Height="13" Width="120" />
+                                            <Border Classes="skeleton" Height="11" Width="88" />
+                                        </StackPanel>
+                                        <Border Grid.Column="2" Classes="skeleton" Width="70" Height="14" VerticalAlignment="Center" />
+                                    </Grid>
+                                    <Separator />
+                                </StackPanel>
+                                <StackPanel Spacing="0">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,4,0,0">
+                                        <Border Grid.Column="0" Classes="skeleton" Width="42" Height="42"
+                                                CornerRadius="{StaticResource RadiusControl}" Margin="0,0,14,0" />
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="7">
+                                            <Border Classes="skeleton" Height="13" Width="162" />
+                                            <Border Classes="skeleton" Height="11" Width="112" />
+                                        </StackPanel>
+                                        <Border Grid.Column="2" Classes="skeleton" Width="60" Height="14" VerticalAlignment="Center" />
+                                    </Grid>
+                                    <Separator />
+                                </StackPanel>
+                                <StackPanel Spacing="0">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,4,0,0">
+                                        <Border Grid.Column="0" Classes="skeleton" Width="42" Height="42"
+                                                CornerRadius="{StaticResource RadiusControl}" Margin="0,0,14,0" />
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="7">
+                                            <Border Classes="skeleton" Height="13" Width="150" />
+                                            <Border Classes="skeleton" Height="11" Width="98" />
+                                        </StackPanel>
+                                        <Border Grid.Column="2" Classes="skeleton" Width="65" Height="14" VerticalAlignment="Center" />
+                                    </Grid>
+                                    <Separator />
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Accounts Summary -->
+                    <Border Grid.Column="1" Classes="card">
+                        <Grid RowDefinitions="Auto,*,Auto" RowSpacing="18">
+                            <StackPanel Grid.Row="0" Spacing="7">
+                                <Border Classes="skeleton" Height="15" Width="78" />
+                                <Border Classes="skeleton" Height="12" Width="135" />
+                            </StackPanel>
+                            <StackPanel Grid.Row="1" Spacing="10">
+                                <Border Background="{DynamicResource BgBase}" CornerRadius="{StaticResource RadiusInset}"
+                                        Padding="14,12" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1">
+                                    <Grid ColumnDefinitions="Auto,*,Auto">
+                                        <Border Grid.Column="0" Classes="skeleton" Width="36" Height="36"
+                                                CornerRadius="{StaticResource RadiusIcon}" Margin="0,0,12,0" />
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="5">
+                                            <Border Classes="skeleton" Height="12" Width="92" />
+                                            <Border Classes="skeleton" Height="11" Width="60" />
+                                        </StackPanel>
+                                        <Border Grid.Column="2" Classes="skeleton" Width="58" Height="13" VerticalAlignment="Center" />
+                                    </Grid>
+                                </Border>
+                                <Border Background="{DynamicResource BgBase}" CornerRadius="{StaticResource RadiusInset}"
+                                        Padding="14,12" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1">
+                                    <Grid ColumnDefinitions="Auto,*,Auto">
+                                        <Border Grid.Column="0" Classes="skeleton" Width="36" Height="36"
+                                                CornerRadius="{StaticResource RadiusIcon}" Margin="0,0,12,0" />
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="5">
+                                            <Border Classes="skeleton" Height="12" Width="72" />
+                                            <Border Classes="skeleton" Height="11" Width="52" />
+                                        </StackPanel>
+                                        <Border Grid.Column="2" Classes="skeleton" Width="62" Height="13" VerticalAlignment="Center" />
+                                    </Grid>
+                                </Border>
+                                <Border Background="{DynamicResource BgBase}" CornerRadius="{StaticResource RadiusInset}"
+                                        Padding="14,12" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1">
+                                    <Grid ColumnDefinitions="Auto,*,Auto">
+                                        <Border Grid.Column="0" Classes="skeleton" Width="36" Height="36"
+                                                CornerRadius="{StaticResource RadiusIcon}" Margin="0,0,12,0" />
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="5">
+                                            <Border Classes="skeleton" Height="12" Width="82" />
+                                            <Border Classes="skeleton" Height="11" Width="56" />
+                                        </StackPanel>
+                                        <Border Grid.Column="2" Classes="skeleton" Width="54" Height="13" VerticalAlignment="Center" />
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+                            <StackPanel Spacing="18" Grid.Row="2">
+                                <Separator />
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <Border Grid.Column="0" Classes="skeleton" Height="13" Width="82" VerticalAlignment="Center" />
+                                    <Border Grid.Column="1" Classes="skeleton" Height="18" Width="92" CornerRadius="7" />
+                                </Grid>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

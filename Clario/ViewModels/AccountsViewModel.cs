@@ -35,10 +35,15 @@ public partial class AccountsViewModel : ViewModelBase
     [ObservableProperty] private List<Account> _archivedAccounts = new();
     public bool HasArchivedAccounts => ArchivedAccounts.Count > 0;
 
+    [ObservableProperty] private bool _shouldCloseSheet;
+
+    /// <summary>Set by AccountsViewMobile. Returns true and closes the sheet if it was open.</summary>
+    public Func<bool>? TryCloseSheet { get; set; }
+
     public AccountsViewModel()
     {
-        AppData.Accounts.CollectionChanged += (_, _) => { Initialize(); };
-        AppData.Transactions.CollectionChanged += (_, _) => { Initialize(); };
+        Track(AppData.Accounts,      (_, _) => Initialize());
+        Track(AppData.Transactions,  (_, _) => Initialize());
         Initialize();
     }
 
@@ -184,6 +189,7 @@ public partial class AccountsViewModel : ViewModelBase
         {
             IsDeleteDialogVisible = false;
             Initialize();
+            ShouldCloseSheet = true;
         };
         DeleteDialog.OnCancelled = () => IsDeleteDialogVisible = false;
         IsDeleteDialogVisible = true;

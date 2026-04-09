@@ -17,7 +17,7 @@
     <Grid RowDefinitions="Auto,*,Auto"
           Background="{DynamicResource BgBase}">
 
-        <!-- ── Top bar ──────────────────────────── -->
+        <!-- Top bar -->
         <Grid Grid.Row="0"
               ColumnDefinitions="Auto,*,Auto"
               Margin="16,16,16,0">
@@ -57,7 +57,7 @@
             <Border Grid.Column="2" Width="36" />
         </Grid>
 
-        <!-- ── Scrollable form ───────────────────── -->
+        <!-- Scrollable form -->
         <ScrollViewer Grid.Row="1"
                       VerticalScrollBarVisibility="Auto"
                       HorizontalScrollBarVisibility="Disabled"
@@ -366,7 +366,7 @@
             </StackPanel>
         </ScrollViewer>
 
-        <!-- ── Bottom action bar ─────────────────── -->
+        <!-- Bottom action bar -->
         <Border Grid.Row="2"
                 Background="{DynamicResource BgSurface}"
                 BorderBrush="{DynamicResource BorderSubtle}"

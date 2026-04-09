@@ -21,7 +21,9 @@ public partial class MainViewModel : ViewModelBase
     public TransactionsViewModel _transactionsViewModel = null!;
     private AccountsViewModel _accountsViewModel = null!;
     private BudgetViewModel _budgetViewModel = null!;
+    private CategoriesViewModel _categoriesViewModel = null!;
     private AnalyticsViewModel _analyticsViewModel = null!;
+    private MoreViewModel _moreViewModel = null!;
 
     GeneralDataRepo AppData => DataRepo.General;
     [ObservableProperty] private Profile? _profile;
@@ -34,6 +36,9 @@ public partial class MainViewModel : ViewModelBase
     [ObservableProperty] private SetSavingsGoalDialogViewModel _setSavingsGoalDialogViewModel = null!;
 
     [ObservableProperty] private bool _isDimmed;
+    [ObservableProperty] private bool _isMessageBoxVisible;
+    [ObservableProperty] private MessageBoxViewModel _messageBoxViewModel = new();
+
     [ObservableProperty] private bool _isTransactionFormVisible;
     [ObservableProperty] private bool _isAccountFormVisible;
     [ObservableProperty] private bool _isBudgetFormVisible;
@@ -42,7 +47,8 @@ public partial class MainViewModel : ViewModelBase
 
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(isOnDashboard), nameof(isOnTransactions), nameof(isOnAccounts), nameof(isOnBudget), nameof(isOnAnalytics), nameof(isOnSettings))]
+    [NotifyPropertyChangedFor(nameof(isOnDashboard), nameof(isOnTransactions), nameof(isOnAccounts), nameof(isOnBudget), nameof(isOnCategories), nameof(isOnAnalytics),
+        nameof(isOnSettings), nameof(isOnMore))]
     private ViewModelBase? _currentView;
 
     [ObservableProperty] private bool _isDarkTheme;
@@ -50,13 +56,13 @@ public partial class MainViewModel : ViewModelBase
     public MainViewModel()
     {
         DebugLogger.Log("main vm loaded");
-        WeakReferenceMessenger.Default.Register<ProfileUpdated>(this, (_, m) =>
+        WeakReferenceMessenger.Default.Register<ProfileUpdated>(this, (s, m) =>
         {
             Profile = AppData.Profile;
             _ = DataRepo.General.RefreshLiveRatesAndEnrich();
         });
         IsDimmed = true;
-        CurrentView = new LoadingViewModel();
+        CurrentView = new DashboardSkeletonViewModel();
         _ = InitializeApp();
     }
 
@@ -73,11 +79,11 @@ public partial class MainViewModel : ViewModelBase
                 var accountsTask = DataRepo.General.FetchAccounts();
                 var budgetsTask = DataRepo.General.FetchBudgets();
                 await Task.WhenAll(profilesTask, categoriesTask, accountsTask, transactionsTask, budgetsTask);
-
                 Profile = profilesTask.Result;
 
                 DataRepo.General.LinkTransactionCategories();
                 await DataRepo.General.RefreshLiveRatesAndEnrich();
+
 
                 DebugLogger.Log("fetched all data");
             });
@@ -89,12 +95,13 @@ public partial class MainViewModel : ViewModelBase
                 parentViewModel = this
             };
             DebugLogger.Log("initialized DashboardViewModel");
+
             _transactionsViewModel = new TransactionsViewModel()
             {
                 parentViewModel = this
             };
-
             DebugLogger.Log("initialized TransactionsViewModel");
+
             _accountsViewModel = new AccountsViewModel()
             {
                 parentViewModel = this
@@ -106,6 +113,16 @@ public partial class MainViewModel : ViewModelBase
                 parentViewModel = this
             };
             DebugLogger.Log("initialized BudgetViewModel");
+            _categoriesViewModel = new CategoriesViewModel()
+            {
+                parentViewModel = this
+            };
+            DebugLogger.Log("initialized CategoriesViewModel");
+            _moreViewModel = new MoreViewModel()
+            {
+                parentViewModel = this
+            };
+            DebugLogger.Log("initialized MoreViewModel");
             _analyticsViewModel = new AnalyticsViewModel()
             {
                 parentViewModel = this
@@ -144,6 +161,7 @@ public partial class MainViewModel : ViewModelBase
             IsDarkTheme = ThemeService.IsDarkTheme;
 
             ThemeService.SwitchToTheme(AppData.Profile?.Theme ?? "system");
+            AppData.StartRealtimeSync();
             CurrentView = _dashboardViewModel;
             IsDimmed = false;
         }
@@ -151,6 +169,24 @@ public partial class MainViewModel : ViewModelBase
         {
             DebugLogger.Log(e);
         }
+    }
+
+    /// <summary>Shows a themed message box overlay. Safe to call from any child ViewModel.</summary>
+    public void ShowMessage(MessageType type, string title, string message)
+    {
+        MessageBoxViewModel.Type = type;
+        MessageBoxViewModel.Title = title;
+        MessageBoxViewModel.Message = message;
+        MessageBoxViewModel.OnClose = CloseMessageBox;
+        IsMessageBoxVisible = true;
+        IsDimmed = true;
+    }
+
+    [RelayCommand]
+    private void CloseMessageBox()
+    {
+        IsMessageBoxVisible = false;
+        IsDimmed = false;
     }
 
     [RelayCommand]
@@ -404,6 +440,18 @@ public partial class MainViewModel : ViewModelBase
     }
 
     [RelayCommand]
+    private void GoToCategories()
+    {
+        CurrentView = _categoriesViewModel;
+    }
+
+    [RelayCommand]
+    private void GoToMore()
+    {
+        CurrentView = _moreViewModel;
+    }
+
+    [RelayCommand]
     private void GoToAnalytics()
     {
         CurrentView = _analyticsViewModel;
@@ -432,10 +480,74 @@ public partial class MainViewModel : ViewModelBase
         }
     }
 
+    /// <summary>Returns true if the back event was handled (suppress system back), false to let the system close the app.</summary>
+    public bool HandleBackNavigation()
+    {
+        // 1. Close deepest-nested modal first (category form sits on top of transaction form)
+        if (IsCategoryFormVisible)
+        {
+            CloseCategoryForm();
+            return true;
+        }
+
+        if (IsTransactionFormVisible)
+        {
+            CloseTransactionForm();
+            return true;
+        }
+
+        if (IsAccountFormVisible)
+        {
+            CloseAccountForm();
+            return true;
+        }
+
+        if (IsBudgetFormVisible)
+        {
+            CloseBudgetForm();
+            return true;
+        }
+
+        if (IsSavingsGoalDialogVisible)
+        {
+            CloseSavingsGoalDialog();
+            return true;
+        }
+
+        // 2. Close dialogs inside AccountsView
+        if (_accountsViewModel is { IsDeleteDialogVisible: true })
+        {
+            _accountsViewModel.IsDeleteDialogVisible = false;
+            return true;
+        }
+
+        if (_accountsViewModel is { IsArchiveDialogVisible: true })
+        {
+            _accountsViewModel.IsArchiveDialogVisible = false;
+            return true;
+        }
+
+        // 3. Close AccountsView bottom sheet
+        if (_accountsViewModel?.TryCloseSheet?.Invoke() == true)
+            return true;
+
+        // 4. Navigate back to dashboard from any non-dashboard main view
+        if (!isOnDashboard)
+        {
+            CurrentView = _dashboardViewModel;
+            return true;
+        }
+
+        // 5. Already on dashboard — let the system handle (closes the app)
+        return false;
+    }
+
     public bool isOnDashboard => CurrentView is DashboardViewModel;
     public bool isOnTransactions => CurrentView is TransactionsViewModel;
     public bool isOnAccounts => CurrentView is AccountsViewModel;
     public bool isOnBudget => CurrentView is BudgetViewModel;
+    public bool isOnCategories => CurrentView is CategoriesViewModel;
     public bool isOnAnalytics => CurrentView is AnalyticsViewModel;
     public bool isOnSettings => CurrentView is SettingsViewModel;
+    public bool isOnMore => CurrentView is MoreViewModel or AnalyticsViewModel or BudgetViewModel or CategoriesViewModel;
 }

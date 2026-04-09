@@ -24,7 +24,7 @@ public partial class AuthViewModel : ViewModelBase
     [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(ConfirmCreateAccountCommand))]
     private string _lastName;
 
-    [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(ConfirmCreateAccountCommand), nameof(ConfirmLoginCommand))]
+    [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(ConfirmCreateAccountCommand), nameof(ConfirmLoginCommand), nameof(SendResetLinkCommand))]
     private string _email;
 
     [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(ConfirmCreateAccountCommand), nameof(ConfirmLoginCommand))]
@@ -34,12 +34,14 @@ public partial class AuthViewModel : ViewModelBase
     private string _confirmPassword;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(isSignin), nameof(isCreateAccount))]
-    [NotifyCanExecuteChangedFor(nameof(ConfirmCreateAccountCommand), nameof(ConfirmLoginCommand))]
+    [NotifyPropertyChangedFor(nameof(isSignin), nameof(isCreateAccount), nameof(isForgotPassword), nameof(ShowTabs))]
+    [NotifyCanExecuteChangedFor(nameof(ConfirmCreateAccountCommand), nameof(ConfirmLoginCommand), nameof(SendResetLinkCommand))]
     private string _operation = "login";
 
     [ObservableProperty] [NotifyPropertyChangedFor(nameof(HasError))]
     private string? _errorMessage;
+
+    [ObservableProperty] private bool _resetEmailSent;
 
     public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
 
@@ -72,6 +74,30 @@ public partial class AuthViewModel : ViewModelBase
     {
         Operation = operation;
         ErrorMessage = null;
+        ResetEmailSent = false;
+    }
+
+    [RelayCommand(CanExecute = nameof(canSendResetLink))]
+    private async Task SendResetLink()
+    {
+        ErrorMessage = null;
+        try
+        {
+            await SupabaseService.Client.Auth.ResetPasswordForEmail(_email);
+            ResetEmailSent = true;
+        }
+        catch (GotrueException e)
+        {
+            DebugLogger.Log(e);
+            ErrorMessage = e.Reason == FailureHint.Reason.UserBadEmailAddress
+                ? GetErrorMessage(AuthError.InvalidEmail)
+                : GetErrorMessage(AuthError.Unknown);
+        }
+        catch (Exception e)
+        {
+            DebugLogger.Log(e);
+            ErrorMessage = GetErrorMessage(AuthError.Unknown);
+        }
     }
 
     [RelayCommand(CanExecute = nameof(canSignin))]
@@ -185,12 +211,16 @@ public partial class AuthViewModel : ViewModelBase
 
     public bool isSignin => Operation == "login";
     public bool isCreateAccount => Operation == "signup";
+    public bool isForgotPassword => Operation == "forgotPassword";
+    public bool ShowTabs => !isForgotPassword;
 
     public bool canSignin => isSignin && !string.IsNullOrWhiteSpace(_email) && !string.IsNullOrWhiteSpace(_password);
 
     public bool canCreateAccount => isCreateAccount && !string.IsNullOrWhiteSpace(_firstName) && !string.IsNullOrWhiteSpace(_lastName) &&
                                     !string.IsNullOrWhiteSpace(_email) &&
                                     !string.IsNullOrWhiteSpace(_password) && _password == _confirmPassword;
+
+    public bool canSendResetLink => isForgotPassword && !string.IsNullOrWhiteSpace(_email);
 }
 
 class Wrapper
