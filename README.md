@@ -21,7 +21,7 @@
 
 ## Overview
 
-Clario is a native app for tracking personal finances — expenses, income, and budgets — without the clutter of a browser tab. Built with [Avalonia UI](https://avaloniaui.net/), it runs natively on Windows, macOS, Linux, and Android.
+Clario is a native app for tracking personal finances (expenses, income, and budgets). Built with [Avalonia UI](https://avaloniaui.net/), it runs natively on Windows, Linux, and Android.
 
 ---
 
@@ -48,7 +48,7 @@ Clario is a native app for tracking personal finances — expenses, income, and 
 - **Multi-account support** — Track balances across multiple accounts
 - **Multi-currency** — Accounts in different currencies
 - **Multiple themes** — Dark, Light, Catppuccin Latte, Macchiato, and Mocha
-- **Cross-platform** — Runs natively on Windows, macOS, Linux, and Android
+- **Cross-platform** — Runs natively on Windows, Linux, and Android
 - **Real-time sync** — Powered by Supabase with live data updates
 
 ---
@@ -60,8 +60,6 @@ Clario is a native app for tracking personal finances — expenses, income, and 
 | UI Framework | [Avalonia UI 11](https://avaloniaui.net/) |
 | Language | C# / .NET 8 |
 | Architecture | MVVM (CommunityToolkit.MVVM) |
-| Backend | [Supabase](https://supabase.com/) (PostgreSQL, Auth, Realtime) |
-| Charts | [LiveCharts2](https://livecharts.dev/) (SkiaSharp) |
 | Icons | [Lucide](https://lucide.dev/) |
 
 ---
@@ -111,6 +109,6 @@ The project isn't formally open to contributions yet while the core is still bei
 
 <div align="center">
 
-Made with ☕ and Avalonia UI.
+Made with Avalonia UI.
 
 </div>
