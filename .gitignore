@@ -9,3 +9,5 @@ publish/
 *.tar.gz
 Clario/devsettings.json
 .env
+TODO.md
+clario.keystore

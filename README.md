@@ -4,7 +4,7 @@
 
 # Clario
 
-**A clean, fast personal finance tracker for the desktop.**
+**A clean, fast personal finance tracker for desktop and mobile.**
 
 [![Beta](https://img.shields.io/badge/status-beta-f59e0b?style=flat-square)](https://github.com/yourusername/clario)
 [![Built with Avalonia](https://img.shields.io/badge/built%20with-Avalonia%20UI-8b5cf6?style=flat-square)](https://avaloniaui.net/)
@@ -21,7 +21,7 @@
 
 ## Overview
 
-Clario is a native desktop app for tracking personal finances — expenses, income, and budgets — without the clutter of a browser tab. Built with [Avalonia UI](https://avaloniaui.net/), it runs natively on Windows, macOS, and Linux.
+Clario is a native app for tracking personal finances — expenses, income, and budgets — without the clutter of a browser tab. Built with [Avalonia UI](https://avaloniaui.net/), it runs natively on Windows, macOS, Linux, and Android.
 
 ---
 
@@ -31,20 +31,25 @@ Clario is a native desktop app for tracking personal finances — expenses, inco
 
 <!-- Uncomment and replace when ready:
 ![Dashboard](./Assets/Screenshots/dashboard.png)
-![Expenses](./Assets/Screenshots/expenses.png)
-![Reports](./Assets/Screenshots/reports.png)
+![Transactions](./Assets/Screenshots/transactions.png)
+![Analytics](./Assets/Screenshots/analytics.png)
+![Budget](./Assets/Screenshots/budget.png)
 -->
 
 ---
 
 ## Features
 
-- 📋 **Expense & income tracking** — Log transactions with categories, amounts, dates, and notes
-- 📅 **Date range filtering** — Quickly slice your data by day, week, month, or custom range
-- 🏷️ **Categories** — Organize transactions with custom categories and icons
-- 📊 **Spending overview** — At-a-glance summaries of where your money is going
-- 🌙 **Dark-first UI** — Designed for dark mode from the ground up
-- 🖥️ **Cross-platform** — Runs natively on Windows, macOS, and Linux
+- **Expense & income tracking** — Log transactions with categories, amounts, dates, and notes
+- **Date range filtering** — Quickly slice your data by day, week, month, or custom range
+- **Categories** — Organize transactions with custom categories and icons
+- **Budget goals** — Set spending limits per category with period tracking
+- **Analytics** — 6 chart sections covering spending trends, category breakdowns, and more
+- **Multi-account support** — Track balances across multiple accounts
+- **Multi-currency** — Accounts in different currencies
+- **Multiple themes** — Dark, Light, Catppuccin Latte, Macchiato, and Mocha
+- **Cross-platform** — Runs natively on Windows, macOS, Linux, and Android
+- **Real-time sync** — Powered by Supabase with live data updates
 
 ---
 
@@ -54,7 +59,9 @@ Clario is a native desktop app for tracking personal finances — expenses, inco
 |---|---|
 | UI Framework | [Avalonia UI 11](https://avaloniaui.net/) |
 | Language | C# / .NET 8 |
-| Architecture | MVVM |
+| Architecture | MVVM (CommunityToolkit.MVVM) |
+| Backend | [Supabase](https://supabase.com/) (PostgreSQL, Auth, Realtime) |
+| Charts | [LiveCharts2](https://livecharts.dev/) (SkiaSharp) |
 | Icons | [Lucide](https://lucide.dev/) |
 
 ---
@@ -68,7 +75,7 @@ If you'd prefer to run from source:
 ```bash
 git clone https://github.com/yourusername/clario.git
 cd clario
-dotnet run --project Clario
+dotnet run --project Clario.Desktop
 ```
 
 > Requires the [.NET 8 SDK](https://dotnet.microsoft.com/download) when running from source.
@@ -77,15 +84,20 @@ dotnet run --project Clario
 
 ## Project Status
 
-Clario is in active development. Core tracking features work, but some things are still being built out:
+Clario is in active development. Core features are working:
 
 - [x] Transaction entry & editing
 - [x] Category management
 - [x] Date range picker
-- [x] Expense list with filtering
-- [x] Budget goals
+- [x] Transaction list with filtering, search & sorting
+- [x] Budget goals with period navigation
+- [x] Analytics (charts & spending reports)
+- [x] Multi-account management
+- [x] Multi-currency support
+- [x] Settings (profile, theme, currency, savings goal)
+- [x] Android support
+- [x] Multiple themes (Dark, Light, Catppuccin variants)
 - [ ] Budget goal notifications
-- [ ] Charts & reports
 - [ ] CSV import / export
 - [ ] Recurring transactions
 
